@@ -1,5 +1,6 @@
 package name.martingeisse.mahdl.gradle
 
+import name.martingeisse.mahdl.plugin.CodeGenerator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

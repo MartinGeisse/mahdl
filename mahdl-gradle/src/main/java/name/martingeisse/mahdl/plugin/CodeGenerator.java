@@ -1,4 +1,4 @@
-package name.martingeisse.mahdl.gradle;
+package name.martingeisse.mahdl.plugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

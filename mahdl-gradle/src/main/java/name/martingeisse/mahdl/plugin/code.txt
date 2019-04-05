@@ -1,0 +1,10 @@
+		try {
+			actionPerformed(event, console);
+		} catch (UserMessageException e) {
+			console.print(e.getMessage(), ConsoleViewContentType.ERROR_OUTPUT);
+		} catch (SelfDescribingRuntimeException e) {
+			printError(console, e::describe);
+		} catch (Exception e) {
+			console.print("unexpected exception\n", ConsoleViewContentType.ERROR_OUTPUT);
+			printError(console, e::printStackTrace);
+		}
