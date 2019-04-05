@@ -37,15 +37,6 @@
     </extensions>
 
     <actions>
-
-        <!-- MaHDL actions -->
-        <action id="mapag.generateVerilog" class="name.martingeisse.mahdl.plugin.actions.GenerateVerilogAction" text="generate verilog">
-            <add-to-group group-id="ProjectViewPopupMenu" />
-        </action>
-        <action id="mapag.generateIseBuild" class="name.martingeisse.mahdl.plugin.ise_build.GenerateIseBuildAction" text="generate ISE build">
-            <add-to-group group-id="ProjectViewPopupMenu" />
-        </action>
-
     </actions>
 
 </idea-plugin>

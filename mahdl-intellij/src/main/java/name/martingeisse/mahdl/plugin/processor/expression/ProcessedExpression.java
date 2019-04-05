@@ -5,8 +5,6 @@
 package name.martingeisse.mahdl.plugin.processor.expression;
 
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.codegen.ExpressionVerilogGenerator;
-import name.martingeisse.mahdl.plugin.codegen.ModuleHasErrorsException;
 import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
 import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
