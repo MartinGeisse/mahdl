@@ -50,13 +50,13 @@ public class MahdlParserDefinition implements ParserDefinition {
 	@NotNull
 	@Override
 	public TokenSet getWhitespaceTokens() {
-		return TokenGroups.WHITESPACE;
+		return null;
 	}
 
 	@NotNull
 	@Override
 	public TokenSet getCommentTokens() {
-		return TokenGroups.COMMENTS;
+		return null;
 	}
 
 	@NotNull
