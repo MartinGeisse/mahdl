@@ -1,8 +1,17 @@
+plugins {
+    id "org.jetbrains.intellij"
+}
 
+apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+
+intellij {
+    version '183.6156.11'
+    pluginName 'MaHDL IntelliJ Plugin Environment'
+}
 
 group 'name.martingeisse.mahdl'
 version '1.0'
@@ -36,5 +45,4 @@ repositories {
 }
 
 dependencies {
-    providedCompile 'com.jetbrains:ideaIC:183.6156.11'
 }
