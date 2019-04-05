@@ -1,0 +1,4 @@
+include 'mahdl-environment'
+project(':mahdl-environment').projectDir = new File(settingsDir, '../mahdl-environment-gradle')
+include 'mahdl-common'
+project(':mahdl-common').projectDir = new File(settingsDir, '../mahdl-common')

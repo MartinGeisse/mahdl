@@ -1,18 +1,8 @@
 plugins {
-	id 'java-gradle-plugin'
 	id 'groovy'
 }
 
 apply plugin: 'groovy'
-
-gradlePlugin {
-	plugins {
-		simplePlugin {
-			id = 'name.martingeisse.mahdl'
-			implementationClass = 'name.martingeisse.mahdl.gradle.MahdlGradlePlugin'
-		}
-	}
-}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -49,9 +39,6 @@ repositories {
 }
 
 dependencies {
-
-	compile project(':mahdl-environment')
-	compile project(':mahdl-common')
 
 	implementation gradleApi()
 	implementation localGroovy()

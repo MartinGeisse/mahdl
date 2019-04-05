@@ -36,14 +36,5 @@ repositories {
 }
 
 dependencies {
-
-    compile project(':mahdl-environment')
-
-    compile 'org.apache.commons:commons-lang3:3.0'
-    compile 'com.google.guava:guava:27.1-jre'
-    compile 'org.jetbrains:annotations:16.0.2'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.tngtech.java:junit-dataprovider:1.13.1'
-    
+    providedCompile 'com.jetbrains:ideaIC:183.6156.11'
 }
