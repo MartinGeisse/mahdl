@@ -12,7 +12,7 @@ import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
 import name.martingeisse.mahdl.plugin.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.plugin.util.HeadBodyReader;
+import name.martingeisse.mahdl.common.util.HeadBodyReader;
 import name.martingeisse.mahdl.plugin.util.LiteralParser;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;

@@ -4,6 +4,7 @@
  */
 package name.martingeisse.mahdl.plugin.util;
 
+import name.martingeisse.mahdl.common.util.IntegerBitUtil;
 import org.junit.Assert;
 import org.junit.Test;
 

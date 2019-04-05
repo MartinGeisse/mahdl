@@ -5,7 +5,7 @@
 package name.martingeisse.mahdl.plugin.processor.expression;
 
 import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.plugin.util.IntegerBitUtil;
+import name.martingeisse.mahdl.common.util.IntegerBitUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
