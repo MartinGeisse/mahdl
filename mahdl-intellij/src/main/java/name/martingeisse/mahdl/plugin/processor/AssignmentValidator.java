@@ -7,7 +7,7 @@ package name.martingeisse.mahdl.plugin.processor;
 import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.plugin.input.psi.*;
 import name.martingeisse.mahdl.plugin.processor.definition.*;
-import name.martingeisse.mahdl.plugin.processor.definition.PortDirection;
+import name.martingeisse.mahdl.common.processor.definition.PortDirection;
 import name.martingeisse.mahdl.plugin.processor.expression.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

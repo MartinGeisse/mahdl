@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
 import name.martingeisse.mahdl.plugin.input.psi.*;
 import name.martingeisse.mahdl.plugin.processor.definition.*;
-import name.martingeisse.mahdl.plugin.processor.definition.PortDirection;
+import name.martingeisse.mahdl.common.processor.definition.PortDirection;
 import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessorImpl;
 import name.martingeisse.mahdl.plugin.processor.statement.ProcessedDoBlock;

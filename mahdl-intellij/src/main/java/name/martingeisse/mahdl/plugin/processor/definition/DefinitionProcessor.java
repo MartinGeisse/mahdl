@@ -173,11 +173,11 @@ public final class DefinitionProcessor {
 					for (PortDefinition portDefinition : portDefinitionGroup.getDefinitions().getAll()) {
 						String portName = portDefinition.getName();
 						if (portName != null) {
-							PortDirection direction;
+							name.martingeisse.mahdl.common.processor.definition.PortDirection direction;
 							if (portDefinitionGroup.getDirection() instanceof PortDirection_In) {
-								direction = PortDirection.IN;
+								direction = name.martingeisse.mahdl.common.processor.definition.PortDirection.IN;
 							} else if (portDefinitionGroup.getDirection() instanceof PortDirection_Out) {
-								direction = PortDirection.OUT;
+								direction = name.martingeisse.mahdl.common.processor.definition.PortDirection.OUT;
 							} else {
 								errorHandler.onError(portDefinitionGroup.getDirection(), "unknown direction");
 								continue;

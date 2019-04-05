@@ -45,4 +45,7 @@ repositories {
 }
 
 dependencies {
+
+    compile project(':mahdl-common')
+
 }
