@@ -1,17 +1,8 @@
-plugins {
-    id "org.jetbrains.intellij" version "0.4.7"
-}
 
-apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
-
-intellij {
-    version '183.6156.11'
-    pluginName 'MaHDL IntelliJ Plugin'
-}
 
 group 'name.martingeisse.mahdl'
 version '1.0'
@@ -45,4 +36,12 @@ repositories {
 }
 
 dependencies {
+    
+    compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'com.google.guava:guava:27.1-jre'
+    compile 'org.jetbrains:annotations:16.0.2'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.tngtech.java:junit-dataprovider:1.13.1'
+    
 }
