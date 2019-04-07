@@ -1,12 +1,9 @@
 package com.intellij.extapi.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.impl.source.tree.SharedImplUtil;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * @author max
+ *
  */
 public class ASTWrapperPsiElement extends ASTDelegatePsiElement {
 
@@ -17,17 +14,12 @@ public class ASTWrapperPsiElement extends ASTDelegatePsiElement {
 	}
 
 	@Override
-	public PsiElement getParent() {
-		return SharedImplUtil.getParent(getNode());
-	}
-
-	@Override
 	public ASTNode getNode() {
 		return astNode;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + myNode.getElementType().toString() + ")";
+		return getClass().getSimpleName() + "(" + getElementType().toString() + ")";
 	}
 }

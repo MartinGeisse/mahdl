@@ -11,6 +11,8 @@ import com.intellij.lang.ASTNode;
  */
 public interface PsiElement {
 
+	PsiElement[] EMPTY_ARRAY = new PsiElement[0];
+
 	PsiElement[] getChildren();
 	PsiElement getParent();
 	PsiElement getFirstChild();
