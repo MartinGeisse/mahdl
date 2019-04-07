@@ -1,0 +1,22 @@
+
+Building a compatibility layer between Gradle and IntelliJ is much more complex than I first thought. The latest problem is interference with how Gradle
+(while building the IntelliJ plugin) resolves the implicit dependencies of the IDE within the environment module. I consider this whole compatibility
+sub-project failed.
+
+The alternative approach is to have MaPaG generate thrww different packages: A PSI interface package, an implementation package for IntelliJ and
+an implementation package for standalone modules and/or Gradle plugins. While this generates lots of duplicate code, it is generated code and so
+does not violate DRY. The assumption made here is that the interface package can abstract sufficiently to make subsequent compilation steps
+possible.
+
+(((alternative idea: build yet another tree from the PSI or directly that is common to both cases. Does slow down the IntelliJ plugin though,
+and probably adds little over interfaces)))
+
+Individual (potential) issues:
+- how will the PSI interfaces return PSI leaf nodes? They cannot return LeafPsiElement for that since it's an IntelliJ interface?
+	- they will return a generated PsiLeafWrapper which is not part of IntelliJ and which does not inherit from LeafPsiElement or PsiElement.
+	--> indicates that what I define here is "my own PSI", and the PsiLeafWrapper is the leaf node type for it. Invent a new name,
+		and do not refer to the PSI at all in the common interface code. (?)
+		--> name: "code model", prefix Cm for classes / interfaces
+- add a toplevel "environment" property to the MaPaG property file. This chooses the implementation which drives code generation.
+
+
