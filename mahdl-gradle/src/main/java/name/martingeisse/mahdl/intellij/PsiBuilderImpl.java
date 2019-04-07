@@ -58,4 +58,18 @@ public class PsiBuilderImpl implements PsiBuilder {
 		TODO
 	}
 
+	public final class MarkerImpl implements Marker {
+
+		@Override
+		public void rollbackTo() {
+			TODO
+		}
+
+		@Override
+		public void done(IElementType type) {
+			TODO
+		}
+
+	}
+
 }
