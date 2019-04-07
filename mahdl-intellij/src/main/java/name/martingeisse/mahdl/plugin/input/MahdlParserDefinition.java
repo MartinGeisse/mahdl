@@ -14,8 +14,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import name.martingeisse.mahdl.intellij.MahdlFileElementTypeHolder;
 import name.martingeisse.mahdl.plugin.MahdlSourceFile;
-import name.martingeisse.mahdl.plugin.MahdlLanguage;
 import name.martingeisse.mahdl.plugin.input.psi.PsiFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +24,6 @@ import org.jetbrains.annotations.Nullable;
  *
  */
 public class MahdlParserDefinition implements ParserDefinition {
-
-	public static final IFileElementType FILE_ELEMENT_TYPE = new IFileElementType(MahdlLanguage.INSTANCE);
 
 	private static final TokenSet STRING_LITERALS = TokenSet.create(Symbols.TEXT_LITERAL);
 
@@ -44,7 +42,7 @@ public class MahdlParserDefinition implements ParserDefinition {
 	@Override
 	@NotNull
 	public IFileElementType getFileNodeType() {
-		return FILE_ELEMENT_TYPE;
+		return MahdlFileElementTypeHolder.FILE_ELEMENT_TYPE;
 	}
 
 	@NotNull

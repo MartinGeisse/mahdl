@@ -1328,7 +1328,7 @@ public class MapagGeneratedMahdlParser implements PsiParser, LightPsiParser {
             };
 
 	// other
-	private static final IElementType FILE_ELEMENT_TYPE = name.martingeisse.mahdl.plugin.input.MahdlParserDefinition.FILE_ELEMENT_TYPE;
+	private static final IElementType FILE_ELEMENT_TYPE = name.martingeisse.mahdl.intellij.MahdlFileElementTypeHolder.FILE_ELEMENT_TYPE;
 	private static final int RECOVERY_SYNC_LENGTH = 3;
 
 	// ------------------------------------------------------------------------------------------------
