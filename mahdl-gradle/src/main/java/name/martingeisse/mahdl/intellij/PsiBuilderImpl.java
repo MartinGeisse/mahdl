@@ -9,6 +9,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.psi.tree.IElementType;
 import name.martingeisse.mahdl.common.input.psi.Token;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +19,15 @@ import java.util.List;
  */
 public class PsiBuilderImpl implements PsiBuilder {
 
+	private final String sourcePath;
 	private final ImmutableList<Token> tokens;
 	private int tokenIndex = 0;
 	private final List<Marker> markerStack = new ArrayList<>();
 	private final ASTNode rootNode;
+	private boolean hasErrors = false;
 
-	public PsiBuilderImpl(ImmutableList<Token> tokens, IElementType rootElementType) {
+	public PsiBuilderImpl(String sourcePath, ImmutableList<Token> tokens, IElementType rootElementType) {
+		this.sourcePath = sourcePath;
 		this.tokens = tokens;
 		this.rootNode = new ASTNode(rootElementType, 0, 0);
 	}
@@ -51,8 +55,10 @@ public class PsiBuilderImpl implements PsiBuilder {
 	}
 
 	@Override
-	public void error(String messageText) {
-		TODO
+	public void error(String message) {
+		int errorTokenIndex = eof() ? (tokens.size() - 1) : tokenIndex;
+		int row = tokens.get(errorTokenIndex).getRow();
+		CompilationErrors.reportError(sourcePath, row, message);
 	}
 
 	@Override
@@ -94,7 +100,7 @@ public class PsiBuilderImpl implements PsiBuilder {
 			if (markerStack.isEmpty()) {
 				rootNode.createChild(startToken);
 			} else {
-				MarkerImpl parentMarker = (MarkerImpl)markerStack.get(markerStack.size() - 1);
+				MarkerImpl parentMarker = (MarkerImpl) markerStack.get(markerStack.size() - 1);
 				ASTNode node = parentMarker.createUnlinkedChildNode(startToken);
 				for (ASTNode unlinkedChildNode : unlinkedChildNodes) {
 					node.createChild(unlinkedChildNode.getElementType(), unlinkedChildNode.getRow(), unlinkedChildNode.getColumn());

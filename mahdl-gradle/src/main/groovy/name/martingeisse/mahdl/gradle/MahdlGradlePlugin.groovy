@@ -20,6 +20,7 @@ class MahdlGradlePlugin implements Plugin<Project> {
 			project.tasks.compileJava.dependsOn(delegate)
 			doLast {
 				new CodeGenerator().run(project.projectDir)
+				CompilationErrors.failOnErrors();
 			}
 		}
 
