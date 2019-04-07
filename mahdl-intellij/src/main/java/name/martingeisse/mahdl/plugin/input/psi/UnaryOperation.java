@@ -5,13 +5,14 @@
 package name.martingeisse.mahdl.plugin.input.psi;
 
 import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  *
  */
-public interface UnaryOperation extends NavigatablePsiElement {
+public interface UnaryOperation extends PsiElement {
 
 	@Nullable
 	Expression getOperand();

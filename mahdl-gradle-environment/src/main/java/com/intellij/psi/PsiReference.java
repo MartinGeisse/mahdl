@@ -21,9 +21,6 @@ import org.jetbrains.annotations.Nullable;
  * @see PsiReferenceContributor
  */
 public interface PsiReference {
-	PsiReference[] EMPTY_ARRAY = new PsiReference[0];
-
-	ArrayFactory<PsiReference> ARRAY_FACTORY = count -> count == 0 ? EMPTY_ARRAY : new PsiReference[count];
 
 	/**
 	 * Returns the underlying (referencing) element of the reference.

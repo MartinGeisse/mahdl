@@ -9,10 +9,11 @@ import org.jetbrains.annotations.NotNull;
  * @author max
  */
 public class ASTWrapperPsiElement extends ASTDelegatePsiElement {
-	private final ASTNode myNode;
 
-	public ASTWrapperPsiElement(@NotNull final ASTNode node) {
-		myNode = node;
+	private final ASTNode astNode;
+
+	public ASTWrapperPsiElement(final ASTNode astNode) {
+		this.astNode = astNode;
 	}
 
 	@Override
@@ -21,9 +22,8 @@ public class ASTWrapperPsiElement extends ASTDelegatePsiElement {
 	}
 
 	@Override
-	@NotNull
 	public ASTNode getNode() {
-		return myNode;
+		return astNode;
 	}
 
 	@Override

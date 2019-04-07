@@ -139,7 +139,7 @@ public final class ModuleProcessor {
 				assignmentValidator.finishSection();
 			}, implementationItem));
 		}
-		runnables.sort(Comparator.comparing(pair -> pair.getRight().getTextRange().getStartOffset()));
+		runnables.sort(Comparator.comparing(Pair::getRight, LowLevelPsiUtil.PSI_ELEMENT_START_POSITION_COMPARATOR));
 		for (Pair<Runnable, PsiElement> pair : runnables) {
 			pair.getLeft().run();
 		}
