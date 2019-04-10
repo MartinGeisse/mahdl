@@ -5,7 +5,7 @@
 package name.martingeisse.mahdl.plugin.input;
 
 import com.intellij.psi.tree.IElementType;
-import name.martingeisse.mahdl.intellij.MahdlLanguage;
+import name.martingeisse.mahdl.plugin.MahdlLanguage;
 import org.jetbrains.annotations.NotNull;
 
 /**

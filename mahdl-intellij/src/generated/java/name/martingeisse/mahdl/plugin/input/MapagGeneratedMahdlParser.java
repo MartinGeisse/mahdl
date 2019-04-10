@@ -6,6 +6,7 @@ import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiParser;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import name.martingeisse.mahdl.plugin.MahdlFileElementTypeHolder;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -1328,7 +1329,7 @@ public class MapagGeneratedMahdlParser implements PsiParser, LightPsiParser {
             };
 
 	// other
-	private static final IElementType FILE_ELEMENT_TYPE = name.martingeisse.mahdl.intellij.MahdlFileElementTypeHolder.FILE_ELEMENT_TYPE;
+	private static final IElementType FILE_ELEMENT_TYPE = MahdlFileElementTypeHolder.FILE_ELEMENT_TYPE;
 	private static final int RECOVERY_SYNC_LENGTH = 3;
 
 	// ------------------------------------------------------------------------------------------------

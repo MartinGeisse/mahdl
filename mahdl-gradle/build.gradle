@@ -50,7 +50,6 @@ repositories {
 
 dependencies {
 
-	compile project(':mahdl-environment')
 	compile project(':mahdl-common')
 
 	implementation gradleApi()

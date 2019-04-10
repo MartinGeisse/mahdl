@@ -37,8 +37,6 @@ repositories {
 
 dependencies {
 
-    compile project(':mahdl-environment')
-
     compile 'org.apache.commons:commons-lang3:3.0'
     compile 'com.google.guava:guava:27.1-jre'
     compile 'org.jetbrains:annotations:16.0.2'

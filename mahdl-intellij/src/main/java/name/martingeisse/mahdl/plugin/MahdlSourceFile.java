@@ -8,7 +8,6 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.intellij.MahdlLanguage;
 import name.martingeisse.mahdl.plugin.input.psi.Module;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

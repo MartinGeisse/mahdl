@@ -14,7 +14,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import name.martingeisse.mahdl.intellij.MahdlFileElementTypeHolder;
+import name.martingeisse.mahdl.plugin.MahdlFileElementTypeHolder;
 import name.martingeisse.mahdl.plugin.MahdlSourceFile;
 import name.martingeisse.mahdl.plugin.input.psi.PsiFactory;
 import org.jetbrains.annotations.NotNull;

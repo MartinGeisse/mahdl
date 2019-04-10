@@ -1,0 +1,3 @@
+include 'mahdl-common'
+include 'mahdl-gradle'
+include 'mahdl-intellij'

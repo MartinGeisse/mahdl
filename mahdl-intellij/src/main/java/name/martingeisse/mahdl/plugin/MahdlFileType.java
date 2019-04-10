@@ -5,7 +5,6 @@
 package name.martingeisse.mahdl.plugin;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import name.martingeisse.mahdl.intellij.MahdlLanguage;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

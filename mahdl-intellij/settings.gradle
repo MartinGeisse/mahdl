@@ -1,4 +1,0 @@
-include 'mahdl-environment'
-project(':mahdl-environment').projectDir = new File(settingsDir, '../mahdl-intellij-environment')
-include 'mahdl-common'
-project(':mahdl-common').projectDir = new File(settingsDir, '../mahdl-common')
