@@ -1,43 +1,23 @@
 package name.martingeisse.mahdl.input.cm.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.LightPsiParser;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import name.martingeisse.mahdl.input.cm.CmToken;
+import name.martingeisse.mahdl.input.cm.Literal_Text;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.util.IncorrectOperationException;
-import com.intellij.psi.PsiReference;
-import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public final class Literal_TextImpl extends LiteralImpl implements Literal_Text, PsiCm {
 
-import name.martingeisse.mahdl.input.cm.*;
+	public Literal_TextImpl(@NotNull ASTNode node) {
+		super(node);
+	}
 
-public final class Literal_TextImpl extends LiteralImpl implements Literal_Text,PsiCm {
+	public CmToken getValue() {
+		return (CmToken) InternalPsiUtil.getCmFromPsi(InternalPsiUtil.getChild(this, 0));
+	}
 
-    public Literal_TextImpl(@NotNull ASTNode node) {
-        super(node);
-    }
+	public LeafPsiElement getValuePsi() {
+		return (LeafPsiElement) InternalPsiUtil.getChild(this, 0);
+	}
 
-    	    public CmToken getValue() {
-            return (CmToken)InternalPsiUtil.getCmFromPsi(InternalPsiUtil.getChild(this, 0));
-        }
-
-    	public LeafPsiElement getValuePsi() {
-            return (LeafPsiElement)InternalPsiUtil.getChild(this, 0);
-        }
-    
-        
-    
-    
-    
 }

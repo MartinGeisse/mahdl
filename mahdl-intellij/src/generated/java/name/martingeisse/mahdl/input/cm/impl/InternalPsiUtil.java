@@ -2,27 +2,26 @@ package name.martingeisse.mahdl.input.cm.impl;
 
 import com.intellij.extapi.psi.ASTDelegatePsiElement;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
-
-import java.util.function.Consumer;
-
+import com.intellij.psi.tree.TokenSet;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.CmToken;
+
+import java.util.function.Consumer;
 
 public final class InternalPsiUtil {
 
 	private static TokenSet ignoredElementTypes;
 
-	private static void initializeIgnoredElementTypes() {
-		if (ignoredElementTypes == null) {
-            name.martingeisse.mahdl.common.input.MahdlParserDefinition parserDefinition = new name.martingeisse.mahdl.common.input.MahdlParserDefinition();
-			ignoredElementTypes = TokenSet.orSet(parserDefinition.getWhitespaceTokens(), parserDefinition.getCommentTokens());
-		}
-	}
-
 	// prevent instantiation
 	private InternalPsiUtil() {
+	}
+
+	private static void initializeIgnoredElementTypes() {
+		if (ignoredElementTypes == null) {
+			name.martingeisse.mahdl.common.input.MahdlParserDefinition parserDefinition = new name.martingeisse.mahdl.common.input.MahdlParserDefinition();
+			ignoredElementTypes = TokenSet.orSet(parserDefinition.getWhitespaceTokens(), parserDefinition.getCommentTokens());
+		}
 	}
 
 	/**
@@ -57,30 +56,30 @@ public final class InternalPsiUtil {
 		return element;
 	}
 
-    /**
-     * Returns the CM node for a PSI node, or null if not possible.
-     */
-    public static CmNode getCmFromPsi(PsiElement psi) {
-        if (psi instanceof CmNode) {
-            return (CmNode)psi;
-        } else if (psi instanceof LeafPsiElement) {
-            return new CmTokenImpl((LeafPsiElement)psi);
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Returns the CM node for a PSI node, or null if not possible.
+	 */
+	public static CmNode getCmFromPsi(PsiElement psi) {
+		if (psi instanceof CmNode) {
+			return (CmNode) psi;
+		} else if (psi instanceof LeafPsiElement) {
+			return new CmTokenImpl((LeafPsiElement) psi);
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * Returns the PSI node for a CM node, or null if not possible.
-     */
-    public static PsiElement getPsiFromCm(CmNode cm) {
-        if (cm instanceof PsiElement) {
-            return (PsiElement)cm;
-        } else if (cm instanceof CmToken) {
-            throw new RuntimeException("not yet implemented");
-        } else {
-            throw new RuntimeException("found CM node that is neither a PSI node nor a token: " + cm);
-        }
-    }
+	/**
+	 * Returns the PSI node for a CM node, or null if not possible.
+	 */
+	public static PsiElement getPsiFromCm(CmNode cm) {
+		if (cm instanceof PsiElement) {
+			return (PsiElement) cm;
+		} else if (cm instanceof CmToken) {
+			throw new RuntimeException("not yet implemented");
+		} else {
+			throw new RuntimeException("found CM node that is neither a PSI node nor a token: " + cm);
+		}
+	}
 
 }

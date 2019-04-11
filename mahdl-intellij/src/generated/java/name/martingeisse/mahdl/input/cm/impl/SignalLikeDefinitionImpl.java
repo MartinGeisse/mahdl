@@ -1,39 +1,20 @@
 package name.martingeisse.mahdl.input.cm.impl;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.LightPsiParser;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.psi.PsiReference;
-import com.google.common.collect.ImmutableList;
+import name.martingeisse.mahdl.input.cm.SignalLikeDefinition;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public abstract class SignalLikeDefinitionImpl extends ASTWrapperPsiElement implements SignalLikeDefinition, PsiCm, PsiNameIdentifierOwner {
 
-import name.martingeisse.mahdl.input.cm.*;
+	public SignalLikeDefinitionImpl(@NotNull ASTNode node) {
+		super(node);
+	}
 
-public abstract class SignalLikeDefinitionImpl extends ASTWrapperPsiElement implements SignalLikeDefinition,PsiCm,PsiNameIdentifierOwner {
+	public void superclassDelete() throws IncorrectOperationException {
+		super.delete();
+	}
 
-    public SignalLikeDefinitionImpl(@NotNull ASTNode node) {
-        super(node);
-    }
-
-    
-        
-    
-            public void superclassDelete() throws IncorrectOperationException {
-            super.delete();
-        }
-    
-    
 }
