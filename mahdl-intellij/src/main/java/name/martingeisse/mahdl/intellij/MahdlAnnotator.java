@@ -22,6 +22,7 @@ public class MahdlAnnotator implements Annotator {
 	 */
 	@Override
 	public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
+		IntellijEnvironment.initialize();
 		if (psiElement instanceof ModuleImpl) {
 			annotate((ModuleImpl) psiElement, annotationHolder);
 		}
