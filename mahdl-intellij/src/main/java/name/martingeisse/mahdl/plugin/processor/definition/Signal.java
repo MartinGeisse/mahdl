@@ -6,9 +6,8 @@ package name.martingeisse.mahdl.plugin.processor.definition;
 
 import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.plugin.input.psi.DataType;
-import name.martingeisse.mahdl.plugin.input.psi.Expression;
 import name.martingeisse.mahdl.plugin.input.psi.ExtendedExpression;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

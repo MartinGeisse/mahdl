@@ -6,9 +6,9 @@ package name.martingeisse.mahdl.plugin.processor.statement;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
-import name.martingeisse.mahdl.plugin.processor.expression.TypeErrorException;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

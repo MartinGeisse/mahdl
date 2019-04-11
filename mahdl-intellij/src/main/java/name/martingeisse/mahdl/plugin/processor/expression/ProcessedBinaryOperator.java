@@ -4,12 +4,13 @@
  */
 package name.martingeisse.mahdl.plugin.processor.expression;
 
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import name.martingeisse.mahdl.plugin.input.psi.*;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 
 /**

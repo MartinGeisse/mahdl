@@ -4,6 +4,7 @@
  */
 package name.martingeisse.mahdl.plugin.processor.type;
 
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.plugin.input.psi.DataType;
 import org.jetbrains.annotations.NotNull;
 

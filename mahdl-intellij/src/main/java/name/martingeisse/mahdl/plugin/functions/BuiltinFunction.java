@@ -6,9 +6,9 @@ package name.martingeisse.mahdl.plugin.functions;
 
 import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
-import name.martingeisse.mahdl.plugin.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

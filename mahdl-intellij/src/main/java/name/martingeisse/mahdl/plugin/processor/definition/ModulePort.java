@@ -9,7 +9,7 @@ import name.martingeisse.mahdl.common.processor.definition.PortDirection;
 import name.martingeisse.mahdl.plugin.input.psi.DataType;
 import name.martingeisse.mahdl.plugin.input.psi.PortDirection_In;
 import name.martingeisse.mahdl.plugin.input.psi.PortDirection_Out;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**

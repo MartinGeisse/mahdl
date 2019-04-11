@@ -1,7 +1,9 @@
 package name.martingeisse.mahdl.plugin.processor.expression;
 
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.IntegerBitUtil;
 import org.jetbrains.annotations.NotNull;
 

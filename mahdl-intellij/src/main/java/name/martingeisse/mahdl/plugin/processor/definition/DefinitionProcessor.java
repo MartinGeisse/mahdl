@@ -11,7 +11,7 @@ import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
 import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.plugin.processor.type.DataTypeProcessor;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

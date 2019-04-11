@@ -6,12 +6,14 @@ package name.martingeisse.mahdl.plugin.processor.expression;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import name.martingeisse.mahdl.plugin.functions.BuiltinFunction;
 import name.martingeisse.mahdl.plugin.functions.BuiltinFunctions;
 import name.martingeisse.mahdl.plugin.input.psi.*;
 import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
 import name.martingeisse.mahdl.plugin.processor.definition.*;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.plugin.util.LiteralParser;
 import org.jetbrains.annotations.NotNull;
 

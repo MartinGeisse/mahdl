@@ -5,10 +5,9 @@
 package name.martingeisse.mahdl.plugin.processor.statement;
 
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.input.psi.Expression;
 import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
-import name.martingeisse.mahdl.plugin.processor.expression.TypeErrorException;
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 
 /**
  *

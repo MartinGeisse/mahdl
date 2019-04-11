@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.plugin.processor.expression;
 
 import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.plugin.processor.ErrorHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

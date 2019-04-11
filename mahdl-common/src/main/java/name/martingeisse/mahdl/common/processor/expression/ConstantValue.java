@@ -2,9 +2,9 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.processor.expression;
+package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.plugin.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.IntegerBitUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
