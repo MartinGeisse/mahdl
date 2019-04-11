@@ -1,4 +1,4 @@
-package name.martingeisse.mahdl.common.input;
+package name.martingeisse.mahdl.input;
 
 import java.lang.Error;
 import com.intellij.lexer.FlexLexer;

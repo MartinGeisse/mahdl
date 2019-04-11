@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.intellij.input;
 
 import com.intellij.lexer.FlexAdapter;
+import name.martingeisse.mahdl.input.FlexGeneratedMahdlLexer;
 
 /**
  *
