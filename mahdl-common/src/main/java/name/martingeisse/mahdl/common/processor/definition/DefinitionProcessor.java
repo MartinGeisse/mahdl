@@ -5,6 +5,8 @@
 package name.martingeisse.mahdl.common.processor.definition;
 
 import com.google.common.collect.ImmutableMap;
+import name.martingeisse.mahdl.common.Environment;
+import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
@@ -22,6 +24,9 @@ import java.util.Map;
 public final class DefinitionProcessor {
 
 	@NotNull
+	private final Environment environment;
+
+	@NotNull
 	private final ErrorHandler errorHandler;
 
 	@NotNull
@@ -33,9 +38,11 @@ public final class DefinitionProcessor {
 	@NotNull
 	private final Map<String, Named> definitions;
 
-	public DefinitionProcessor(@NotNull ErrorHandler errorHandler,
+	public DefinitionProcessor(@NotNull Environment environment,
+							   @NotNull ErrorHandler errorHandler,
 							   @NotNull DataTypeProcessor dataTypeProcessor,
 							   @NotNull ExpressionProcessor expressionProcessor) {
+		this.environment = environment;
 		this.errorHandler = errorHandler;
 		this.dataTypeProcessor = dataTypeProcessor;
 		this.expressionProcessor = expressionProcessor;
@@ -150,18 +157,14 @@ public final class DefinitionProcessor {
 
 			// resolve the module definition
 			Module resolvedModule;
-			{
-				PsiElement untypedResolvedModule = moduleInstanceDefinitionGroupElement.getModuleName().getReference().resolve();
-				if (untypedResolvedModule instanceof Module) {
-					resolvedModule = (Module) untypedResolvedModule;
-				} else {
-					errorHandler.onError(moduleInstanceDefinitionGroupElement.getModuleName(), "unknown module: '" +
-						moduleInstanceDefinitionGroupElement.getModuleName().getReference().getCanonicalText() + "'");
-					for (ModuleInstanceDefinition definition : moduleInstanceDefinitionGroupElement.getDefinitions().getAll()) {
-						add(new ModuleInstanceWithMissingDefinition(moduleInstanceDefinitionGroupElement.getModuleName(), definition));
-					}
-					return;
+			try {
+				resolvedModule = environment.resolveModuleReference(moduleInstanceDefinitionGroupElement.getModuleName());
+			} catch (ReferenceResolutionException e) {
+				errorHandler.onError(moduleInstanceDefinitionGroupElement.getModuleName(), e.getMessage());
+				for (ModuleInstanceDefinition definition : moduleInstanceDefinitionGroupElement.getDefinitions().getAll()) {
+					add(new ModuleInstanceWithMissingDefinition(moduleInstanceDefinitionGroupElement.getModuleName(), definition));
 				}
+				return;
 			}
 
 			// build a map of the port definitions from the module definition

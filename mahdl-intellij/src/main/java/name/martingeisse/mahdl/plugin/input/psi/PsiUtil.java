@@ -17,16 +17,13 @@ import com.intellij.util.FileContentUtil;
 import com.intellij.util.IncorrectOperationException;
 import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.plugin.MahdlSourceFile;
-import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
+import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.plugin.input.reference.LocalReference;
 import name.martingeisse.mahdl.plugin.input.reference.ModuleInstancePortReference;
 import name.martingeisse.mahdl.plugin.input.reference.ModuleReference;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

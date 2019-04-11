@@ -9,16 +9,10 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.indexing.FileBasedIndex;
 import name.martingeisse.mahdl.common.cm.CmUtil;
-import name.martingeisse.mahdl.plugin.MahdlModuleIndex;
-import name.martingeisse.mahdl.plugin.MahdlSourceFile;
-import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
-import name.martingeisse.mahdl.plugin.input.Symbols;
+import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.plugin.input.psi.Module;
 import name.martingeisse.mahdl.plugin.input.psi.PsiUtil;
 import name.martingeisse.mahdl.plugin.input.psi.QualifiedModuleName;
@@ -27,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**

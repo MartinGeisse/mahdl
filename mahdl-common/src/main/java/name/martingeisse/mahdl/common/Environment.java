@@ -14,8 +14,8 @@ public interface Environment {
 
 	InputStream openDataFile(CmNode anchor, String filename) throws IOException;
 
-	boolean validateModuleNameAgainstFilePath(QualifiedModuleName name) throws IOException;
+	void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException;
 
-	Module resolveModuleReference(QualifiedModuleName name) throws IOException;
+	Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException, IOException;
 
 }

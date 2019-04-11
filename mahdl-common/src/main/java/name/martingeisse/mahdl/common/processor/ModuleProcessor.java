@@ -6,6 +6,7 @@ package name.martingeisse.mahdl.common.processor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
@@ -17,6 +18,7 @@ import name.martingeisse.mahdl.common.processor.type.DataTypeProcessorImpl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +41,7 @@ public final class ModuleProcessor {
 
 	private final Module module;
 	private final String canonicalModuleName;
+	private final Environment environment;
 	private final ErrorHandler errorHandler;
 
 	private DataTypeProcessor dataTypeProcessor;
@@ -49,9 +52,10 @@ public final class ModuleProcessor {
 	private StatementProcessor statementProcessor;
 	private List<ProcessedDoBlock> processedDoBlocks;
 
-	public ModuleProcessor(@NotNull Module module, @NotNull ErrorHandler errorHandler) {
+	public ModuleProcessor(@NotNull Module module, @NotNull Environment environment, @NotNull ErrorHandler errorHandler) {
 		this.module = module;
 		this.canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
+		this.environment = environment;
 		this.errorHandler = errorHandler;
 	}
 
@@ -63,7 +67,11 @@ public final class ModuleProcessor {
 	public ModuleDefinition process() {
 
 		// make sure the module name matches the file name and sits in the right folder
-		validateModuleNameAgainstFilePath();
+		try {
+			environment.validateModuleNameAgainstFilePath(module, module.getModuleName());
+		} catch (IOException e) {
+			errorHandler.onError(module.getModuleName(), "module name does not match file path");
+		}
 
 		// validate nativeness (but still continue even if violated, since the keyword may be misplaced)
 		boolean isNative = module.getNativeness().getIt() != null;
@@ -144,22 +152,6 @@ public final class ModuleProcessor {
 		assignmentValidator.checkMissingAssignments(getDefinitions().values());
 
 		return new ModuleDefinition(isNative, canonicalModuleName, ImmutableMap.copyOf(getDefinitions()), ImmutableList.copyOf(processedDoBlocks));
-	}
-
-	private void validateModuleNameAgainstFilePath() {
-		QualifiedModuleName name = module.getModuleName();
-		Module moduleForName;
-		try {
-			moduleForName = PsiUtil.resolveModuleName(name, PsiUtil.ModuleNameResolutionUseCase.NAME_DECLARATION_VALIDATION);
-		} catch (ReferenceResolutionException e) {
-			errorHandler.onError(name, e.getMessage());
-			return;
-		}
-		if (moduleForName != module) {
-			VirtualFile fileForName = PsiUtil.getVirtualFile(moduleForName);
-			String path = (fileForName == null ? "(null)" : fileForName.getPath());
-			errorHandler.onError(name, "module name '" + canonicalModuleName + "' refers to different file " + path);
-		}
 	}
 
 	private boolean isConstant(ImplementationItem item) {

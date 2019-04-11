@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
@@ -63,15 +64,12 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 		int rows = arguments.get(1).convertToInteger().intValueExact();
 		int columns = arguments.get(2).convertToInteger().intValueExact();
 
-		// locate the file
-		VirtualFile file = locateFile(errorSource, filename, context);
-		if (file == null) {
-			return ConstantValue.Unknown.INSTANCE;
-		}
+		// TODO
+		Environment environment = ;
 
 		// read the file
-		MutableObject<BitSet> resultBitSetHolder = new MutableObject();
-		try (InputStream inputStream = file.getInputStream()) {
+		MutableObject<BitSet> resultBitSetHolder = new MutableObject<>();
+		try (InputStream inputStream = environment.openDataFile(errorSource, filename)) {
 			try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 				new HeadBodyReader() {
 
@@ -167,28 +165,5 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 		return new ConstantValue.Matrix(rows, columns, resultBitSetHolder.getValue());
 	}
 
-	private VirtualFile locateFile(@NotNull PsiElement anchor, String filename, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
-		if (filename.indexOf('/') != -1 || filename.startsWith(".")) {
-			context.error(anchor, "invalid filename: " + filename);
-			return null;
-		}
-		PsiFile psiFile = anchor.getContainingFile();
-		if (psiFile == null) {
-			context.error(anchor, "element is not inside a PsiFile");
-			return null;
-		}
-		VirtualFile containingFile = psiFile.getOriginalFile().getVirtualFile();
-		if (containingFile == null) {
-			context.error(anchor, "element is not inside a VirtualFile");
-			return null;
-		}
-		VirtualFile folder = containingFile.getParent();
-		VirtualFile file = folder.findChild(filename);
-		if (file == null) {
-			context.error(anchor, "file not found: " + filename);
-			return null;
-		}
-		return file;
-	}
 
 }
