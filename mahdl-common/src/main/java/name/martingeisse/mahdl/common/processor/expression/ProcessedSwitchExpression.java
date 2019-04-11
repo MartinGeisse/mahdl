@@ -5,12 +5,12 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedAssignment;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedStatement;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedSwitchStatement;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,6 +114,21 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 		}
 	}
 
+	@NotNull
+	public ProcessedSwitchStatement convertToStatement(@NotNull ProcessedExpression destination) {
+		try {
+			List<ProcessedSwitchStatement.Case> statementCases = new ArrayList<>();
+			for (ProcessedSwitchExpression.Case expressionCase : cases) {
+				ProcessedStatement branch = new ProcessedAssignment(getErrorSource(), destination, expressionCase.getResultValue());
+				statementCases.add(new ProcessedSwitchStatement.Case(expressionCase.getSelectorValues(), branch));
+			}
+			ProcessedStatement defaultBranch = new ProcessedAssignment(getErrorSource(), destination, this.defaultBranch);
+			return new ProcessedSwitchStatement(getErrorSource(), selector, ImmutableList.copyOf(statementCases), defaultBranch);
+		} catch (TypeErrorException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static final class Case {
 
 		@NotNull
@@ -142,21 +157,6 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 			return (resultValue == this.resultValue ? this : new Case(selectorValues, resultValue));
 		}
 
-	}
-
-	@NotNull
-	public ProcessedSwitchStatement convertToStatement(@NotNull ProcessedExpression destination) {
-		try {
-			List<ProcessedSwitchStatement.Case> statementCases = new ArrayList<>();
-			for (ProcessedSwitchExpression.Case expressionCase : cases) {
-				ProcessedStatement branch = new ProcessedAssignment(getErrorSource(), destination, expressionCase.getResultValue());
-				statementCases.add(new ProcessedSwitchStatement.Case(expressionCase.getSelectorValues(), branch));
-			}
-			ProcessedStatement defaultBranch = new ProcessedAssignment(getErrorSource(), destination, this.defaultBranch);
-			return new ProcessedSwitchStatement(getErrorSource(), selector, ImmutableList.copyOf(statementCases), defaultBranch);
-		} catch (TypeErrorException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

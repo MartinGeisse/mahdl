@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.cm.*;
+import name.martingeisse.mahdl.common.cm.BinaryOperation;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
@@ -87,14 +87,6 @@ public enum ProcessedBinaryOperator {
 	private final BinaryOperator<BigInteger> bigIntegerEquivalentOperator;
 	private final CompareResultPredicate compareResultPredicate;
 	private final boolean zeroCheckRightOperand;
-
-	private interface LogicalOperation {
-		boolean evaluate(boolean leftOperand, boolean rightOperand);
-	}
-
-	private interface CompareResultPredicate {
-		boolean test(int compareResult);
-	}
 
 	ProcessedBinaryOperator(LogicalOperation logicalOperation, BinaryOperator<BigInteger> bigIntegerEquivalentOperator, CompareResultPredicate compareResultPredicate, boolean zeroCheckRightOperand) {
 		this.logicalOperation = logicalOperation;
@@ -224,6 +216,14 @@ public enum ProcessedBinaryOperator {
 		} else {
 			throw new OperatorInconsistencyException("evaluateIntegerVectorOperator() not supported for this operator");
 		}
+	}
+
+	private interface LogicalOperation {
+		boolean evaluate(boolean leftOperand, boolean rightOperand);
+	}
+
+	private interface CompareResultPredicate {
+		boolean test(int compareResult);
 	}
 
 	public static class OperandValueException extends Exception {

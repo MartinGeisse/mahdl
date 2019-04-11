@@ -12,6 +12,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class ProcessedDataType {
 
+	@NotNull
+	public abstract Family getFamily();
+
 	public enum Family {
 
 		BIT, VECTOR, MATRIX, INTEGER, TEXT, CLOCK, UNKNOWN;
@@ -21,9 +24,6 @@ public abstract class ProcessedDataType {
 		}
 
 	}
-
-	@NotNull
-	public abstract Family getFamily();
 
 	public static final class Unknown extends ProcessedDataType {
 

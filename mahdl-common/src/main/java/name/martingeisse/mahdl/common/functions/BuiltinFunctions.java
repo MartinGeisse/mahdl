@@ -14,10 +14,6 @@ import java.util.List;
  */
 public final class BuiltinFunctions {
 
-	// prevent instantiation
-	private BuiltinFunctions() {
-	}
-
 	public static final ImmutableMap<String, BuiltinFunction> FUNCTIONS;
 
 	static {
@@ -31,6 +27,10 @@ public final class BuiltinFunctions {
 			builder.put(function.getName(), function);
 		}
 		FUNCTIONS = builder.build();
+	}
+
+	// prevent instantiation
+	private BuiltinFunctions() {
 	}
 
 }

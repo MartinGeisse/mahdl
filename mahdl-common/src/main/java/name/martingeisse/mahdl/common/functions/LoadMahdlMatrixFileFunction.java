@@ -6,13 +6,13 @@ package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
 import name.martingeisse.mahdl.common.Environment;
-import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.HeadBodyReader;
 import name.martingeisse.mahdl.common.util.LiteralParser;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -158,6 +158,5 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 		}
 		return new ConstantValue.Matrix(rows, columns, resultBitSetHolder.getValue());
 	}
-
 
 }

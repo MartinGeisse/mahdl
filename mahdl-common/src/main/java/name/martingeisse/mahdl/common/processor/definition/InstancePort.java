@@ -4,7 +4,6 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import name.martingeisse.mahdl.common.processor.definition.PortDirection;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 

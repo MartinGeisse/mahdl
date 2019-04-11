@@ -4,10 +4,10 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.input.cm.Expression;
-import name.martingeisse.mahdl.input.cm.ExtendedExpression;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.Expression;
+import name.martingeisse.mahdl.input.cm.ExtendedExpression;
 
 /**
  *

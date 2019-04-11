@@ -4,9 +4,9 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,11 +92,11 @@ public abstract class ProcessedExpression {
 		return new ProcessedConstantValue(errorSource, value);
 	}
 
-	private static class NotConstantException extends RuntimeException {
-	}
-
 	@NotNull
 	protected abstract ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler);
+
+	private static class NotConstantException extends RuntimeException {
+	}
 
 	public static class FormallyConstantEvaluationContext {
 

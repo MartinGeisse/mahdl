@@ -4,10 +4,10 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.DataType;
 import name.martingeisse.mahdl.input.cm.ExtendedExpression;
-import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

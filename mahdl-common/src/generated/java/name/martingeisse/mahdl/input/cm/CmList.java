@@ -7,14 +7,14 @@ import java.util.function.Consumer;
 
 public interface CmList<T extends CmNode> extends CmNode {
 
-    <S extends CmNode> CmList<S> cast(Class<S> subclass);
+	<S extends CmNode> CmList<S> cast(Class<S> subclass);
 
-    List<T> getAll();
+	List<T> getAll();
 
 	void addAllTo(List<T> list);
 
 	void addAllTo(ImmutableList.Builder<T> builder);
 
-    void foreach(Consumer<T> consumer);
+	void foreach(Consumer<T> consumer);
 
 }
