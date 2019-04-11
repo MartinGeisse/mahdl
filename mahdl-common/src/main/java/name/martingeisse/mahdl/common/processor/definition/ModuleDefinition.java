@@ -6,7 +6,7 @@ package name.martingeisse.mahdl.common.processor.definition;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import name.martingeisse.mahdl.plugin.processor.statement.ProcessedDoBlock;
+import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 import org.jetbrains.annotations.NotNull;
 
 /**

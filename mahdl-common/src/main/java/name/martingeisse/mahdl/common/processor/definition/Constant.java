@@ -4,11 +4,11 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.input.psi.DataType;
-import name.martingeisse.mahdl.plugin.input.psi.ExtendedExpression;
+import name.martingeisse.mahdl.common.cm.CmToken;
+import name.martingeisse.mahdl.common.cm.DataType;
+import name.martingeisse.mahdl.common.cm.ExtendedExpression;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
-import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
+import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ public final class Constant extends SignalLike {
 	private ConstantValue value;
 
 	// note: the initializer can be null in case of errors in the code
-	public Constant(@NotNull PsiElement nameElement,
+	public Constant(@NotNull CmToken nameElement,
 					@NotNull DataType dataTypeElement,
 					@NotNull ProcessedDataType processedDataType,
 					@Nullable ExtendedExpression initializer) {
