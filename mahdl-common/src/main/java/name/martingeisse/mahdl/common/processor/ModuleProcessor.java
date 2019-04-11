@@ -69,7 +69,7 @@ public final class ModuleProcessor {
 		try {
 			Environment.Holder.INSTANCE.validateModuleNameAgainstFilePath(module, module.getModuleName());
 		} catch (IOException e) {
-			errorHandler.onError(module.getModuleName(), "module name does not match file path");
+			errorHandler.onError(module.getModuleName(), "module name does not match file path -- " + e.getMessage());
 		}
 
 		// validate nativeness (but still continue even if violated, since the keyword may be misplaced)
