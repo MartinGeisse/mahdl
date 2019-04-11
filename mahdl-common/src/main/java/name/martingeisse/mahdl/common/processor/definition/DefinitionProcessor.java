@@ -5,11 +5,10 @@
 package name.martingeisse.mahdl.common.processor.definition;
 
 import com.google.common.collect.ImmutableMap;
-import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.input.psi.*;
+import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
-import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessor;
-import name.martingeisse.mahdl.plugin.processor.expression.ProcessedExpression;
+import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
+import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +47,7 @@ public final class DefinitionProcessor {
 		return definitions;
 	}
 
-	public void processPorts(@NotNull ListNode<PortDefinitionGroup> psiPortList) {
+	public void processPorts(@NotNull CmList<PortDefinitionGroup> psiPortList) {
 		for (PortDefinitionGroup untypedPortDefinitionGroup : psiPortList.getAll()) {
 			if (untypedPortDefinitionGroup instanceof PortDefinitionGroup_Valid) {
 				PortDefinitionGroup_Valid portDefinitionGroup = (PortDefinitionGroup_Valid) untypedPortDefinitionGroup;
@@ -92,7 +91,7 @@ public final class DefinitionProcessor {
 			for (SignalLikeDefinition signalLikeDefinition : signalLike.getDefinitions().getAll()) {
 
 				// extract name element and initializer
-				PsiElement nameElement;
+				CmToken nameElement;
 				ExtendedExpression initializer;
 				if (signalLikeDefinition instanceof SignalLikeDefinition_WithoutInitializer) {
 					SignalLikeDefinition_WithoutInitializer typedDeclaredSignalLike = (SignalLikeDefinition_WithoutInitializer) signalLikeDefinition;
