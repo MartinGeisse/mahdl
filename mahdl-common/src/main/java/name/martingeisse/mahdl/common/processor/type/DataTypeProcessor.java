@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.type;
 
-import name.martingeisse.mahdl.common.cm.DataType;
+import name.martingeisse.mahdl.input.cm.DataType;
 import org.jetbrains.annotations.NotNull;
 
 public interface DataTypeProcessor {

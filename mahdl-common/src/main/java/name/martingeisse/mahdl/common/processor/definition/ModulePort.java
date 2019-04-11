@@ -4,10 +4,10 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import name.martingeisse.mahdl.common.cm.CmToken;
-import name.martingeisse.mahdl.common.cm.DataType;
-import name.martingeisse.mahdl.common.cm.PortDirection_In;
-import name.martingeisse.mahdl.common.cm.PortDirection_Out;
+import name.martingeisse.mahdl.input.cm.CmToken;
+import name.martingeisse.mahdl.input.cm.DataType;
+import name.martingeisse.mahdl.input.cm.PortDirection_In;
+import name.martingeisse.mahdl.input.cm.PortDirection_Out;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,13 +17,13 @@ import org.jetbrains.annotations.NotNull;
 public final class ModulePort extends SignalLike {
 
 	@NotNull
-	private final name.martingeisse.mahdl.common.cm.PortDirection directionElement;
+	private final name.martingeisse.mahdl.input.cm.PortDirection directionElement;
 
 	@NotNull
 	private final PortDirection direction;
 
 	public ModulePort(@NotNull CmToken nameElement,
-					  @NotNull name.martingeisse.mahdl.common.cm.PortDirection directionElement,
+					  @NotNull name.martingeisse.mahdl.input.cm.PortDirection directionElement,
 					  @NotNull DataType dataTypeElement,
 					  @NotNull ProcessedDataType processedDataType) {
 		super(nameElement, dataTypeElement, processedDataType, null);
@@ -38,7 +38,7 @@ public final class ModulePort extends SignalLike {
 	}
 
 	@NotNull
-	public name.martingeisse.mahdl.common.cm.PortDirection getDirectionElement() {
+	public name.martingeisse.mahdl.input.cm.PortDirection getDirectionElement() {
 		return directionElement;
 	}
 

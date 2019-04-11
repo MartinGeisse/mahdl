@@ -1,8 +1,8 @@
 package name.martingeisse.mahdl.common;
 
-import name.martingeisse.mahdl.common.cm.CmNode;
-import name.martingeisse.mahdl.common.cm.Module;
-import name.martingeisse.mahdl.common.cm.QualifiedModuleName;
+import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -4,8 +4,8 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import name.martingeisse.mahdl.common.cm.ModuleInstanceDefinition;
-import name.martingeisse.mahdl.common.cm.QualifiedModuleName;
+import name.martingeisse.mahdl.input.cm.ModuleInstanceDefinition;
+import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import org.jetbrains.annotations.NotNull;
 

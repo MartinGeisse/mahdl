@@ -5,7 +5,7 @@
 package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;

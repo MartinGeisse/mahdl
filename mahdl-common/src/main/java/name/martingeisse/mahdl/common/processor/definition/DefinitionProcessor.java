@@ -7,12 +7,12 @@ package name.martingeisse.mahdl.common.processor.definition;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

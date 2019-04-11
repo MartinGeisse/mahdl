@@ -4,9 +4,9 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import name.martingeisse.mahdl.common.cm.CmToken;
-import name.martingeisse.mahdl.common.cm.DataType;
-import name.martingeisse.mahdl.common.cm.ExtendedExpression;
+import name.martingeisse.mahdl.input.cm.CmToken;
+import name.martingeisse.mahdl.input.cm.DataType;
+import name.martingeisse.mahdl.input.cm.ExtendedExpression;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;

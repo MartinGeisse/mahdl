@@ -4,12 +4,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import name.martingeisse.mahdl.common.Environment;
-import name.martingeisse.mahdl.common.cm.CmNode;
-import name.martingeisse.mahdl.common.cm.Module;
-import name.martingeisse.mahdl.common.cm.ModuleInstanceDefinition;
-import name.martingeisse.mahdl.common.cm.QualifiedModuleName;
+import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.common.processor.definition.ModuleInstanceWithMissingDefinition;
 import name.martingeisse.mahdl.plugin.input.psi.PsiUtil;
 
 import java.io.IOException;

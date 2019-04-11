@@ -4,10 +4,10 @@
  */
 package name.martingeisse.mahdl.common.processor;
 
-import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.definition.PortDirection;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

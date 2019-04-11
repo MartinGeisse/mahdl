@@ -4,8 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.cm.CmNode;
-import name.martingeisse.mahdl.common.cm.CmToken;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;

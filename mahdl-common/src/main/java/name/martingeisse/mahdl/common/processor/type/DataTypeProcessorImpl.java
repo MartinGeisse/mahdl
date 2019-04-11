@@ -4,11 +4,11 @@
  */
 package name.martingeisse.mahdl.common.processor.type;
 
-import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
+import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;

@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.statement;
 
-import name.martingeisse.mahdl.common.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmNode;
 
 /**
  *

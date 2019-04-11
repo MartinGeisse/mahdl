@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.statement;
 
-import name.martingeisse.mahdl.common.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmNode;
 
 /**
  * This statement indicates that a processing error has occurred that makes it impossible to treat it as any specific

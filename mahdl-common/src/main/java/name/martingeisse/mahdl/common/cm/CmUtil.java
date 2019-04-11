@@ -1,5 +1,7 @@
 package name.martingeisse.mahdl.common.cm;
 
+import name.martingeisse.mahdl.input.cm.CmToken;
+import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 

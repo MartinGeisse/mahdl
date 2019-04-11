@@ -12,6 +12,7 @@ import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.LiteralParser;
+import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;

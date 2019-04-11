@@ -5,8 +5,8 @@
 package name.martingeisse.mahdl.common.processor.definition;
 
 import com.google.common.collect.ImmutableMap;
-import name.martingeisse.mahdl.common.cm.Module;
-import name.martingeisse.mahdl.common.cm.ModuleInstanceDefinition;
+import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.ModuleInstanceDefinition;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import org.jetbrains.annotations.NotNull;
 

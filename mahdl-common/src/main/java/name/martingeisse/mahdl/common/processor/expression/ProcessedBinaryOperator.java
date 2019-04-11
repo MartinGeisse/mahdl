@@ -6,6 +6,7 @@ package name.martingeisse.mahdl.common.processor.expression;
 
 import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;

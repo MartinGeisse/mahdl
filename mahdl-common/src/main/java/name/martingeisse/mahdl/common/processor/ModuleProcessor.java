@@ -7,7 +7,7 @@ package name.martingeisse.mahdl.common.processor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.common.Environment;
-import name.martingeisse.mahdl.common.cm.*;
+import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessorImpl;
@@ -15,6 +15,7 @@ import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 import name.martingeisse.mahdl.common.processor.statement.StatementProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessorImpl;
+import name.martingeisse.mahdl.input.cm.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
