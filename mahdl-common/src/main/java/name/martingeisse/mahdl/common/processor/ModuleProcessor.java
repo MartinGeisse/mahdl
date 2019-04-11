@@ -6,21 +6,12 @@ package name.martingeisse.mahdl.common.processor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessorImpl;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 import name.martingeisse.mahdl.common.processor.statement.StatementProcessor;
-import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
-import name.martingeisse.mahdl.plugin.input.psi.*;
-import name.martingeisse.mahdl.plugin.processor.definition.*;
-import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessor;
-import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessorImpl;
-import name.martingeisse.mahdl.plugin.processor.statement.ProcessedDoBlock;
-import name.martingeisse.mahdl.plugin.processor.statement.StatementProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessorImpl;
 import org.apache.commons.lang3.tuple.Pair;
@@ -77,7 +68,7 @@ public final class ModuleProcessor {
 		// validate nativeness (but still continue even if violated, since the keyword may be misplaced)
 		boolean isNative = module.getNativeness().getIt() != null;
 		if (isNative) {
-			ImmutableList<ImplementationItem> implementationItems = module.getImplementationItems().getAll();
+			List<ImplementationItem> implementationItems = module.getImplementationItems().getAll();
 			if (!implementationItems.isEmpty()) {
 				errorHandler.onError(implementationItems.get(0), "native module cannot contain implementation items");
 			}
@@ -112,7 +103,7 @@ public final class ModuleProcessor {
 		// Process do-blocks and check for missing / duplicate assignments. Do so in the original file's order so when
 		// an error message could in principle appear in one of multiple places, it appears in the topmost place.
 		assignmentValidator = new AssignmentValidator(errorHandler);
-		List<Pair<Runnable, PsiElement>> runnables = new ArrayList<>();
+		List<Pair<Runnable, CmNode>> runnables = new ArrayList<>();
 		for (Named item : getDefinitions().values()) {
 			// Inconsistencies regarding signal-likes in the initializer vs. other assignments:
 			// - ports cannot have an initializer
@@ -121,7 +112,7 @@ public final class ModuleProcessor {
 			// - signals must be checked here
 			// - for registers, the initializer does not conflict with other assignments
 			if (item instanceof Signal) {
-				Signal signal = (Signal)item;
+				Signal signal = (Signal) item;
 				if (signal.getInitializer() != null) {
 					runnables.add(Pair.of(() -> {
 						assignmentValidator.considerAssignedTo(signal, signal.getNameElement());
@@ -144,8 +135,8 @@ public final class ModuleProcessor {
 				assignmentValidator.finishSection();
 			}, implementationItem));
 		}
-		runnables.sort(Comparator.comparing(Pair::getRight, LowLevelPsiUtil.PSI_ELEMENT_START_POSITION_COMPARATOR));
-		for (Pair<Runnable, PsiElement> pair : runnables) {
+		runnables.sort(Comparator.comparing(Pair::getRight, CmNode::compareStartOffset));
+		for (Pair<Runnable, CmNode> pair : runnables) {
 			pair.getLeft().run();
 		}
 

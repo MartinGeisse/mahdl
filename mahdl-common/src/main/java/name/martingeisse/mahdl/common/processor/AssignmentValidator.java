@@ -145,11 +145,11 @@ public final class AssignmentValidator {
 	 * Therefore, this method should not be called for the initializer of a register, because that initializer is not
 	 * in conflict with an assignment to the register, but calling this function would assume it to be.
 	 */
-	public void considerAssignedTo(@NotNull SignalLike signalLike, @NotNull PsiElement errorSource) {
+	public void considerAssignedTo(@NotNull SignalLike signalLike, @NotNull CmNode errorSource) {
 		considerAssignedTo(signalLike.getName(), errorSource);
 	}
 
-	public void validateAssignmentToInstancePort(@NotNull ModuleInstance moduleInstance, @NotNull InstancePort port, @NotNull PsiElement errorSource) {
+	public void validateAssignmentToInstancePort(@NotNull ModuleInstance moduleInstance, @NotNull InstancePort port, @NotNull CmNode errorSource) {
 		if (port.getDirection() == PortDirection.OUT) {
 			errorHandler.onError(errorSource, "cannot assign to output port");
 		} else {
@@ -157,7 +157,7 @@ public final class AssignmentValidator {
 		}
 	}
 
-	private void considerAssignedTo(@NotNull String signalName, @NotNull PsiElement errorSource) {
+	private void considerAssignedTo(@NotNull String signalName, @NotNull CmNode errorSource) {
 		if (previouslyAssignedSignals.contains(signalName)) {
 			errorHandler.onError(errorSource, "'" + signalName + "' has already been assigned to");
 		}
