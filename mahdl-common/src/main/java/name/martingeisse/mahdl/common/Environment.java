@@ -16,6 +16,10 @@ public interface Environment {
 
 	void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException;
 
-	Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException, IOException;
+	Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException;
+
+	class Holder {
+		public static Environment INSTANCE = null;
+	}
 
 }

@@ -41,7 +41,6 @@ public final class ModuleProcessor {
 
 	private final Module module;
 	private final String canonicalModuleName;
-	private final Environment environment;
 	private final ErrorHandler errorHandler;
 
 	private DataTypeProcessor dataTypeProcessor;
@@ -52,10 +51,9 @@ public final class ModuleProcessor {
 	private StatementProcessor statementProcessor;
 	private List<ProcessedDoBlock> processedDoBlocks;
 
-	public ModuleProcessor(@NotNull Module module, @NotNull Environment environment, @NotNull ErrorHandler errorHandler) {
+	public ModuleProcessor(@NotNull Module module, @NotNull ErrorHandler errorHandler) {
 		this.module = module;
 		this.canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
-		this.environment = environment;
 		this.errorHandler = errorHandler;
 	}
 
@@ -68,7 +66,7 @@ public final class ModuleProcessor {
 
 		// make sure the module name matches the file name and sits in the right folder
 		try {
-			environment.validateModuleNameAgainstFilePath(module, module.getModuleName());
+			Environment.Holder.INSTANCE.validateModuleNameAgainstFilePath(module, module.getModuleName());
 		} catch (IOException e) {
 			errorHandler.onError(module.getModuleName(), "module name does not match file path");
 		}

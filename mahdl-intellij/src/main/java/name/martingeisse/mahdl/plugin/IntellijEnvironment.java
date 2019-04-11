@@ -20,6 +20,12 @@ import java.io.InputStream;
  */
 public class IntellijEnvironment implements Environment {
 
+	public static void initialize() {
+		if (Holder.INSTANCE == null) {
+			Holder.INSTANCE = new IntellijEnvironment();
+		}
+	}
+
 	@Override
 	public InputStream openDataFile(CmNode anchor, String filename) throws IOException {
 		PsiElement anchorPsi = ;
@@ -57,7 +63,7 @@ public class IntellijEnvironment implements Environment {
 	}
 
 	@Override
-	public Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException, IOException {
+	public Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
 		QualifiedModuleNameImpl namePsi = ;
 		PsiElement untypedResolvedModule = name.getReference().resolve();
 		if (untypedResolvedModule instanceof Module) {

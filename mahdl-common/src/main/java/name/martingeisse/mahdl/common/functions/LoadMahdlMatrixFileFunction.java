@@ -5,9 +5,6 @@
 package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
@@ -64,12 +61,9 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 		int rows = arguments.get(1).convertToInteger().intValueExact();
 		int columns = arguments.get(2).convertToInteger().intValueExact();
 
-		// TODO
-		Environment environment = ;
-
 		// read the file
 		MutableObject<BitSet> resultBitSetHolder = new MutableObject<>();
-		try (InputStream inputStream = environment.openDataFile(errorSource, filename)) {
+		try (InputStream inputStream = Environment.Holder.INSTANCE.openDataFile(errorSource, filename)) {
 			try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 				new HeadBodyReader() {
 

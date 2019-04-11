@@ -24,9 +24,6 @@ import java.util.Map;
 public final class DefinitionProcessor {
 
 	@NotNull
-	private final Environment environment;
-
-	@NotNull
 	private final ErrorHandler errorHandler;
 
 	@NotNull
@@ -38,11 +35,9 @@ public final class DefinitionProcessor {
 	@NotNull
 	private final Map<String, Named> definitions;
 
-	public DefinitionProcessor(@NotNull Environment environment,
-							   @NotNull ErrorHandler errorHandler,
+	public DefinitionProcessor(@NotNull ErrorHandler errorHandler,
 							   @NotNull DataTypeProcessor dataTypeProcessor,
 							   @NotNull ExpressionProcessor expressionProcessor) {
-		this.environment = environment;
 		this.errorHandler = errorHandler;
 		this.dataTypeProcessor = dataTypeProcessor;
 		this.expressionProcessor = expressionProcessor;
@@ -158,7 +153,7 @@ public final class DefinitionProcessor {
 			// resolve the module definition
 			Module resolvedModule;
 			try {
-				resolvedModule = environment.resolveModuleReference(moduleInstanceDefinitionGroupElement.getModuleName());
+				resolvedModule = Environment.Holder.INSTANCE.resolveModuleReference(moduleInstanceDefinitionGroupElement.getModuleName());
 			} catch (ReferenceResolutionException e) {
 				errorHandler.onError(moduleInstanceDefinitionGroupElement.getModuleName(), e.getMessage());
 				for (ModuleInstanceDefinition definition : moduleInstanceDefinitionGroupElement.getDefinitions().getAll()) {
