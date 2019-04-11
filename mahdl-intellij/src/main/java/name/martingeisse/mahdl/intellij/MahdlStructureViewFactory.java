@@ -16,7 +16,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.input.Symbols;
-import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
+import name.martingeisse.mahdl.input.cm.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,17 +101,17 @@ public class MahdlStructureViewFactory implements PsiStructureViewFactory {
 		@Override
 		public String getPresentableText() {
 			IElementType elementType = element.getNode().getElementType();
-			if (elementType == Symbols.module && element instanceof Module) {
-				return "module " + ((Module) element).getName();
-			} else if (elementType == Symbols.synthetic_List_PortDefinitionGroup && element instanceof ListNode<?>) {
+			if (elementType == Symbols.module && element instanceof ModuleImpl) {
+				return "module " + ((ModuleImpl) element).getName();
+			} else if (elementType == Symbols.synthetic_List_PortDefinitionGroup && element instanceof CmListImpl<?, ?>) {
 				return "interface";
-			} else if (elementType == Symbols.implementationItem_SignalLikeDefinitionGroup && element instanceof ImplementationItem_SignalLikeDefinitionGroup) {
-				ImplementationItem_SignalLikeDefinitionGroup group = (ImplementationItem_SignalLikeDefinitionGroup) element;
+			} else if (elementType == Symbols.implementationItem_SignalLikeDefinitionGroup && element instanceof ImplementationItem_SignalLikeDefinitionGroupImpl) {
+				ImplementationItem_SignalLikeDefinitionGroupImpl group = (ImplementationItem_SignalLikeDefinitionGroupImpl) element;
 				StringBuilder builder = new StringBuilder();
-				builder.append(group.getKind().getText());
+				builder.append(group.getKindPsi().getText());
 				builder.append(' ');
 				boolean first = true;
-				for (SignalLikeDefinition definition : group.getDefinitions().getAll()) {
+				for (SignalLikeDefinitionImpl definition : group.getDefinitionsPsi().getAllPsi()) {
 					if (first) {
 						first = false;
 					} else {
@@ -120,20 +120,20 @@ public class MahdlStructureViewFactory implements PsiStructureViewFactory {
 					builder.append(definition.getName());
 				}
 				return builder.toString();
-			} else if (elementType == Symbols.implementationItem_DoBlock && element instanceof ImplementationItem_DoBlock) {
-				ImplementationItem_DoBlock doBlock = (ImplementationItem_DoBlock) element;
+			} else if (elementType == Symbols.implementationItem_DoBlock && element instanceof ImplementationItem_DoBlockImpl) {
+				ImplementationItem_DoBlockImpl doBlock = (ImplementationItem_DoBlockImpl) element;
 				if (doBlock.getTrigger() == null) {
 					return "do (???)";
 				} else {
-					return "do (" + doBlock.getTrigger().getText() + ")";
+					return "do (" + doBlock.getTriggerPsi().getText() + ")";
 				}
-			} else if (elementType == Symbols.implementationItem_ModuleInstanceDefinitionGroup && element instanceof ImplementationItem_ModuleInstanceDefinitionGroup) {
-				ImplementationItem_ModuleInstanceDefinitionGroup group = (ImplementationItem_ModuleInstanceDefinitionGroup) element;
+			} else if (elementType == Symbols.implementationItem_ModuleInstanceDefinitionGroup && element instanceof ImplementationItem_ModuleInstanceDefinitionGroupImpl) {
+				ImplementationItem_ModuleInstanceDefinitionGroupImpl group = (ImplementationItem_ModuleInstanceDefinitionGroupImpl) element;
 				StringBuilder builder = new StringBuilder();
 				builder.append(group.getModuleName() == null ? "???" : CmUtil.canonicalizeQualifiedModuleName(group.getModuleName()));
 				builder.append(' ');
 				boolean first = true;
-				for (ModuleInstanceDefinition definition : group.getDefinitions().getAll()) {
+				for (ModuleInstanceDefinitionImpl definition : group.getDefinitionsPsi().getAllPsi()) {
 					if (first) {
 						first = false;
 					} else {
