@@ -60,7 +60,7 @@ public final class ModuleProcessor {
 
 	public ModuleProcessor(@NotNull Module module, @NotNull ErrorHandler errorHandler) {
 		this.module = module;
-		this.canonicalModuleName = PsiUtil.canonicalizeQualifiedModuleName(module.getModuleName());
+		this.canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
 		this.errorHandler = errorHandler;
 	}
 
