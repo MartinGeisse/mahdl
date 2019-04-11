@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmUtil;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.InternalPsiUtil;
@@ -52,14 +53,17 @@ public class IntellijEnvironment implements Environment {
 	@Override
 	public void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException {
 		QualifiedModuleNameImpl namePsi = (QualifiedModuleNameImpl) InternalPsiUtil.getPsiFromCm(name);
+		String canonicalName = CmUtil.canonicalizeQualifiedModuleName(namePsi);
 		Module moduleForName;
 		try {
 			moduleForName = PsiUtil.resolveModuleName(namePsi);
 		} catch (ReferenceResolutionException e) {
-			throw new IOException("could not resolve name", e);
+			throw new IOException("could not resolve name " + canonicalName, e);
 		}
 		if (moduleForName != module) {
-			throw new IOException("name resolves to different module");
+			String otherCanonicalName = module.getModuleName() == null ? "(null)" :
+				CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
+			throw new IOException("name " + canonicalName + " resolves to different module " + otherCanonicalName);
 		}
 	}
 
