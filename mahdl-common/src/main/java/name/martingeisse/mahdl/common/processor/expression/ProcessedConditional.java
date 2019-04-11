@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ public final class ProcessedConditional extends ProcessedExpression {
 	private final ProcessedExpression thenBranch;
 	private final ProcessedExpression elseBranch;
 
-	public ProcessedConditional(@NotNull PsiElement errorSource,
+	public ProcessedConditional(@NotNull CmNode errorSource,
 								@NotNull ProcessedExpression condition,
 								@NotNull ProcessedExpression thenBranch,
 								@NotNull ProcessedExpression elseBranch) throws TypeErrorException {

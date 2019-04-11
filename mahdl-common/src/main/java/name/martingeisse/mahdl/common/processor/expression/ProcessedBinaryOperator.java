@@ -16,7 +16,7 @@ import java.util.function.BinaryOperator;
  * respect to types: For example, for TSIVOs, only integer/integer and vector/vector are supported; mixed operands
  * should be shielded by inserting type conversions.
  * <p>
- * The concatenation operators for texts and for vectors have been split up here. They use the same PSI nodes because
+ * The concatenation operators for texts and for vectors have been split up here. They use the same CM nodes because
  * they use the same textual symbol, but they are split up in processing because most code pieces treat them very
  * differently.
  */

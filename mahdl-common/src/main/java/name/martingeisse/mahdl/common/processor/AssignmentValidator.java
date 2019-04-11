@@ -5,8 +5,8 @@
 package name.martingeisse.mahdl.common.processor;
 
 import name.martingeisse.mahdl.common.cm.*;
-import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.definition.PortDirection;
+import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,13 +53,13 @@ public final class AssignmentValidator {
 				String instanceName = moduleInstance.getName();
 				for (PortDefinitionGroup untypedPortDefinitionGroup : moduleInstance.getModuleElement().getPortDefinitionGroups().getAll()) {
 					if (untypedPortDefinitionGroup instanceof PortDefinitionGroup_Valid) {
-						PortDefinitionGroup_Valid portDefinitionGroup = (PortDefinitionGroup_Valid)untypedPortDefinitionGroup;
+						PortDefinitionGroup_Valid portDefinitionGroup = (PortDefinitionGroup_Valid) untypedPortDefinitionGroup;
 						if (portDefinitionGroup.getDirection() instanceof PortDirection_In) {
 							for (PortDefinition portDefinition : portDefinitionGroup.getDefinitions().getAll()) {
-								String prefixedPortName = instanceName + '.' + portDefinition.getName();
+								String prefixedPortName = instanceName + '.' + portDefinition.getIdentifier().getText();
 								if (!previouslyAssignedSignals.contains(prefixedPortName)) {
 									errorHandler.onError(moduleInstance.getModuleInstanceDefinitionElement(),
-										"missing assignment for port '" + portDefinition.getName() + "' in instance '" + instanceName + "'");
+										"missing assignment for port '" + portDefinition.getIdentifier().getText() + "' in instance '" + instanceName + "'");
 								}
 							}
 						}
@@ -81,7 +81,7 @@ public final class AssignmentValidator {
 		} else if (destination instanceof SignalLikeReference) {
 
 			SignalLike signalLike = ((SignalLikeReference) destination).getDefinition();
-			PsiElement errorSource = destination.getErrorSource();
+			CmNode errorSource = destination.getErrorSource();
 			if (signalLike instanceof ModulePort) {
 				PortDirection direction = ((ModulePort) signalLike).getDirection();
 				if (direction != PortDirection.OUT) {

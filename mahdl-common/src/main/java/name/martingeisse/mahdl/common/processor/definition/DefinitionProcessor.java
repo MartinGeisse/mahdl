@@ -47,8 +47,8 @@ public final class DefinitionProcessor {
 		return definitions;
 	}
 
-	public void processPorts(@NotNull CmList<PortDefinitionGroup> psiPortList) {
-		for (PortDefinitionGroup untypedPortDefinitionGroup : psiPortList.getAll()) {
+	public void processPorts(@NotNull CmList<PortDefinitionGroup> cmPortList) {
+		for (PortDefinitionGroup untypedPortDefinitionGroup : cmPortList.getAll()) {
 			if (untypedPortDefinitionGroup instanceof PortDefinitionGroup_Valid) {
 				PortDefinitionGroup_Valid portDefinitionGroup = (PortDefinitionGroup_Valid) untypedPortDefinitionGroup;
 				for (PortDefinition portDefinition : portDefinitionGroup.getDefinitions().getAll()) {
@@ -102,7 +102,7 @@ public final class DefinitionProcessor {
 					nameElement = typedDeclaredSignalLike.getIdentifier();
 					initializer = typedDeclaredSignalLike.getInitializer();
 				} else {
-					errorHandler.onError(signalLikeDefinition, "unknown PSI node");
+					errorHandler.onError(signalLikeDefinition, "unknown CM node");
 					continue;
 				}
 

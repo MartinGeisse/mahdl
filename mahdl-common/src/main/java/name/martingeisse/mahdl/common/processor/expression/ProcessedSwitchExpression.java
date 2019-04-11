@@ -5,11 +5,11 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
-import name.martingeisse.mahdl.plugin.processor.statement.ProcessedAssignment;
-import name.martingeisse.mahdl.plugin.processor.statement.ProcessedStatement;
-import name.martingeisse.mahdl.plugin.processor.statement.ProcessedSwitchStatement;
+import name.martingeisse.mahdl.common.processor.statement.ProcessedAssignment;
+import name.martingeisse.mahdl.common.processor.statement.ProcessedStatement;
+import name.martingeisse.mahdl.common.processor.statement.ProcessedSwitchStatement;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 	@Nullable
 	private final ProcessedExpression defaultBranch;
 
-	public ProcessedSwitchExpression(@NotNull PsiElement errorSource,
+	public ProcessedSwitchExpression(@NotNull CmNode errorSource,
 									 @NotNull ProcessedDataType dataType,
 									 @NotNull ProcessedExpression selector,
 									 @NotNull ImmutableList<Case> cases,

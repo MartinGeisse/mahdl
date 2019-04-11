@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.definition.Constant;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
@@ -17,7 +17,7 @@ public final class SignalLikeReference extends ProcessedExpression {
 
 	private final SignalLike definition;
 
-	public SignalLikeReference(@NotNull PsiElement errorSource, @NotNull SignalLike definition) {
+	public SignalLikeReference(@NotNull CmNode errorSource, @NotNull SignalLike definition) {
 		super(errorSource, definition.getProcessedDataType());
 		this.definition = definition;
 	}
@@ -33,7 +33,6 @@ public final class SignalLikeReference extends ProcessedExpression {
 		ConstantValue constant = getConstant();
 		return constant == null ? context.notConstant(this) : constant;
 	}
-
 
 	@NotNull
 	@Override

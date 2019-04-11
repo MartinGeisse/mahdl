@@ -11,6 +11,7 @@ import name.martingeisse.mahdl.common.functions.BuiltinFunctions;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.util.LiteralParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -229,7 +230,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		InstancePort port = moduleInstance.getPorts().get(portName);
 		if (port == null) {
 			return error(expression, "cannot resolve port '" + portName + "' of instance '" + moduleInstance.getName() +
-				"' of module '" + moduleInstance.getModuleElement().getName() + "'");
+				"' of module '" + CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName()) + "'");
 		}
 		return new InstancePortReference(expression, moduleInstance, port);
 
@@ -609,7 +610,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	 * error messages should be generated at all, and so this wrong behavior should not matter.
 	 */
 	@NotNull
-	private ProcessedExpression error(@NotNull PsiElement errorSource, @NotNull String message) {
+	private ProcessedExpression error(@NotNull CmNode errorSource, @NotNull String message) {
 		errorHandler.onError(errorSource, message);
 		return new UnknownExpression(errorSource);
 	}

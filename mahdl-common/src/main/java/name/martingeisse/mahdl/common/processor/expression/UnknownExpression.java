@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class UnknownExpression extends ProcessedExpression {
 
-	public UnknownExpression(@NotNull PsiElement errorSource) {
+	public UnknownExpression(@NotNull CmNode errorSource) {
 		super(errorSource, ProcessedDataType.Unknown.INSTANCE);
 	}
 

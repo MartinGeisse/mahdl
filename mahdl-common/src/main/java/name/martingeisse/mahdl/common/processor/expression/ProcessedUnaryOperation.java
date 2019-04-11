@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +18,7 @@ public final class ProcessedUnaryOperation extends ProcessedExpression {
 	private final ProcessedExpression operand;
 	private final ProcessedUnaryOperator operator;
 
-	public ProcessedUnaryOperation(@NotNull PsiElement errorSource,
+	public ProcessedUnaryOperation(@NotNull CmNode errorSource,
 								   @NotNull ProcessedExpression operand,
 								   @NotNull ProcessedUnaryOperator operator) throws TypeErrorException {
 		super(errorSource, operator.checkType(operator.checkType(operand.getDataType())));
