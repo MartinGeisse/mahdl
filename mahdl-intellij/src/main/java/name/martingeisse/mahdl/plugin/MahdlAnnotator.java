@@ -8,7 +8,7 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.plugin.input.psi.Module;
-import name.martingeisse.mahdl.plugin.processor.ModuleProcessor;
+import name.martingeisse.mahdl.common.processor.ModuleProcessor;
 import org.jetbrains.annotations.NotNull;
 
 /**

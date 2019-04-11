@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2018 Martin Geisse
+ * This file is distributed under the terms of the MIT license.
+ */
+package name.martingeisse.mahdl.common.processor.statement;
+
+import name.martingeisse.mahdl.common.cm.CmNode;
+
+/**
+ *
+ */
+public abstract class ProcessedStatement {
+
+	private final CmNode errorSource;
+
+	public ProcessedStatement(CmNode errorSource) {
+		this.errorSource = errorSource;
+	}
+
+	public CmNode getErrorSource() {
+		return errorSource;
+	}
+
+}
