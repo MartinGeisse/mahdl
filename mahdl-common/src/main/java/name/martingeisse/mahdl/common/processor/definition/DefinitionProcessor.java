@@ -59,7 +59,7 @@ public final class DefinitionProcessor {
 						errorHandler.onError(dataType, family.getDisplayString() + " type not allowed for ports");
 						processedDataType = ProcessedDataType.Unknown.INSTANCE;
 					}
-					add(new ModulePort(portDefinition, portDefinitionGroup.getDirection(), dataType, processedDataType));
+					add(new ModulePort(portDefinition.getIdentifier(), portDefinitionGroup.getDirection(), dataType, processedDataType));
 				}
 			}
 		}
@@ -170,7 +170,7 @@ public final class DefinitionProcessor {
 				if (untypedPortDefinitionGroup instanceof PortDefinitionGroup_Valid) {
 					PortDefinitionGroup_Valid portDefinitionGroup = (PortDefinitionGroup_Valid) untypedPortDefinitionGroup;
 					for (PortDefinition portDefinition : portDefinitionGroup.getDefinitions().getAll()) {
-						String portName = portDefinition.getName();
+						String portName = portDefinition.getIdentifier().getText();
 						if (portName != null) {
 							name.martingeisse.mahdl.common.processor.definition.PortDirection direction;
 							if (portDefinitionGroup.getDirection() instanceof PortDirection_In) {
