@@ -15,7 +15,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import name.martingeisse.mahdl.common.cm.CmUtil;
-import name.martingeisse.mahdl.intellij.input.Symbols;
+import name.martingeisse.mahdl.input.Symbols;
+import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +47,7 @@ public class MahdlStructureViewFactory implements PsiStructureViewFactory {
 		if (!(psiFile instanceof MahdlSourceFile)) {
 			return null;
 		}
-		Module module = ((MahdlSourceFile) psiFile).getModule();
+		ModuleImpl module = ((MahdlSourceFile) psiFile).getModule();
 		if (module == null) {
 			return null;
 		}

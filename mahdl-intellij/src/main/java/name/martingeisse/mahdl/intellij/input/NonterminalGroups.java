@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.intellij.input;
 
 import com.intellij.psi.tree.TokenSet;
+import name.martingeisse.mahdl.input.Symbols;
 
 /**
  *

@@ -14,9 +14,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import name.martingeisse.mahdl.input.MapagGeneratedMahdlParser;
+import name.martingeisse.mahdl.input.Symbols;
+import name.martingeisse.mahdl.input.cm.impl.PsiFactory;
 import name.martingeisse.mahdl.intellij.MahdlFileElementTypeHolder;
 import name.martingeisse.mahdl.intellij.MahdlSourceFile;
-import name.martingeisse.mahdl.intellij.input.psi.PsiFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

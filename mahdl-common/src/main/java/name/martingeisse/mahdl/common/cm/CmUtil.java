@@ -1,9 +1,11 @@
 package name.martingeisse.mahdl.common.cm;
 
+import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,19 @@ public final class CmUtil {
 			segments.add(segment.getText());
 		}
 		return segments.toArray(new String[segments.size()]);
+	}
+
+	@Nullable
+	public static <T> T getAncestor(@NotNull CmNode node, @NotNull Class<T> nodeClass) {
+		while (true) {
+			if (nodeClass.isInstance(node)) {
+				return nodeClass.cast(node);
+			}
+			if (node == null) {
+				return null;
+			}
+			node = node.getCmParent();
+		}
 	}
 
 }

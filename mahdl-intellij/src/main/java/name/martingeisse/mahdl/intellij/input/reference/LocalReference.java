@@ -10,7 +10,8 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.IncorrectOperationException;
-import name.martingeisse.mahdl.intellij.input.psi.*;
+import name.martingeisse.mahdl.input.cm.impl.*;
+import name.martingeisse.mahdl.intellij.input.PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,8 +38,8 @@ public final class LocalReference implements PsiReference {
 
 	// note: may only return true for PsiNamedElement objects!
 	protected final boolean isElementTargetable(@NotNull PsiElement potentialTarget) {
-		return (potentialTarget instanceof PortDefinition || potentialTarget instanceof SignalLikeDefinition ||
-			potentialTarget instanceof ModuleInstanceDefinition);
+		return (potentialTarget instanceof PortDefinitionImpl || potentialTarget instanceof SignalLikeDefinitionImpl ||
+			potentialTarget instanceof ModuleInstanceDefinitionImpl);
 	}
 
 	@Override
@@ -50,16 +51,16 @@ public final class LocalReference implements PsiReference {
 	@Override
 	public PsiElement resolve() {
 
-		Module module = PsiUtil.getAncestor(element, Module.class);
+		ModuleImpl module = PsiUtil.getAncestor(element, ModuleImpl.class);
 		if (module == null) {
 			return null;
 		}
 		String identifier = element.getText();
 
 		// ports
-		for (PortDefinitionGroup group : module.getPortDefinitionGroups().getAll()) {
-			if (group instanceof PortDefinitionGroup_Valid) {
-				for (PortDefinition definition : ((PortDefinitionGroup_Valid) group).getDefinitions().getAll()) {
+		for (PortDefinitionGroupImpl group : module.getPortDefinitionGroupsPsi().getAllPsi()) {
+			if (group instanceof PortDefinitionGroup_ValidImpl) {
+				for (PortDefinitionImpl definition : ((PortDefinitionGroup_ValidImpl) group).getDefinitionsPsi().getAllPsi()) {
 					String definitionName = definition.getName();
 					if (definitionName != null && definitionName.equals(identifier)) {
 						return definition;
@@ -69,19 +70,19 @@ public final class LocalReference implements PsiReference {
 		}
 
 		// local definitions
-		for (ImplementationItem implementationItem : module.getImplementationItems().getAll()) {
-			if (implementationItem instanceof ImplementationItem_SignalLikeDefinitionGroup) {
-				for (SignalLikeDefinition definition : ((ImplementationItem_SignalLikeDefinitionGroup) implementationItem).getDefinitions().getAll()) {
+		for (ImplementationItemImpl implementationItem : module.getImplementationItemsPsi().getAllPsi()) {
+			if (implementationItem instanceof ImplementationItem_SignalLikeDefinitionGroupImpl) {
+				for (SignalLikeDefinitionImpl definition : ((ImplementationItem_SignalLikeDefinitionGroupImpl) implementationItem).getDefinitionsPsi().getAllPsi()) {
 					String definitionName = definition.getName();
 					if (definitionName != null && definitionName.equals(identifier)) {
 						return definition;
 					}
 				}
-			} else if (implementationItem instanceof ImplementationItem_ModuleInstanceDefinitionGroup) {
-				for (ModuleInstanceDefinition definition : ((ImplementationItem_ModuleInstanceDefinitionGroup) implementationItem).getDefinitions().getAll()) {
+			} else if (implementationItem instanceof ImplementationItem_ModuleInstanceDefinitionGroupImpl) {
+				for (ModuleInstanceDefinitionImpl definition : ((ImplementationItem_ModuleInstanceDefinitionGroupImpl) implementationItem).getDefinitionsPsi().getAllPsi()) {
 					String instanceName = definition.getName();
 					if (instanceName != null && instanceName.equals(identifier)) {
-						return definition.getIdentifier();
+						return definition.getIdentifierPsi();
 					}
 				}
 			}
@@ -149,16 +150,16 @@ public final class LocalReference implements PsiReference {
 	public Object[] getVariants() {
 
 		// obtain the module
-		Module module = PsiUtil.getAncestor(element, Module.class);
+		ModuleImpl module = PsiUtil.getAncestor(element, ModuleImpl.class);
 		if (module == null) {
 			return new Object[0];
 		}
 		List<Object> variants = new ArrayList<>();
 
 		// ports
-		for (PortDefinitionGroup group : module.getPortDefinitionGroups().getAll()) {
-			if (group instanceof PortDefinitionGroup_Valid) {
-				for (PortDefinition definition : ((PortDefinitionGroup_Valid) group).getDefinitions().getAll()) {
+		for (PortDefinitionGroupImpl group : module.getPortDefinitionGroupsPsi().getAllPsi()) {
+			if (group instanceof PortDefinitionGroup_ValidImpl) {
+				for (PortDefinitionImpl definition : ((PortDefinitionGroup_ValidImpl) group).getDefinitionsPsi().getAllPsi()) {
 					String definitionName = definition.getName();
 					if (definitionName != null) {
 						variants.add(definitionName);
@@ -168,16 +169,16 @@ public final class LocalReference implements PsiReference {
 		}
 
 		// implementation items
-		for (ImplementationItem implementationItem : module.getImplementationItems().getAll()) {
-			if (implementationItem instanceof ImplementationItem_SignalLikeDefinitionGroup) {
-				for (SignalLikeDefinition definition : ((ImplementationItem_SignalLikeDefinitionGroup) implementationItem).getDefinitions().getAll()) {
+		for (ImplementationItemImpl implementationItem : module.getImplementationItemsPsi().getAllPsi()) {
+			if (implementationItem instanceof ImplementationItem_SignalLikeDefinitionGroupImpl) {
+				for (SignalLikeDefinitionImpl definition : ((ImplementationItem_SignalLikeDefinitionGroupImpl) implementationItem).getDefinitionsPsi().getAllPsi()) {
 					String definitionName = definition.getName();
 					if (definitionName != null) {
 						variants.add(definitionName);
 					}
 				}
-			} else if (implementationItem instanceof ImplementationItem_ModuleInstanceDefinitionGroup) {
-				for (ModuleInstanceDefinition definition : ((ImplementationItem_ModuleInstanceDefinitionGroup) implementationItem).getDefinitions().getAll()) {
+			} else if (implementationItem instanceof ImplementationItem_ModuleInstanceDefinitionGroupImpl) {
+				for (ModuleInstanceDefinitionImpl definition : ((ImplementationItem_ModuleInstanceDefinitionGroupImpl) implementationItem).getDefinitionsPsi().getAllPsi()) {
 					variants.add(definition.getName());
 				}
 			}

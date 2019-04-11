@@ -5,7 +5,7 @@ import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.rename.RenameInputValidator;
 import com.intellij.util.ProcessingContext;
-import name.martingeisse.mahdl.intellij.input.psi.Module;
+import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
@@ -20,7 +20,7 @@ public class MahdlModuleNameRenameInputValidator implements RenameInputValidator
 	@NotNull
 	@Override
 	public ElementPattern<? extends PsiElement> getPattern() {
-		return StandardPatterns.instanceOf(Module.class);
+		return StandardPatterns.instanceOf(ModuleImpl.class);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.indexing.*;
 import com.intellij.util.io.IOUtil;
 import com.intellij.util.io.KeyDescriptor;
-import name.martingeisse.mahdl.intellij.input.psi.Module;
+import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +46,7 @@ public class MahdlModuleIndex extends ScalarIndexExtension<String> {
 			Map<String, Void> map = new HashMap<>();
 			PsiFile psiFile = fileContent.getPsiFile();
 			if (psiFile instanceof MahdlSourceFile) {
-				Module module = ((MahdlSourceFile) psiFile).getModule();
+				ModuleImpl module = ((MahdlSourceFile) psiFile).getModule();
 				if (module != null) {
 					map.put(module.getName(), null);
 				}

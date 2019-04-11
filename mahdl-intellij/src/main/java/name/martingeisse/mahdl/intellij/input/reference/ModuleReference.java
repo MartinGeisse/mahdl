@@ -11,11 +11,11 @@ import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.intellij.input.psi.Module;
-import name.martingeisse.mahdl.intellij.input.psi.PsiUtil;
-import name.martingeisse.mahdl.intellij.input.psi.QualifiedModuleName;
+import name.martingeisse.mahdl.common.cm.CmUtil;
+import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
+import name.martingeisse.mahdl.input.cm.impl.QualifiedModuleNameImpl;
+import name.martingeisse.mahdl.intellij.input.PsiUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,9 +28,9 @@ import java.util.List;
  */
 public class ModuleReference implements PsiReference {
 
-	private final QualifiedModuleName moduleName;
+	private final QualifiedModuleNameImpl moduleName;
 
-	public ModuleReference(@NotNull QualifiedModuleName moduleName) {
+	public ModuleReference(@NotNull QualifiedModuleNameImpl moduleName) {
 		this.moduleName = moduleName;
 	}
 
@@ -50,7 +50,7 @@ public class ModuleReference implements PsiReference {
 	@Override
 	public PsiElement resolve() {
 		try {
-			return PsiUtil.resolveModuleName(moduleName, PsiUtil.ModuleNameResolutionUseCase.REFERENCE_RESOLUTION);
+			return PsiUtil.resolveModuleName(moduleName);
 		} catch (ReferenceResolutionException e) {
 			return null;
 		}
@@ -60,7 +60,7 @@ public class ModuleReference implements PsiReference {
 	@Override
 	public String getCanonicalText() {
 		// this removes whitespace and comments from the module name
-		String[] segments = PsiUtil.parseQualifiedModuleName(moduleName);
+		String[] segments = CmUtil.parseQualifiedModuleName(moduleName);
 		return StringUtils.join(segments, '.');
 	}
 
@@ -76,7 +76,7 @@ public class ModuleReference implements PsiReference {
 	@Override
 	@NotNull
 	public PsiElement bindToElement(@NotNull PsiElement psiElement) throws IncorrectOperationException {
-		if (psiElement instanceof Module) {
+		if (psiElement instanceof ModuleImpl) {
 			throw new IncorrectOperationException("cannot bind this reference to a non-module PSI node");
 		}
 		throw new IncorrectOperationException("not yet supported"); // TODO I have no idea how to manipulate the PSI that way
@@ -84,9 +84,9 @@ public class ModuleReference implements PsiReference {
 
 	@Override
 	public boolean isReferenceTo(@Nullable PsiElement psiElement) {
-		if (psiElement instanceof Module) {
+		if (psiElement instanceof ModuleImpl) {
 			String canonicalReferenceModuleName = CmUtil.canonicalizeQualifiedModuleName(moduleName);
-			String canonicalCandidateModuleName = CmUtil.canonicalizeQualifiedModuleName(((Module) psiElement).getModuleName());
+			String canonicalCandidateModuleName = CmUtil.canonicalizeQualifiedModuleName(((ModuleImpl) psiElement).getModuleName());
 			if (canonicalCandidateModuleName.equals(canonicalReferenceModuleName)) {
 				PsiElement resolved = resolve();
 				return (resolved != null && resolved.equals(psiElement));
@@ -111,7 +111,7 @@ public class ModuleReference implements PsiReference {
 				@Override
 				public boolean visitFile(@NotNull VirtualFile file) {
 					String name = file.getName();
-					String prefix = (String)getCurrentValue();
+					String prefix = (String) getCurrentValue();
 					if (!file.isDirectory() && name.endsWith(".mahdl")) {
 						String simpleModuleName = name.substring(0, name.length() - ".mahdl".length());
 						String fullModuleName = (prefix == null ? simpleModuleName : (prefix + '.' + simpleModuleName));

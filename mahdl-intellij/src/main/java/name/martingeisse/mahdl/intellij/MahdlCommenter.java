@@ -8,7 +8,7 @@ import com.intellij.lang.CodeDocumentationAwareCommenterEx;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
-import name.martingeisse.mahdl.intellij.input.Symbols;
+import name.martingeisse.mahdl.input.Symbols;
 import org.jetbrains.annotations.Nullable;
 
 public class MahdlCommenter implements CodeDocumentationAwareCommenterEx {

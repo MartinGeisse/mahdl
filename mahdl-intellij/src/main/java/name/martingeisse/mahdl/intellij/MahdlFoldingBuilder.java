@@ -9,8 +9,8 @@ import com.intellij.lang.folding.FoldingBuilder;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.intellij.input.psi.ImplementationItem;
-import name.martingeisse.mahdl.intellij.input.psi.ImplementationItem_DoBlock;
+import name.martingeisse.mahdl.input.cm.impl.ImplementationItemImpl;
+import name.martingeisse.mahdl.input.cm.impl.ImplementationItem_DoBlockImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +31,9 @@ public class MahdlFoldingBuilder implements FoldingBuilder {
 	}
 
 	private void collectFoldingRegions(PsiElement psiElement, List<FoldingDescriptor> destination) {
-		if (psiElement instanceof ImplementationItem_DoBlock) {
+		if (psiElement instanceof ImplementationItem_DoBlockImpl) {
 			destination.add(new FoldingDescriptor(psiElement.getNode(), psiElement.getTextRange()));
-		} else if (!(psiElement instanceof ImplementationItem)) {
+		} else if (!(psiElement instanceof ImplementationItemImpl)) {
 			for (PsiElement child : psiElement.getChildren()) {
 				collectFoldingRegions(child, destination);
 			}
@@ -44,9 +44,9 @@ public class MahdlFoldingBuilder implements FoldingBuilder {
 	@Override
 	public String getPlaceholderText(@NotNull ASTNode astNode) {
 		PsiElement psiElement = astNode.getPsi();
-		if (psiElement instanceof ImplementationItem_DoBlock) {
-			ImplementationItem_DoBlock doBlock = (ImplementationItem_DoBlock)psiElement;
-			return "do (" + doBlock.getTrigger().getText() + ") do {...}";
+		if (psiElement instanceof ImplementationItem_DoBlockImpl) {
+			ImplementationItem_DoBlockImpl doBlock = (ImplementationItem_DoBlockImpl) psiElement;
+			return "do (" + doBlock.getTriggerPsi().getText() + ") do {...}";
 		}
 		return psiElement.toString();
 	}

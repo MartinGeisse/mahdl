@@ -9,7 +9,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import name.martingeisse.mahdl.intellij.input.psi.*;
+import name.martingeisse.mahdl.input.cm.impl.*;
+import name.martingeisse.mahdl.intellij.input.PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,9 +22,9 @@ import java.util.List;
  */
 public class ModuleInstancePortReference implements PsiReference {
 
-	private final InstancePortName instancePortName;
+	private final InstancePortNameImpl instancePortName;
 
-	public ModuleInstancePortReference(@NotNull InstancePortName instancePortName) {
+	public ModuleInstancePortReference(@NotNull InstancePortNameImpl instancePortName) {
 		this.instancePortName = instancePortName;
 	}
 
@@ -41,25 +42,25 @@ public class ModuleInstancePortReference implements PsiReference {
 
 	@Nullable
 	private PsiElement resolveModule() {
-		Expression_InstancePort expression = PsiUtil.getAncestor(instancePortName, Expression_InstancePort.class);
+		Expression_InstancePortImpl expression = PsiUtil.getAncestor(instancePortName, Expression_InstancePortImpl.class);
 		if (expression == null) {
 			return null;
 		}
-		PsiElement someElementInsideInstanceDefinition = expression.getInstanceName().getReference().resolve();
+		PsiElement someElementInsideInstanceDefinition = expression.getInstanceNamePsi().getReference().resolve();
 		if (someElementInsideInstanceDefinition == null) {
 			return null;
 		}
-		ImplementationItem_ModuleInstanceDefinitionGroup moduleInstanceDefinitionGroup = PsiUtil.getAncestor(someElementInsideInstanceDefinition, ImplementationItem_ModuleInstanceDefinitionGroup.class);
+		ImplementationItem_ModuleInstanceDefinitionGroupImpl moduleInstanceDefinitionGroup = PsiUtil.getAncestor(someElementInsideInstanceDefinition, ImplementationItem_ModuleInstanceDefinitionGroupImpl.class);
 		if (moduleInstanceDefinitionGroup == null) {
 			// at least resolve to inside the instance
 			return someElementInsideInstanceDefinition;
 		}
-		PsiElement moduleNameDefiningElement = moduleInstanceDefinitionGroup.getModuleName().getReference().resolve();
+		PsiElement moduleNameDefiningElement = moduleInstanceDefinitionGroup.getModuleNamePsi().getReference().resolve();
 		if (moduleNameDefiningElement == null) {
 			// the module name is unknown
-			return moduleInstanceDefinitionGroup.getModuleName();
+			return moduleInstanceDefinitionGroup.getModuleNamePsi();
 		}
-		Module module = PsiUtil.getAncestor(moduleNameDefiningElement, Module.class);
+		ModuleImpl module = PsiUtil.getAncestor(moduleNameDefiningElement, ModuleImpl.class);
 		if (module == null) {
 			// the module name defining element is lost in a PSI soup
 			return moduleNameDefiningElement;
@@ -71,14 +72,14 @@ public class ModuleInstancePortReference implements PsiReference {
 	@Override
 	public PsiElement resolve() {
 		PsiElement resolvedModule = resolveModule();
-		if (!(resolvedModule instanceof Module)) {
+		if (!(resolvedModule instanceof ModuleImpl)) {
 			return resolvedModule;
 		}
-		Module targetModule = (Module) resolvedModule;
+		ModuleImpl targetModule = (ModuleImpl) resolvedModule;
 		String referencePortName = getCanonicalText();
-		for (PortDefinitionGroup portDefinitionGroup : targetModule.getPortDefinitionGroups().getAll()) {
-			if (portDefinitionGroup instanceof PortDefinitionGroup_Valid) {
-				for (PortDefinition portDefinition : ((PortDefinitionGroup_Valid) portDefinitionGroup).getDefinitions().getAll()) {
+		for (PortDefinitionGroupImpl portDefinitionGroup : targetModule.getPortDefinitionGroupsPsi().getAllPsi()) {
+			if (portDefinitionGroup instanceof PortDefinitionGroup_ValidImpl) {
+				for (PortDefinitionImpl portDefinition : ((PortDefinitionGroup_ValidImpl) portDefinitionGroup).getDefinitionsPsi().getAllPsi()) {
 					String definitionPortName = portDefinition.getName();
 					if (referencePortName.equals(definitionPortName)) {
 						return portDefinition;
@@ -93,15 +94,15 @@ public class ModuleInstancePortReference implements PsiReference {
 	// Works similar to resolve(), but won't return anything other than a PortDefinition. That is, any failure case
 	// doesn't resolve the reference "as good as we can" but just returns null.
 	@Nullable
-	public PortDefinition resolvePortDefinitionOnly() {
+	public PortDefinitionImpl resolvePortDefinitionOnly() {
 		PsiElement element = resolve();
-		return (element instanceof PortDefinition ? (PortDefinition) element : null);
+		return (element instanceof PortDefinitionImpl ? (PortDefinitionImpl) element : null);
 	}
 
 	@NotNull
 	@Override
 	public String getCanonicalText() {
-		return instancePortName.getIdentifier().getText();
+		return instancePortName.getIdentifierPsi().getText();
 	}
 
 	@Override
@@ -110,16 +111,16 @@ public class ModuleInstancePortReference implements PsiReference {
 		if (newName == null) {
 			throw new IncorrectOperationException("new name is null");
 		}
-		return PsiUtil.setText(instancePortName.getIdentifier(), newName);
+		return PsiUtil.setText(instancePortName.getIdentifierPsi(), newName);
 	}
 
 	@Override
 	@NotNull
 	public PsiElement bindToElement(@NotNull PsiElement psiElement) throws IncorrectOperationException {
-		if (psiElement instanceof PortDefinition) {
+		if (psiElement instanceof PortDefinitionImpl) {
 			String newName = ((PsiNamedElement) psiElement).getName();
 			if (newName != null) {
-				return PsiUtil.setText(instancePortName.getIdentifier(), newName);
+				return PsiUtil.setText(instancePortName.getIdentifierPsi(), newName);
 			}
 		}
 		throw new IncorrectOperationException();
@@ -127,8 +128,8 @@ public class ModuleInstancePortReference implements PsiReference {
 
 	@Override
 	public boolean isReferenceTo(@Nullable PsiElement psiElement) {
-		if (psiElement instanceof PortDefinition) {
-			String candidatePortName = ((PortDefinition) psiElement).getName();
+		if (psiElement instanceof PortDefinitionImpl) {
+			String candidatePortName = ((PortDefinitionImpl) psiElement).getName();
 			if (candidatePortName != null && candidatePortName.equals(getCanonicalText())) {
 				PsiElement resolved = resolve();
 				return (resolved != null && resolved.equals(psiElement));
@@ -143,11 +144,11 @@ public class ModuleInstancePortReference implements PsiReference {
 		// note: if this returns PSI elements, they must be PsiNamedElement or contain the name in meta-data
 		List<String> portNames = new ArrayList<>();
 		PsiElement resolvedModule = resolveModule();
-		if (resolvedModule instanceof Module) {
-			Module targetModule = (Module) resolvedModule;
-			for (PortDefinitionGroup portDefinitionGroup : targetModule.getPortDefinitionGroups().getAll()) {
-				if (portDefinitionGroup instanceof PortDefinitionGroup_Valid) {
-					for (PortDefinition portDefinition : ((PortDefinitionGroup_Valid) portDefinitionGroup).getDefinitions().getAll()) {
+		if (resolvedModule instanceof ModuleImpl) {
+			ModuleImpl targetModule = (ModuleImpl) resolvedModule;
+			for (PortDefinitionGroupImpl portDefinitionGroup : targetModule.getPortDefinitionGroupsPsi().getAllPsi()) {
+				if (portDefinitionGroup instanceof PortDefinitionGroup_ValidImpl) {
+					for (PortDefinitionImpl portDefinition : ((PortDefinitionGroup_ValidImpl) portDefinitionGroup).getDefinitionsPsi().getAllPsi()) {
 						String definitionPortName = portDefinition.getName();
 						if (definitionPortName != null) {
 							portNames.add(definitionPortName);

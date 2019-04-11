@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.intellij.input.psi;
+package name.martingeisse.mahdl.intellij.input;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -15,9 +15,11 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.Consumer;
 import com.intellij.util.FileContentUtil;
 import com.intellij.util.IncorrectOperationException;
-import name.martingeisse.mahdl.common.cm.CmUtil;
-import name.martingeisse.mahdl.intellij.MahdlSourceFile;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
+import name.martingeisse.mahdl.common.cm.CmUtil;
+import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
+import name.martingeisse.mahdl.input.cm.impl.*;
+import name.martingeisse.mahdl.intellij.MahdlSourceFile;
 import name.martingeisse.mahdl.intellij.input.reference.LocalReference;
 import name.martingeisse.mahdl.intellij.input.reference.ModuleInstancePortReference;
 import name.martingeisse.mahdl.intellij.input.reference.ModuleReference;
@@ -84,14 +86,13 @@ public final class PsiUtil {
 		return ProjectRootManager.getInstance(originPsiFile.getProject()).getFileIndex().getSourceRootForFile(originVirtualFile);
 	}
 
-	// the useCase has an effect on error messages but otherwise doesn't influence resolution
 	@NotNull
-	public static Module resolveModuleName(QualifiedModuleName moduleName, ModuleNameResolutionUseCase useCase) throws ReferenceResolutionException {
+	public static ModuleImpl resolveModuleName(QualifiedModuleNameImpl moduleName) throws ReferenceResolutionException {
 		VirtualFile sourceRoot = getSourceRoot(moduleName);
 		if (sourceRoot == null) {
 			throw new ReferenceResolutionException("the module name is not located inside a source root");
 		}
-		String[] segments = parseQualifiedModuleName(moduleName);
+		String[] segments = CmUtil.parseQualifiedModuleName(moduleName);
 		VirtualFile targetVirtualFile = sourceRoot;
 		for (int i = 0; i < segments.length - 1; i++) {
 			targetVirtualFile = targetVirtualFile.findChild(segments[i]);
@@ -109,16 +110,11 @@ public final class PsiUtil {
 		if (!(targetPsiFile instanceof MahdlSourceFile)) {
 			throw new ReferenceResolutionException(targetVirtualFile.getPath() + " is not a MaHDL source file");
 		}
-		Module module = ((MahdlSourceFile) targetPsiFile).getModule();
+		ModuleImpl module = ((MahdlSourceFile) targetPsiFile).getModule();
 		if (module == null) {
 			throw new ReferenceResolutionException("target file does not contain a module");
 		}
 		return module;
-	}
-
-	public enum ModuleNameResolutionUseCase {
-		NAME_DECLARATION_VALIDATION,
-		REFERENCE_RESOLUTION
 	}
 
 	//
@@ -126,39 +122,39 @@ public final class PsiUtil {
 	//
 
 	@Nullable
-	public static QualifiedModuleName getNameIdentifier(@NotNull Module node) {
-		return node.getModuleName();
+	public static QualifiedModuleNameImpl getNameIdentifier(@NotNull ModuleImpl node) {
+		return node.getModuleNamePsi();
 	}
 
 	@Nullable
-	public static String getName(@NotNull Module node) {
+	public static String getName(@NotNull ModuleImpl node) {
 		QualifiedModuleName name = node.getModuleName();
 		return name == null ? null : CmUtil.canonicalizeQualifiedModuleName(name);
 	}
 
-	public static PsiElement setName(@NotNull Module node, @NotNull String newName) {
+	public static PsiElement setName(@NotNull ModuleImpl node, @NotNull String newName) {
 		throw new IncorrectOperationException("renaming module not yet implemented");
 	}
 
 	@Nullable
-	public static LeafPsiElement getNameIdentifier(@NotNull PortDefinition node) {
-		return node.getIdentifier();
+	public static LeafPsiElement getNameIdentifier(@NotNull PortDefinitionImpl node) {
+		return node.getIdentifierPsi();
 	}
 
 	@Nullable
-	public static LeafPsiElement getNameIdentifier(@NotNull SignalLikeDefinition node) {
-		if (node instanceof SignalLikeDefinition_WithoutInitializer) {
-			return ((SignalLikeDefinition_WithoutInitializer) node).getIdentifier();
-		} else if (node instanceof SignalLikeDefinition_WithInitializer) {
-			return ((SignalLikeDefinition_WithInitializer) node).getIdentifier();
+	public static LeafPsiElement getNameIdentifier(@NotNull SignalLikeDefinitionImpl node) {
+		if (node instanceof SignalLikeDefinition_WithoutInitializerImpl) {
+			return ((SignalLikeDefinition_WithoutInitializerImpl) node).getIdentifierPsi();
+		} else if (node instanceof SignalLikeDefinition_WithInitializerImpl) {
+			return ((SignalLikeDefinition_WithInitializerImpl) node).getIdentifierPsi();
 		} else {
 			return null;
 		}
 	}
 
 	@Nullable
-	public static LeafPsiElement getNameIdentifier(@NotNull ModuleInstanceDefinition node) {
-		return node.getIdentifier();
+	public static LeafPsiElement getNameIdentifier(@NotNull ModuleInstanceDefinitionImpl node) {
+		return node.getIdentifierPsi();
 	}
 
 	//
@@ -166,42 +162,42 @@ public final class PsiUtil {
 	//
 
 	@NotNull
-	public static PsiReference getReference(@NotNull QualifiedModuleName node) {
+	public static PsiReference getReference(@NotNull QualifiedModuleNameImpl node) {
 		return new ModuleReference(node);
 	}
 
 	@NotNull
-	public static PsiReference getReference(@NotNull InstancePortName node) {
+	public static PsiReference getReference(@NotNull InstancePortNameImpl node) {
 		return new ModuleInstancePortReference(node);
 	}
 
 	@NotNull
-	public static PsiReference getReference(@NotNull Expression_Identifier node) {
-		return new LocalReference(node.getIdentifier());
+	public static PsiReference getReference(@NotNull Expression_IdentifierImpl node) {
+		return new LocalReference(node.getIdentifierPsi());
 	}
 
 	@NotNull
-	public static PsiReference getReference(@NotNull InstanceReferenceName node) {
-		return new LocalReference(node.getIdentifier());
+	public static PsiReference getReference(@NotNull InstanceReferenceNameImpl node) {
+		return new LocalReference(node.getIdentifierPsi());
 	}
 
 	//
 	// safe delete
 	//
 
-	public static void delete(@NotNull Module node) throws IncorrectOperationException {
+	public static void delete(@NotNull ModuleImpl node) throws IncorrectOperationException {
 		delete(node, node::superclassDelete);
 	}
 
-	public static void delete(@NotNull PortDefinition node) throws IncorrectOperationException {
+	public static void delete(@NotNull PortDefinitionImpl node) throws IncorrectOperationException {
 		delete(node, node::superclassDelete);
 	}
 
-	public static void delete(@NotNull SignalLikeDefinition node) throws IncorrectOperationException {
+	public static void delete(@NotNull SignalLikeDefinitionImpl node) throws IncorrectOperationException {
 		delete(node, node::superclassDelete);
 	}
 
-	public static void delete(@NotNull ModuleInstanceDefinition node) throws IncorrectOperationException {
+	public static void delete(@NotNull ModuleInstanceDefinitionImpl node) throws IncorrectOperationException {
 		delete(node, node::superclassDelete);
 	}
 
