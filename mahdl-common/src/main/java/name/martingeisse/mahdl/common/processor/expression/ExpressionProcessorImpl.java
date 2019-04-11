@@ -5,14 +5,12 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.common.processor.definition.*;
+import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.functions.BuiltinFunctions;
-import name.martingeisse.mahdl.plugin.input.psi.*;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.plugin.util.LiteralParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -219,7 +217,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				moduleInstance = (ModuleInstance) moduleInstanceCandidate;
 			} else if (moduleInstanceCandidate instanceof ModuleInstanceWithMissingDefinition) {
 				QualifiedModuleName moduleNameElement = ((ModuleInstanceWithMissingDefinition) moduleInstanceCandidate).getModuleNameElement();
-				String moduleName = PsiUtil.canonicalizeQualifiedModuleName(moduleNameElement);
+				String moduleName = CmUtil.canonicalizeQualifiedModuleName(moduleNameElement);
 				return error(expression.getInstanceName(), "missing module '" + moduleName + "' for instance '" + instanceName + "'");
 			} else {
 				return error(expression.getInstanceName(), instanceName + " is not a module instance");

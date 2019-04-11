@@ -4,7 +4,8 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
+import name.martingeisse.mahdl.common.cm.CmToken;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 	private final ProcessedExpression container;
 	private final ProcessedExpression index;
 
-	private ProcessedIndexSelection(@NotNull PsiElement errorSource,
+	private ProcessedIndexSelection(@NotNull CmNode errorSource,
 									@NotNull ProcessedDataType dataType,
 									@NotNull ProcessedExpression container,
 									@NotNull ProcessedExpression index) {
@@ -112,13 +113,13 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 	}
 
 	// creates an index selection of the same class as this, using the specified container and index
-	protected abstract ProcessedIndexSelection createEquivalentIndexSelection(PsiElement errorSource,
+	protected abstract ProcessedIndexSelection createEquivalentIndexSelection(CmNode errorSource,
 																			  ProcessedExpression container,
 																			  ProcessedExpression index) throws TypeErrorException;
 
 	public static final class BitFromVector extends ProcessedIndexSelection {
 
-		public BitFromVector(@NotNull PsiElement errorSource, @NotNull ProcessedExpression container, @NotNull ProcessedExpression index) throws TypeErrorException {
+		public BitFromVector(@NotNull CmNode errorSource, @NotNull ProcessedExpression container, @NotNull ProcessedExpression index) throws TypeErrorException {
 			super(errorSource, ProcessedDataType.Bit.INSTANCE, container, index);
 			if (!(container.getDataType() instanceof ProcessedDataType.Vector)) {
 				throw new TypeErrorException();
@@ -135,7 +136,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 		}
 
 		@Override
-		protected ProcessedIndexSelection createEquivalentIndexSelection(PsiElement errorSource, ProcessedExpression container, ProcessedExpression index) throws TypeErrorException {
+		protected ProcessedIndexSelection createEquivalentIndexSelection(CmNode errorSource, ProcessedExpression container, ProcessedExpression index) throws TypeErrorException {
 			return new BitFromVector(errorSource, container, index);
 		}
 
@@ -143,7 +144,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 
 	public static final class VectorFromMatrix extends ProcessedIndexSelection {
 
-		public VectorFromMatrix(@NotNull PsiElement errorSource, @NotNull ProcessedExpression container, @NotNull ProcessedExpression index) throws TypeErrorException {
+		public VectorFromMatrix(@NotNull CmNode errorSource, @NotNull ProcessedExpression container, @NotNull ProcessedExpression index) throws TypeErrorException {
 			super(errorSource, typeCheck(container, index), container, index);
 		}
 
@@ -165,7 +166,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 		}
 
 		@Override
-		protected ProcessedIndexSelection createEquivalentIndexSelection(PsiElement errorSource, ProcessedExpression container, ProcessedExpression index) throws TypeErrorException {
+		protected ProcessedIndexSelection createEquivalentIndexSelection(CmNode errorSource, ProcessedExpression container, ProcessedExpression index) throws TypeErrorException {
 			return new VectorFromMatrix(errorSource, container, index);
 		}
 

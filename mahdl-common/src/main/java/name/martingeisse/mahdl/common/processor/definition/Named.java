@@ -4,8 +4,8 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
-import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.processor.expression.ExpressionProcessor;
+import name.martingeisse.mahdl.common.cm.CmToken;
+import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,14 +14,14 @@ import org.jetbrains.annotations.NotNull;
 public abstract class Named {
 
 	@NotNull
-	private final PsiElement nameElement;
+	private final CmToken nameElement;
 
-	public Named(@NotNull PsiElement nameElement) {
+	public Named(@NotNull CmToken nameElement) {
 		this.nameElement = nameElement;
 	}
 
 	@NotNull
-	public final PsiElement getNameElement() {
+	public final CmToken getNameElement() {
 		return nameElement;
 	}
 

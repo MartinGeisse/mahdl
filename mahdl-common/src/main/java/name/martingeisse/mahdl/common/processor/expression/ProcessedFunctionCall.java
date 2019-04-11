@@ -5,7 +5,7 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -22,7 +22,7 @@ public class ProcessedFunctionCall extends ProcessedExpression {
 	private final BuiltinFunction function;
 	private final ImmutableList<ProcessedExpression> arguments;
 
-	public ProcessedFunctionCall(@NotNull PsiElement errorSource,
+	public ProcessedFunctionCall(@NotNull CmNode errorSource,
 								 @NotNull ProcessedDataType returnType,
 								 @NotNull BuiltinFunction function,
 								 @NotNull ImmutableList<ProcessedExpression> arguments) {
