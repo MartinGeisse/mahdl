@@ -32,7 +32,7 @@ public final class SignalLikeDefinition_WithInitializerImpl extends SignalLikeDe
 	}
 
 	public LeafPsiElement getNameIdentifier() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getNameIdentifier(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getNameIdentifier(this);
 	}
 
 	public String getName() {
@@ -49,7 +49,7 @@ public final class SignalLikeDefinition_WithInitializerImpl extends SignalLikeDe
 	}
 
 	public void delete() throws IncorrectOperationException {
-		name.martingeisse.mahdl.intellij.input.psi.PsiUtil.delete(this);
+		name.martingeisse.mahdl.intellij.input.PsiUtil.delete(this);
 	}
 
 }

@@ -19,7 +19,7 @@ public final class InternalPsiUtil {
 
 	private static void initializeIgnoredElementTypes() {
 		if (ignoredElementTypes == null) {
-			name.martingeisse.mahdl.common.input.MahdlParserDefinition parserDefinition = new name.martingeisse.mahdl.common.input.MahdlParserDefinition();
+			name.martingeisse.mahdl.intellij.input.MahdlParserDefinition parserDefinition = new name.martingeisse.mahdl.intellij.input.MahdlParserDefinition();
 			ignoredElementTypes = TokenSet.orSet(parserDefinition.getWhitespaceTokens(), parserDefinition.getCommentTokens());
 		}
 	}

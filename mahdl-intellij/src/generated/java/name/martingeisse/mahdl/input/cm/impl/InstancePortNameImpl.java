@@ -23,7 +23,7 @@ public final class InstancePortNameImpl extends ASTWrapperPsiElement implements 
 	}
 
 	public PsiReference getReference() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getReference(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getReference(this);
 	}
 
 }

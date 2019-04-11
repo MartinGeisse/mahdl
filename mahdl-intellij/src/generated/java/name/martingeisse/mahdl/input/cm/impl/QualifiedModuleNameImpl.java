@@ -24,7 +24,7 @@ public final class QualifiedModuleNameImpl extends ASTWrapperPsiElement implemen
 	}
 
 	public PsiReference getReference() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getReference(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getReference(this);
 	}
 
 }

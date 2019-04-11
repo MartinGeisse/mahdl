@@ -49,15 +49,15 @@ public final class ModuleImpl extends ASTWrapperPsiElement implements Module, Ps
 	}
 
 	public String getName() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getName(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getName(this);
 	}
 
 	public PsiElement setName(String newName) throws IncorrectOperationException {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.setName(this, newName);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.setName(this, newName);
 	}
 
 	public PsiElement getNameIdentifier() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getNameIdentifier(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getNameIdentifier(this);
 	}
 
 	public void superclassDelete() throws IncorrectOperationException {
@@ -65,7 +65,7 @@ public final class ModuleImpl extends ASTWrapperPsiElement implements Module, Ps
 	}
 
 	public void delete() throws IncorrectOperationException {
-		name.martingeisse.mahdl.intellij.input.psi.PsiUtil.delete(this);
+		name.martingeisse.mahdl.intellij.input.PsiUtil.delete(this);
 	}
 
 }

@@ -22,7 +22,7 @@ public final class Expression_IdentifierImpl extends ExpressionImpl implements E
 	}
 
 	public PsiReference getReference() {
-		return name.martingeisse.mahdl.intellij.input.psi.PsiUtil.getReference(this);
+		return name.martingeisse.mahdl.intellij.input.PsiUtil.getReference(this);
 	}
 
 }
