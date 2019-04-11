@@ -6,7 +6,7 @@ package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.psi.PsiElement;
-import name.martingeisse.mahdl.plugin.functions.BuiltinFunction;
+import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;

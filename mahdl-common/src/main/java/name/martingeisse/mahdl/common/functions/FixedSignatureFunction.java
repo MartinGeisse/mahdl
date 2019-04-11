@@ -2,10 +2,10 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.functions;
+package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -46,7 +46,7 @@ public abstract class FixedSignatureFunction extends AbstractFunction {
 
 	@NotNull
 	@Override
-	public ProcessedDataType checkType(@NotNull PsiElement errorSource, @NotNull List<ProcessedExpression> arguments, @NotNull ErrorHandler errorHandler) {
+	public ProcessedDataType checkType(@NotNull CmNode errorSource, @NotNull List<ProcessedExpression> arguments, @NotNull ErrorHandler errorHandler) {
 		if (arguments.size() != argumentTypes.size()) {
 			errorHandler.onError(errorSource, getSignatureText() + " cannot be invoked with " + arguments.size() + " arguments");
 		}

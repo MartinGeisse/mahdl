@@ -2,18 +2,19 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.functions;
+package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.HeadBodyReader;
-import name.martingeisse.mahdl.plugin.util.LiteralParser;
+import name.martingeisse.mahdl.common.util.LiteralParser;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +58,7 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 
 	@NotNull
 	@Override
-	public ConstantValue applyToConstantValues(@NotNull PsiElement errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
+	public ConstantValue applyToConstantValues(@NotNull CmNode errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
 		String filename = arguments.get(0).convertToString();
 		int rows = arguments.get(1).convertToInteger().intValueExact();
 		int columns = arguments.get(2).convertToInteger().intValueExact();

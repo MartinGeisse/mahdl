@@ -2,9 +2,9 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.functions;
+package name.martingeisse.mahdl.common.functions;
 
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
@@ -22,12 +22,12 @@ public interface BuiltinFunction {
 	String getName();
 
 	@NotNull
-	ProcessedDataType checkType(@NotNull PsiElement errorSource,
+	ProcessedDataType checkType(@NotNull CmNode errorSource,
 								@NotNull List<ProcessedExpression> arguments,
 								@NotNull ErrorHandler errorHandler);
 
 	@NotNull
-	ConstantValue applyToConstantValues(@NotNull PsiElement errorSource,
+	ConstantValue applyToConstantValues(@NotNull CmNode errorSource,
 										@NotNull List<ConstantValue> arguments,
 										@NotNull ProcessedExpression.FormallyConstantEvaluationContext context);
 

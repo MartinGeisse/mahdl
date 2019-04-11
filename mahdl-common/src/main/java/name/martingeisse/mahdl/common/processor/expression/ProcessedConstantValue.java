@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ public final class ProcessedConstantValue extends ProcessedExpression {
 
 	private final ConstantValue value;
 
-	public ProcessedConstantValue(@NotNull PsiElement errorSource, @NotNull ConstantValue value) {
+	public ProcessedConstantValue(@NotNull CmNode errorSource, @NotNull ConstantValue value) {
 		super(errorSource, value.getDataType());
 		this.value = value;
 	}

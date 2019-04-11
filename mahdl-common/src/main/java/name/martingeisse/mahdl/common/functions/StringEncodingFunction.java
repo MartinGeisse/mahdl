@@ -2,10 +2,10 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.functions;
+package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
@@ -40,7 +40,7 @@ public abstract class StringEncodingFunction extends FixedSignatureFunction {
 
 	@NotNull
 	@Override
-	public ConstantValue applyToConstantValues(@NotNull PsiElement errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
+	public ConstantValue applyToConstantValues(@NotNull CmNode errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
 		String text = arguments.get(0).convertToString();
 		int size = arguments.get(1).convertToInteger().intValueExact();
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

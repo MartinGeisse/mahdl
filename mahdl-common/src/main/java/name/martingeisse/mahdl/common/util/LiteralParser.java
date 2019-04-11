@@ -2,10 +2,9 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.util;
+package name.martingeisse.mahdl.common.util;
 
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import name.martingeisse.mahdl.plugin.input.psi.*;
+import name.martingeisse.mahdl.common.cm.*;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +71,7 @@ public class LiteralParser {
 	}
 
 	@NotNull
-	private static ConstantValue parseText(@NotNull LeafPsiElement textElement) throws ParseException {
+	private static ConstantValue parseText(@NotNull CmToken textElement) throws ParseException {
 		String rawText = textElement.getText();
 		if (rawText.charAt(0) != '"' || rawText.charAt(rawText.length() - 1) != '"') {
 			throw new ParseException("missing quotation marks");

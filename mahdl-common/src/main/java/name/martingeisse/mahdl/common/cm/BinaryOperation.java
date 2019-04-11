@@ -2,17 +2,14 @@
  * Copyright (c) 2018 Martin Geisse
  * This file is distributed under the terms of the MIT license.
  */
-package name.martingeisse.mahdl.plugin.input.psi;
+package name.martingeisse.mahdl.common.cm;
 
-import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  *
  */
-public interface BinaryOperation extends PsiElement {
+public interface BinaryOperation extends CmNode {
 
 	@Nullable
 	Expression getLeftOperand();

@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.intellij.psi.PsiElement;
+import name.martingeisse.mahdl.common.cm.CmNode;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
@@ -16,18 +17,18 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ProcessedExpression {
 
 	@NotNull
-	private final PsiElement errorSource;
+	private final CmNode errorSource;
 
 	@NotNull
 	private final ProcessedDataType dataType;
 
-	public ProcessedExpression(@NotNull PsiElement errorSource, @NotNull ProcessedDataType dataType) {
+	public ProcessedExpression(@NotNull CmNode errorSource, @NotNull ProcessedDataType dataType) {
 		this.errorSource = errorSource;
 		this.dataType = dataType;
 	}
 
 	@NotNull
-	public final PsiElement getErrorSource() {
+	public final CmNode getErrorSource() {
 		return errorSource;
 	}
 
@@ -72,7 +73,7 @@ public abstract class ProcessedExpression {
 
 			@Override
 			@NotNull
-			public ConstantValue.Unknown notConstant(@NotNull PsiElement errorSource) {
+			public ConstantValue.Unknown notConstant(@NotNull CmNode errorSource) {
 				throw new NotConstantException();
 			}
 
@@ -112,7 +113,7 @@ public abstract class ProcessedExpression {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown error(@NotNull PsiElement errorSource, @NotNull String message) {
+		public ConstantValue.Unknown error(@NotNull CmNode errorSource, @NotNull String message) {
 			errorHandler.onError(errorSource, message);
 			return ConstantValue.Unknown.INSTANCE;
 		}
@@ -123,7 +124,7 @@ public abstract class ProcessedExpression {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown notConstant(@NotNull PsiElement errorSource) {
+		public ConstantValue.Unknown notConstant(@NotNull CmNode errorSource) {
 			return error(errorSource, "expected a formally constant expression");
 		}
 
@@ -133,7 +134,7 @@ public abstract class ProcessedExpression {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown evaluationInconsistency(@NotNull PsiElement errorSource, @NotNull String message) {
+		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmNode errorSource, @NotNull String message) {
 			return error(errorSource, "internal error: detected an inconsistency between static type check and constant evaluation" +
 				(message == null ? "" : (": " + message)));
 		}
@@ -144,7 +145,7 @@ public abstract class ProcessedExpression {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown evaluationInconsistency(@NotNull PsiElement errorSource) {
+		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmNode errorSource) {
 			return evaluationInconsistency(errorSource, null);
 		}
 
