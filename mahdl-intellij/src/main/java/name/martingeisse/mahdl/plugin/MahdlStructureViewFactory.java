@@ -14,6 +14,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.plugin.input.Symbols;
 import name.martingeisse.mahdl.plugin.input.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -129,7 +130,7 @@ public class MahdlStructureViewFactory implements PsiStructureViewFactory {
 			} else if (elementType == Symbols.implementationItem_ModuleInstanceDefinitionGroup && element instanceof ImplementationItem_ModuleInstanceDefinitionGroup) {
 				ImplementationItem_ModuleInstanceDefinitionGroup group = (ImplementationItem_ModuleInstanceDefinitionGroup) element;
 				StringBuilder builder = new StringBuilder();
-				builder.append(group.getModuleName() == null ? "???" : PsiUtil.canonicalizeQualifiedModuleName(group.getModuleName()));
+				builder.append(group.getModuleName() == null ? "???" : CmUtil.canonicalizeQualifiedModuleName(group.getModuleName()));
 				builder.append(' ');
 				boolean first = true;
 				for (ModuleInstanceDefinition definition : group.getDefinitions().getAll()) {

@@ -15,6 +15,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.util.Consumer;
 import com.intellij.util.FileContentUtil;
 import com.intellij.util.IncorrectOperationException;
+import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.plugin.MahdlSourceFile;
 import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
 import name.martingeisse.mahdl.plugin.input.reference.LocalReference;
@@ -135,7 +136,7 @@ public final class PsiUtil {
 	@Nullable
 	public static String getName(@NotNull Module node) {
 		QualifiedModuleName name = node.getModuleName();
-		return name == null ? null : canonicalizeQualifiedModuleName(name);
+		return name == null ? null : CmUtil.canonicalizeQualifiedModuleName(name);
 	}
 
 	public static PsiElement setName(@NotNull Module node, @NotNull String newName) {
@@ -218,24 +219,6 @@ public final class PsiUtil {
 			}
 		}
 		throw new IncorrectOperationException("could not determine containing virtual file to reparse after safe delete");
-	}
-
-	//
-	// other
-	//
-
-	@NotNull
-	public static String canonicalizeQualifiedModuleName(@NotNull QualifiedModuleName name) {
-		return StringUtils.join(parseQualifiedModuleName(name), '.');
-	}
-
-	@NotNull
-	public static String[] parseQualifiedModuleName(@NotNull QualifiedModuleName name) {
-		List<String> segments = new ArrayList<>();
-		for (LeafPsiElement segment : name.getSegments().getAll()) {
-			segments.add(segment.getText());
-		}
-		return segments.toArray(new String[segments.size()]);
 	}
 
 }

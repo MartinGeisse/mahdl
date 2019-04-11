@@ -14,6 +14,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.indexing.FileBasedIndex;
+import name.martingeisse.mahdl.common.cm.CmUtil;
 import name.martingeisse.mahdl.plugin.MahdlModuleIndex;
 import name.martingeisse.mahdl.plugin.MahdlSourceFile;
 import name.martingeisse.mahdl.plugin.input.ReferenceResolutionException;
@@ -91,8 +92,8 @@ public class ModuleReference implements PsiReference {
 	@Override
 	public boolean isReferenceTo(@Nullable PsiElement psiElement) {
 		if (psiElement instanceof Module) {
-			String canonicalReferenceModuleName = PsiUtil.canonicalizeQualifiedModuleName(moduleName);
-			String canonicalCandidateModuleName = PsiUtil.canonicalizeQualifiedModuleName(((Module) psiElement).getModuleName());
+			String canonicalReferenceModuleName = CmUtil.canonicalizeQualifiedModuleName(moduleName);
+			String canonicalCandidateModuleName = CmUtil.canonicalizeQualifiedModuleName(((Module) psiElement).getModuleName());
 			if (canonicalCandidateModuleName.equals(canonicalReferenceModuleName)) {
 				PsiElement resolved = resolve();
 				return (resolved != null && resolved.equals(psiElement));
