@@ -16,7 +16,7 @@ import com.intellij.util.Consumer;
 import com.intellij.util.FileContentUtil;
 import com.intellij.util.IncorrectOperationException;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.common.cm.CmUtil;
+import name.martingeisse.mahdl.input.cm.CmUtil;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.*;
 import name.martingeisse.mahdl.intellij.MahdlSourceFile;

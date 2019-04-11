@@ -5,9 +5,9 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.cm.BinaryOperation;
-import name.martingeisse.mahdl.common.cm.CmUtil;
-import name.martingeisse.mahdl.common.cm.UnaryOperation;
+import name.martingeisse.mahdl.input.cm.BinaryOperation;
+import name.martingeisse.mahdl.input.cm.CmUtil;
+import name.martingeisse.mahdl.input.cm.UnaryOperation;
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.functions.BuiltinFunctions;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;

@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.cm.BinaryOperation;
+import name.martingeisse.mahdl.input.cm.BinaryOperation;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;

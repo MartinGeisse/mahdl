@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.common.cm.CmUtil;
+import name.martingeisse.mahdl.input.cm.CmUtil;
 import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
 import name.martingeisse.mahdl.input.cm.impl.QualifiedModuleNameImpl;
 import name.martingeisse.mahdl.intellij.input.PsiUtil;

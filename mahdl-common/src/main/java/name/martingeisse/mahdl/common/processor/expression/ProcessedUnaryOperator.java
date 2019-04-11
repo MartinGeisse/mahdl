@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.cm.UnaryOperation;
+import name.martingeisse.mahdl.input.cm.UnaryOperation;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.Expression_UnaryMinus;
 import name.martingeisse.mahdl.input.cm.Expression_UnaryNot;
