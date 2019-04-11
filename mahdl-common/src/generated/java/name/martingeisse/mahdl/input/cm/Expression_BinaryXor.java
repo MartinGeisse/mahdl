@@ -1,6 +1,6 @@
 package name.martingeisse.mahdl.input.cm;
 
-public interface Expression_BinaryXor extends Expression {
+public interface Expression_BinaryXor extends Expression, BinaryOperation {
 
 	Expression getLeftOperand();
 
