@@ -63,6 +63,7 @@ dependencies {
 	implementation localGroovy()
 
 	compile 'org.apache.commons:commons-lang3:3.0'
+	compile 'commons-io:commons-io:2.4'
 	compile 'com.google.guava:guava:27.1-jre'
 	compile 'org.jetbrains:annotations:16.0.2'
 

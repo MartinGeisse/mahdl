@@ -8,8 +8,10 @@ import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
+import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,27 +88,34 @@ public final class SourceLoader {
 	}
 
 	private Module loadSourceFile(File file) {
-		try (FileInputStream fileInputStream = new FileInputStream(file)) {
-			try (InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
-				return loadSourceFile(file.getPath(), inputStreamReader);
-			}
+		try {
+			// JFlex generates a lexer that takes a reader but does not read from it, so pass the content manually.
+			String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+			return loadSourceFile(file.getPath(), content);
 		} catch (IOException e) {
 			CompilationErrors.reportError(file.getPath(), 0, e.toString());
 			return null;
 		}
 	}
 
-	private Module loadSourceFile(String path, Reader reader) throws IOException {
+	private Module loadSourceFile(String path, String content) throws IOException {
 
 		// run lexer
-		FlexGeneratedMahdlLexer lexer = new FlexGeneratedMahdlLexer(reader);
+		FlexGeneratedMahdlLexer lexer = new FlexGeneratedMahdlLexer(null);
+		lexer.reset(content, 0, content.length(), FlexGeneratedMahdlLexer.YYINITIAL);
 		List<CmTokenImpl> tokens = new ArrayList<>();
 		while (true) {
 			IElementType elementType = lexer.advance();
 			if (elementType == null) {
 				break;
 			}
-			tokens.add(new CmTokenImpl(lexer.yyline + 1, lexer.yycolumn + 1, lexer.yytext().toString(), elementType));
+			if (elementType != IElementType.WHITE_SPACE) {
+				tokens.add(new CmTokenImpl(lexer.yyline + 1, lexer.yycolumn + 1, lexer.yytext().toString(), elementType));
+			}
+		}
+		if (tokens.isEmpty()) {
+			CompilationErrors.reportError(path, 0, "empty source file");
+			return null;
 		}
 
 		// run parser
