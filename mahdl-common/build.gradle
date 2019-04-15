@@ -1,5 +1,6 @@
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -27,6 +28,14 @@ sourceSets {
         resources {
             srcDir 'src/test/java'
             srcDir 'src/test/resources'
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
         }
     }
 }

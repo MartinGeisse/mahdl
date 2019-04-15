@@ -15,5 +15,5 @@ import name.martingeisse.mahdl.input.cm.impl.IElementType;
 %line
 %column
 %{
-    int yyline, yycolumn;
+    public int yyline, yycolumn;
 %}

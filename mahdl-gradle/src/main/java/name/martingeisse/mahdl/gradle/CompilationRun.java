@@ -30,6 +30,7 @@ public class CompilationRun {
 		this.dataFiles = sourceLoader.getDataFiles();
 
 		// TODO ...
+		System.out.println();
 
 	}
 

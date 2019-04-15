@@ -337,7 +337,7 @@ public class FlexGeneratedMahdlLexer {
 	private boolean zzEOFDone;
 
 	/* user code: */
-	int yyline, yycolumn;
+	public int yyline, yycolumn;
 
 	/**
 	 * Creates a new scanner

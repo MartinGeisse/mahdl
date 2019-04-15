@@ -106,7 +106,7 @@ public final class SourceLoader {
 			if (elementType == null) {
 				break;
 			}
-			tokens.add(CmTokenImpl(lexer.row, lexer.col, lexer.yytext(), elementType));
+			tokens.add(new CmTokenImpl(lexer.yyline + 1, lexer.yycolumn + 1, lexer.yytext().toString(), elementType));
 		}
 
 		// run parser
