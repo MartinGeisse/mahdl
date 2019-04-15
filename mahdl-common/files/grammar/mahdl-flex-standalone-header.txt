@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.input;
 
 import java.lang.Error;
+import name.martingeisse.mahdl.input.Symbols;
 
 %%
 
