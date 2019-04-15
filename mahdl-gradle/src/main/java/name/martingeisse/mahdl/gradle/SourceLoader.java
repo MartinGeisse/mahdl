@@ -120,7 +120,7 @@ public final class SourceLoader {
 		if (rootNode instanceof Module) {
 			return (Module) rootNode;
 		} else {
-			CompilationErrors.reportError("wrong root CM node: " + rootNode);
+			CompilationErrors.reportError(path, 0, "wrong root CM node: " + rootNode);
 			return null;
 		}
 

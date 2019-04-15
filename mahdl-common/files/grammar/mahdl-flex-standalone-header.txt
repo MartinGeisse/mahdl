@@ -1,7 +1,7 @@
 package name.martingeisse.mahdl.input;
 
 import java.lang.Error;
-import name.martingeisse.mahdl.input.Symbols;
+import name.martingeisse.mahdl.input.cm.impl.IElementType;
 
 %%
 
@@ -12,9 +12,8 @@ import name.martingeisse.mahdl.input.Symbols;
 %type IElementType
 %eof{ return;
 %eof}
-
-
-
------
-
-%line, %column ??
+%line
+%column
+%{
+    int yyline, yycolumn;
+%}
