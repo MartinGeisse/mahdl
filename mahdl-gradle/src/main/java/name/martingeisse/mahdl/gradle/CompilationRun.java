@@ -39,10 +39,13 @@ public class CompilationRun {
 		this.codeModels = sourceLoader.getCodeModels();
 		this.dataFiles = sourceLoader.getDataFiles();
 
-		// TODO ...
-		System.out.println();
-		File dummyOutput = new File(javaDir, "Dummy.java");
-		FileUtils.writeStringToFile(dummyOutput, "public class Dummy {public static void foo() {System.out.println(\"FOO\");}}", StandardCharsets.UTF_8);
+		// process sources
+		ProcessingRun processingRun = new ProcessingRun(codeModels, dataFiles);
+		processingRun.run();
+		for (Map.Entry<ImmutableList<String>, String> javaEntry : processingRun.getGeneratedCode().entrySet()) {
+			File outputFile = prepareOutputFile(javaEntry.getKey(), ".java");
+			FileUtils.writeStringToFile(outputFile, javaEntry.getValue(), StandardCharsets.UTF_8);
+		}
 
 		// copy data files
 		for (Map.Entry<ImmutableList<String>, File> dataFileEntry : dataFiles.entrySet()) {
