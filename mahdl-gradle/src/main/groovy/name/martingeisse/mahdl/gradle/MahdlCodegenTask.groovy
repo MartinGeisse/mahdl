@@ -11,7 +11,6 @@ class MahdlCodegenTask extends DefaultTask {
 
 	File sourceDirectory;
 
-	@OutputDirectory
 	File outputDirectory;
 
 	@TaskAction
