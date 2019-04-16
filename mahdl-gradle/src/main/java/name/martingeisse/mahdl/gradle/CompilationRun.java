@@ -34,8 +34,8 @@ public class CompilationRun {
 
 		// TODO ...
 		System.out.println();
-		File dummyOutput = new File(javaDir, "dummy.txt");
-		FileUtils.writeStringToFile(dummyOutput, "Hello world", StandardCharsets.UTF_8);
+		File dummyOutput = new File(javaDir, "Dummy.java");
+		FileUtils.writeStringToFile(dummyOutput, "public class Dummy {public static void foo() {System.out.println(\"FOO\");}}", StandardCharsets.UTF_8);
 
 	}
 
