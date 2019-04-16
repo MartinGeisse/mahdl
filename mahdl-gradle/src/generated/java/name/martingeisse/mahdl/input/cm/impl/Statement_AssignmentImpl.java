@@ -12,7 +12,9 @@ public final class Statement_AssignmentImpl extends StatementImpl implements Sta
 	public Statement_AssignmentImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.leftSide = (Expression) childNodes[0];
+		((CmNodeImpl) this.leftSide).setParent(this);
 		this.rightSide = (ExtendedExpression) childNodes[2];
+		((CmNodeImpl) this.rightSide).setParent(this);
 	}
 
 	public Expression getLeftSide() {

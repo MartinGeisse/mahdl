@@ -10,6 +10,7 @@ public final class Literal_IntegerImpl extends LiteralImpl implements Literal_In
 	public Literal_IntegerImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.value = (CmToken) childNodes[0];
+		((CmNodeImpl) this.value).setParent(this);
 	}
 
 	public CmToken getValue() {

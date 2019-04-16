@@ -10,6 +10,7 @@ public final class InstanceReferenceNameImpl extends CmNodeImpl implements Insta
 	public InstanceReferenceNameImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.identifier = (CmToken) childNodes[0];
+		((CmNodeImpl) this.identifier).setParent(this);
 	}
 
 	public CmToken getIdentifier() {

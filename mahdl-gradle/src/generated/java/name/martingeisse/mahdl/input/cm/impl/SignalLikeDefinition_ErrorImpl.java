@@ -10,6 +10,7 @@ public final class SignalLikeDefinition_ErrorImpl extends SignalLikeDefinitionIm
 	public SignalLikeDefinition_ErrorImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.identifier = (CmToken) childNodes[0];
+		((CmNodeImpl) this.identifier).setParent(this);
 	}
 
 	public CmToken getIdentifier() {

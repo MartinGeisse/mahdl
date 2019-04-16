@@ -10,6 +10,7 @@ public final class Literal_VectorImpl extends LiteralImpl implements Literal_Vec
 	public Literal_VectorImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.value = (CmToken) childNodes[0];
+		((CmNodeImpl) this.value).setParent(this);
 	}
 
 	public CmToken getValue() {

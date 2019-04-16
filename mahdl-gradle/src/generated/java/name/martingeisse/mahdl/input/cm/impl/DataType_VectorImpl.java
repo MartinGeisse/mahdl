@@ -10,6 +10,7 @@ public final class DataType_VectorImpl extends DataTypeImpl implements DataType_
 	public DataType_VectorImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.size = (Expression) childNodes[2];
+		((CmNodeImpl) this.size).setParent(this);
 	}
 
 	public Expression getSize() {

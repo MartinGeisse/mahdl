@@ -13,7 +13,9 @@ public final class StatementCaseItem_ValueImpl extends StatementCaseItemImpl imp
 	public StatementCaseItem_ValueImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.selectorValues = (CmList<Expression>) childNodes[1];
+		((CmNodeImpl) this.selectorValues).setParent(this);
 		this.statements = (CmList<Statement>) childNodes[3];
+		((CmNodeImpl) this.statements).setParent(this);
 	}
 
 	public CmList<Expression> getSelectorValues() {

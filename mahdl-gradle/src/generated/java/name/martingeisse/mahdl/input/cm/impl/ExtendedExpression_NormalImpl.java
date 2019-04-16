@@ -10,6 +10,7 @@ public final class ExtendedExpression_NormalImpl extends ExtendedExpressionImpl 
 	public ExtendedExpression_NormalImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.expression = (Expression) childNodes[0];
+		((CmNodeImpl) this.expression).setParent(this);
 	}
 
 	public Expression getExpression() {

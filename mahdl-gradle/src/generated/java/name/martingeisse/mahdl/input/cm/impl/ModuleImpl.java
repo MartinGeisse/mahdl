@@ -12,9 +12,13 @@ public final class ModuleImpl extends CmNodeImpl implements Module {
 	public ModuleImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.nativeness = (CmOptional<CmToken>) childNodes[0];
+		((CmNodeImpl) this.nativeness).setParent(this);
 		this.moduleName = (QualifiedModuleName) childNodes[2];
+		((CmNodeImpl) this.moduleName).setParent(this);
 		this.portDefinitionGroups = (CmList<PortDefinitionGroup>) childNodes[6];
+		((CmNodeImpl) this.portDefinitionGroups).setParent(this);
 		this.implementationItems = (CmList<ImplementationItem>) childNodes[8];
+		((CmNodeImpl) this.implementationItems).setParent(this);
 	}
 
 	public CmOptional<CmToken> getNativeness() {

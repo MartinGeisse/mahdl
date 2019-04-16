@@ -10,6 +10,7 @@ public final class Expression_ParenthesizedImpl extends ExpressionImpl implement
 	public Expression_ParenthesizedImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.expression = (Expression) childNodes[1];
+		((CmNodeImpl) this.expression).setParent(this);
 	}
 
 	public Expression getExpression() {

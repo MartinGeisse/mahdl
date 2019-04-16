@@ -10,6 +10,7 @@ public final class ModuleInstanceDefinitionImpl extends CmNodeImpl implements Mo
 	public ModuleInstanceDefinitionImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.identifier = (CmToken) childNodes[0];
+		((CmNodeImpl) this.identifier).setParent(this);
 	}
 
 	public CmToken getIdentifier() {

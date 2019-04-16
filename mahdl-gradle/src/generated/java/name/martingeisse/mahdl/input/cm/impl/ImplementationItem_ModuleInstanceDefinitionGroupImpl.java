@@ -13,7 +13,9 @@ public final class ImplementationItem_ModuleInstanceDefinitionGroupImpl extends 
 	public ImplementationItem_ModuleInstanceDefinitionGroupImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.moduleName = (QualifiedModuleName) childNodes[0];
+		((CmNodeImpl) this.moduleName).setParent(this);
 		this.definitions = (CmList<ModuleInstanceDefinition>) childNodes[1];
+		((CmNodeImpl) this.definitions).setParent(this);
 	}
 
 	public QualifiedModuleName getModuleName() {

@@ -15,17 +15,27 @@ public class FlexGeneratedMahdlLexer {
 	 * This character denotes the end of file
 	 */
 	public static final int YYEOF = -1;
-
-	/**
-	 * initial size of the lookahead buffer
-	 */
-	private static final int ZZ_BUFFERSIZE = 16384;
-
 	/**
 	 * lexical states
 	 */
 	public static final int YYINITIAL = 0;
-
+	/* The ZZ_CMAP_Z table has 136 entries */
+	static final char ZZ_CMAP_Z[] = zzUnpackCMap(
+		"\1\0\207\100");
+	/* The ZZ_CMAP_Y table has 128 entries */
+	static final char ZZ_CMAP_Y[] = zzUnpackCMap(
+		"\1\0\177\200");
+	/* The ZZ_CMAP_A table has 256 entries */
+	static final char ZZ_CMAP_A[] = zzUnpackCMap(
+		"\11\0\1\1\1\4\1\0\1\1\1\4\22\0\1\1\1\33\3\0\1\32\1\23\1\0\1\7\1\10\1\3\1\30" +
+			"\1\20\1\31\1\15\1\2\1\6\1\63\6\64\2\5\1\16\1\17\1\26\1\21\1\27\1\34\1\0\6" +
+			"\65\24\66\1\11\1\0\1\12\1\25\1\35\1\0\1\37\1\56\1\53\1\46\1\43\1\52\1\55\1" +
+			"\62\1\41\1\66\1\60\1\50\1\44\1\36\1\45\2\66\1\51\1\54\1\40\1\47\1\42\1\61" +
+			"\1\57\2\66\1\13\1\24\1\14\1\22\201\0");
+	/**
+	 * initial size of the lookahead buffer
+	 */
+	private static final int ZZ_BUFFERSIZE = 16384;
 	/**
 	 * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
 	 * ZZ_LEXSTATE[l+1] is the state in the DFA for the lexical state l
@@ -35,37 +45,6 @@ public class FlexGeneratedMahdlLexer {
 	private static final int ZZ_LEXSTATE[] = {
 		0, 0
 	};
-
-	/**
-	 * Translates characters to character classes
-	 * Chosen bits are [8, 6, 7]
-	 * Total runtime size is 1040 bytes
-	 */
-	public static int ZZ_CMAP(int ch) {
-		return ZZ_CMAP_A[ZZ_CMAP_Y[ZZ_CMAP_Z[ch >> 13] | ((ch >> 7) & 0x3f)] | (ch & 0x7f)];
-	}
-
-	/* The ZZ_CMAP_Z table has 136 entries */
-	static final char ZZ_CMAP_Z[] = zzUnpackCMap(
-		"\1\0\207\100");
-
-	/* The ZZ_CMAP_Y table has 128 entries */
-	static final char ZZ_CMAP_Y[] = zzUnpackCMap(
-		"\1\0\177\200");
-
-	/* The ZZ_CMAP_A table has 256 entries */
-	static final char ZZ_CMAP_A[] = zzUnpackCMap(
-		"\11\0\1\1\1\4\1\0\1\1\1\4\22\0\1\1\1\33\3\0\1\32\1\23\1\0\1\7\1\10\1\3\1\30" +
-			"\1\20\1\31\1\15\1\2\1\6\1\63\6\64\2\5\1\16\1\17\1\26\1\21\1\27\1\34\1\0\6" +
-			"\65\24\66\1\11\1\0\1\12\1\25\1\35\1\0\1\37\1\56\1\53\1\46\1\43\1\52\1\55\1" +
-			"\62\1\41\1\66\1\60\1\50\1\44\1\36\1\45\2\66\1\51\1\54\1\40\1\47\1\42\1\61" +
-			"\1\57\2\66\1\13\1\24\1\14\1\22\201\0");
-
-	/**
-	 * Translates DFA states to action switch labels.
-	 */
-	private static final int[] ZZ_ACTION = zzUnpackAction();
-
 	private static final String ZZ_ACTION_PACKED_0 =
 		"\1\0\1\1\1\2\1\3\1\4\2\5\1\6\1\7" +
 			"\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17" +
@@ -77,31 +56,10 @@ public class FlexGeneratedMahdlLexer {
 			"\4\34\1\55\15\34\1\56\2\34\1\57\2\34\1\60" +
 			"\1\61\1\62\3\34\1\63\1\64\1\34\1\65\1\66" +
 			"\3\34\1\67\1\70\1\71";
-
-	private static int[] zzUnpackAction() {
-		int[] result = new int[141];
-		int offset = 0;
-		offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
-		return result;
-	}
-
-	private static int zzUnpackAction(String packed, int offset, int[] result) {
-		int i = 0;       /* index in packed string  */
-		int j = offset;  /* index in unpacked array */
-		int l = packed.length();
-		while (i < l) {
-			int count = packed.charAt(i++);
-			int value = packed.charAt(i++);
-			do result[j++] = value; while (--count > 0);
-		}
-		return j;
-	}
-
 	/**
-	 * Translates a state to a row index in the transition table
+	 * Translates DFA states to action switch labels.
 	 */
-	private static final int[] ZZ_ROWMAP = zzUnpackRowMap();
-
+	private static final int[] ZZ_ACTION = zzUnpackAction();
 	private static final String ZZ_ROWMAP_PACKED_0 =
 		"\0\0\0\67\0\67\0\156\0\67\0\245\0\67\0\67" +
 			"\0\67\0\67\0\67\0\67\0\67\0\67\0\67\0\67" +
@@ -121,30 +79,10 @@ public class FlexGeneratedMahdlLexer {
 			"\0\u10f9\0\u01b8\0\u1130\0\u1167\0\u01b8\0\u01b8\0\u01b8\0\u119e" +
 			"\0\u11d5\0\u120c\0\u01b8\0\u01b8\0\u1243\0\u01b8\0\u01b8\0\u127a" +
 			"\0\u12b1\0\u12e8\0\u01b8\0\u01b8\0\u01b8";
-
-	private static int[] zzUnpackRowMap() {
-		int[] result = new int[141];
-		int offset = 0;
-		offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
-		return result;
-	}
-
-	private static int zzUnpackRowMap(String packed, int offset, int[] result) {
-		int i = 0;  /* index in packed string  */
-		int j = offset;  /* index in unpacked array */
-		int l = packed.length();
-		while (i < l) {
-			int high = packed.charAt(i++) << 16;
-			result[j++] = high | packed.charAt(i++);
-		}
-		return j;
-	}
-
 	/**
-	 * The transition table of the DFA
+	 * Translates a state to a row index in the transition table
 	 */
-	private static final int[] ZZ_TRANS = zzUnpackTrans();
-
+	private static final int[] ZZ_ROWMAP = zzUnpackRowMap();
 	private static final String ZZ_TRANS_PACKED_0 =
 		"\1\2\1\3\1\4\1\5\1\3\1\6\1\7\1\10" +
 			"\1\11\1\12\1\13\1\14\1\15\1\16\1\17\1\20" +
@@ -217,6 +155,131 @@ public class FlexGeneratedMahdlLexer {
 			"\26\0\16\40\1\212\13\40\5\0\2\40\26\0\14\40" +
 			"\1\213\15\40\5\0\2\40\26\0\3\40\1\214\26\40" +
 			"\5\0\2\40\26\0\6\40\1\215\23\40";
+	/**
+	 * The transition table of the DFA
+	 */
+	private static final int[] ZZ_TRANS = zzUnpackTrans();
+	/* error codes */
+	private static final int ZZ_UNKNOWN_ERROR = 0;
+	private static final int ZZ_NO_MATCH = 1;
+	private static final int ZZ_PUSHBACK_2BIG = 2;
+	/* error messages for the codes above */
+	private static final String[] ZZ_ERROR_MSG = {
+		"Unknown internal scanner error",
+		"Error: could not match input",
+		"Error: pushback value was too large"
+	};
+	private static final String ZZ_ATTRIBUTE_PACKED_0 =
+		"\1\0\2\11\1\1\1\11\1\1\13\11\1\1\4\11" +
+			"\2\1\3\11\1\1\1\11\20\1\4\0\6\11\47\1" +
+			"\1\11\56\1";
+	/**
+	 * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
+	 */
+	private static final int[] ZZ_ATTRIBUTE = zzUnpackAttribute();
+	/* user code: */
+	public int yyline, yycolumn;
+	/**
+	 * the input device
+	 */
+	private java.io.Reader zzReader;
+	/**
+	 * the current state of the DFA
+	 */
+	private int zzState;
+	/**
+	 * the current lexical state
+	 */
+	private int zzLexicalState = YYINITIAL;
+	/**
+	 * this buffer contains the current text to be matched and is
+	 * the source of the yytext() string
+	 */
+	private CharSequence zzBuffer = "";
+	/**
+	 * the textposition at the last accepting state
+	 */
+	private int zzMarkedPos;
+	/**
+	 * the current text position in the buffer
+	 */
+	private int zzCurrentPos;
+	/**
+	 * startRead marks the beginning of the yytext() string in the buffer
+	 */
+	private int zzStartRead;
+	/**
+	 * endRead marks the last character in the buffer, that has been read
+	 * from input
+	 */
+	private int zzEndRead;
+	/**
+	 * zzAtBOL == true <=> the scanner is currently at the beginning of a line
+	 */
+	private boolean zzAtBOL = true;
+	/**
+	 * zzAtEOF == true <=> the scanner is at the EOF
+	 */
+	private boolean zzAtEOF;
+	/**
+	 * denotes if the user-EOF-code has already been executed
+	 */
+	private boolean zzEOFDone;
+
+	/**
+	 * Creates a new scanner
+	 *
+	 * @param in the java.io.Reader to read input from.
+	 */
+	public FlexGeneratedMahdlLexer(java.io.Reader in) {
+		this.zzReader = in;
+	}
+
+	/**
+	 * Translates characters to character classes
+	 * Chosen bits are [8, 6, 7]
+	 * Total runtime size is 1040 bytes
+	 */
+	public static int ZZ_CMAP(int ch) {
+		return ZZ_CMAP_A[ZZ_CMAP_Y[ZZ_CMAP_Z[ch >> 13] | ((ch >> 7) & 0x3f)] | (ch & 0x7f)];
+	}
+
+	private static int[] zzUnpackAction() {
+		int[] result = new int[141];
+		int offset = 0;
+		offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
+		return result;
+	}
+
+	private static int zzUnpackAction(String packed, int offset, int[] result) {
+		int i = 0;       /* index in packed string  */
+		int j = offset;  /* index in unpacked array */
+		int l = packed.length();
+		while (i < l) {
+			int count = packed.charAt(i++);
+			int value = packed.charAt(i++);
+			do result[j++] = value; while (--count > 0);
+		}
+		return j;
+	}
+
+	private static int[] zzUnpackRowMap() {
+		int[] result = new int[141];
+		int offset = 0;
+		offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
+		return result;
+	}
+
+	private static int zzUnpackRowMap(String packed, int offset, int[] result) {
+		int i = 0;  /* index in packed string  */
+		int j = offset;  /* index in unpacked array */
+		int l = packed.length();
+		while (i < l) {
+			int high = packed.charAt(i++) << 16;
+			result[j++] = high | packed.charAt(i++);
+		}
+		return j;
+	}
 
 	private static int[] zzUnpackTrans() {
 		int[] result = new int[4895];
@@ -238,28 +301,6 @@ public class FlexGeneratedMahdlLexer {
 		return j;
 	}
 
-	/* error codes */
-	private static final int ZZ_UNKNOWN_ERROR = 0;
-	private static final int ZZ_NO_MATCH = 1;
-	private static final int ZZ_PUSHBACK_2BIG = 2;
-
-	/* error messages for the codes above */
-	private static final String[] ZZ_ERROR_MSG = {
-		"Unknown internal scanner error",
-		"Error: could not match input",
-		"Error: pushback value was too large"
-	};
-
-	/**
-	 * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
-	 */
-	private static final int[] ZZ_ATTRIBUTE = zzUnpackAttribute();
-
-	private static final String ZZ_ATTRIBUTE_PACKED_0 =
-		"\1\0\2\11\1\1\1\11\1\1\13\11\1\1\4\11" +
-			"\2\1\3\11\1\1\1\11\20\1\4\0\6\11\47\1" +
-			"\1\11\56\1";
-
 	private static int[] zzUnpackAttribute() {
 		int[] result = new int[141];
 		int offset = 0;
@@ -277,75 +318,6 @@ public class FlexGeneratedMahdlLexer {
 			do result[j++] = value; while (--count > 0);
 		}
 		return j;
-	}
-
-	/**
-	 * the input device
-	 */
-	private java.io.Reader zzReader;
-
-	/**
-	 * the current state of the DFA
-	 */
-	private int zzState;
-
-	/**
-	 * the current lexical state
-	 */
-	private int zzLexicalState = YYINITIAL;
-
-	/**
-	 * this buffer contains the current text to be matched and is
-	 * the source of the yytext() string
-	 */
-	private CharSequence zzBuffer = "";
-
-	/**
-	 * the textposition at the last accepting state
-	 */
-	private int zzMarkedPos;
-
-	/**
-	 * the current text position in the buffer
-	 */
-	private int zzCurrentPos;
-
-	/**
-	 * startRead marks the beginning of the yytext() string in the buffer
-	 */
-	private int zzStartRead;
-
-	/**
-	 * endRead marks the last character in the buffer, that has been read
-	 * from input
-	 */
-	private int zzEndRead;
-
-	/**
-	 * zzAtBOL == true <=> the scanner is currently at the beginning of a line
-	 */
-	private boolean zzAtBOL = true;
-
-	/**
-	 * zzAtEOF == true <=> the scanner is at the EOF
-	 */
-	private boolean zzAtEOF;
-
-	/**
-	 * denotes if the user-EOF-code has already been executed
-	 */
-	private boolean zzEOFDone;
-
-	/* user code: */
-	public int yyline, yycolumn;
-
-	/**
-	 * Creates a new scanner
-	 *
-	 * @param in the java.io.Reader to read input from.
-	 */
-	public FlexGeneratedMahdlLexer(java.io.Reader in) {
-		this.zzReader = in;
 	}
 
 	/**

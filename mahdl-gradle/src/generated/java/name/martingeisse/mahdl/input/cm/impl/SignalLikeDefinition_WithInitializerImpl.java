@@ -12,7 +12,9 @@ public final class SignalLikeDefinition_WithInitializerImpl extends SignalLikeDe
 	public SignalLikeDefinition_WithInitializerImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.identifier = (CmToken) childNodes[0];
+		((CmNodeImpl) this.identifier).setParent(this);
 		this.initializer = (ExtendedExpression) childNodes[2];
+		((CmNodeImpl) this.initializer).setParent(this);
 	}
 
 	public CmToken getIdentifier() {

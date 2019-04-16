@@ -12,7 +12,9 @@ public final class Statement_IfThenImpl extends StatementImpl implements Stateme
 	public Statement_IfThenImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.condition = (Expression) childNodes[2];
+		((CmNodeImpl) this.condition).setParent(this);
 		this.thenBranch = (Statement) childNodes[4];
+		((CmNodeImpl) this.thenBranch).setParent(this);
 	}
 
 	public Expression getCondition() {

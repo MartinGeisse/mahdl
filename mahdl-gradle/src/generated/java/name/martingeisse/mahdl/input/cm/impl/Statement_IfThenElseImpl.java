@@ -13,8 +13,11 @@ public final class Statement_IfThenElseImpl extends StatementImpl implements Sta
 	public Statement_IfThenElseImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.condition = (Expression) childNodes[2];
+		((CmNodeImpl) this.condition).setParent(this);
 		this.thenBranch = (Statement) childNodes[4];
+		((CmNodeImpl) this.thenBranch).setParent(this);
 		this.elseBranch = (Statement) childNodes[6];
+		((CmNodeImpl) this.elseBranch).setParent(this);
 	}
 
 	public Expression getCondition() {

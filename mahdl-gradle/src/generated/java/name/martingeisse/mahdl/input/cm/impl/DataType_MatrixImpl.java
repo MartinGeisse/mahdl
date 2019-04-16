@@ -11,7 +11,9 @@ public final class DataType_MatrixImpl extends DataTypeImpl implements DataType_
 	public DataType_MatrixImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.firstSize = (Expression) childNodes[2];
+		((CmNodeImpl) this.firstSize).setParent(this);
 		this.secondSize = (Expression) childNodes[5];
+		((CmNodeImpl) this.secondSize).setParent(this);
 	}
 
 	public Expression getFirstSize() {

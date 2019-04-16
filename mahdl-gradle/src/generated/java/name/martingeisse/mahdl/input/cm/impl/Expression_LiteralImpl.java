@@ -10,6 +10,7 @@ public final class Expression_LiteralImpl extends ExpressionImpl implements Expr
 	public Expression_LiteralImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.literal = (Literal) childNodes[0];
+		((CmNodeImpl) this.literal).setParent(this);
 	}
 
 	public Literal getLiteral() {

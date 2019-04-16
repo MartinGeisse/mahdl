@@ -10,6 +10,7 @@ public final class DoBlockTrigger_ClockedImpl extends DoBlockTriggerImpl impleme
 	public DoBlockTrigger_ClockedImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.clockExpression = (Expression) childNodes[0];
+		((CmNodeImpl) this.clockExpression).setParent(this);
 	}
 
 	public Expression getClockExpression() {

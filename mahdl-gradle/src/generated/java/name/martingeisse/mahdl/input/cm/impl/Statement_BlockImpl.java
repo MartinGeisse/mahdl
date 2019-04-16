@@ -11,6 +11,7 @@ public final class Statement_BlockImpl extends StatementImpl implements Statemen
 	public Statement_BlockImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.body = (CmList<Statement>) childNodes[1];
+		((CmNodeImpl) this.body).setParent(this);
 	}
 
 	public CmList<Statement> getBody() {

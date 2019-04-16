@@ -11,6 +11,7 @@ public final class StatementCaseItem_DefaultImpl extends StatementCaseItemImpl i
 	public StatementCaseItem_DefaultImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.statements = (CmList<Statement>) childNodes[2];
+		((CmNodeImpl) this.statements).setParent(this);
 	}
 
 	public CmList<Statement> getStatements() {

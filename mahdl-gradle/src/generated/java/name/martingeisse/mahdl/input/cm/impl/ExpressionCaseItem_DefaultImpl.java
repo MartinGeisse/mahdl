@@ -10,6 +10,7 @@ public final class ExpressionCaseItem_DefaultImpl extends ExpressionCaseItemImpl
 	public ExpressionCaseItem_DefaultImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.resultValue = (ExtendedExpression) childNodes[2];
+		((CmNodeImpl) this.resultValue).setParent(this);
 	}
 
 	public ExtendedExpression getResultValue() {

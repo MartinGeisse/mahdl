@@ -11,8 +11,11 @@ public final class ImplementationItem_SignalLikeDefinitionGroupImpl extends Impl
 	public ImplementationItem_SignalLikeDefinitionGroupImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.kind = (SignalLikeKind) childNodes[0];
+		((CmNodeImpl) this.kind).setParent(this);
 		this.dataType = (DataType) childNodes[1];
+		((CmNodeImpl) this.dataType).setParent(this);
 		this.definitions = (CmList<SignalLikeDefinition>) childNodes[2];
+		((CmNodeImpl) this.definitions).setParent(this);
 	}
 
 	public SignalLikeKind getKind() {

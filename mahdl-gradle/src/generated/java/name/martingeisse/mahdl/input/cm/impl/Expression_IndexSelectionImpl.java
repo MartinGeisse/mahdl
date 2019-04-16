@@ -11,7 +11,9 @@ public final class Expression_IndexSelectionImpl extends ExpressionImpl implemen
 	public Expression_IndexSelectionImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.container = (Expression) childNodes[0];
+		((CmNodeImpl) this.container).setParent(this);
 		this.index = (Expression) childNodes[2];
+		((CmNodeImpl) this.index).setParent(this);
 	}
 
 	public Expression getContainer() {

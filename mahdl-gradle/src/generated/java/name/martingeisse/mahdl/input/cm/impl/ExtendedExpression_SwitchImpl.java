@@ -13,7 +13,9 @@ public final class ExtendedExpression_SwitchImpl extends ExtendedExpressionImpl 
 	public ExtendedExpression_SwitchImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.selector = (Expression) childNodes[2];
+		((CmNodeImpl) this.selector).setParent(this);
 		this.items = (CmList<ExpressionCaseItem>) childNodes[5];
+		((CmNodeImpl) this.items).setParent(this);
 	}
 
 	public Expression getSelector() {

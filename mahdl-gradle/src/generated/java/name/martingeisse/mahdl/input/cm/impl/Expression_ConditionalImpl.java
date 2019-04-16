@@ -12,8 +12,11 @@ public final class Expression_ConditionalImpl extends ExpressionImpl implements 
 	public Expression_ConditionalImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.condition = (Expression) childNodes[0];
+		((CmNodeImpl) this.condition).setParent(this);
 		this.thenBranch = (Expression) childNodes[2];
+		((CmNodeImpl) this.thenBranch).setParent(this);
 		this.elseBranch = (Expression) childNodes[4];
+		((CmNodeImpl) this.elseBranch).setParent(this);
 	}
 
 	public Expression getCondition() {

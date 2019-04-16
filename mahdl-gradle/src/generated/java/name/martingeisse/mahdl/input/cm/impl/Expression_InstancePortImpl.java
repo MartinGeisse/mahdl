@@ -12,7 +12,9 @@ public final class Expression_InstancePortImpl extends ExpressionImpl implements
 	public Expression_InstancePortImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.instanceName = (InstanceReferenceName) childNodes[0];
+		((CmNodeImpl) this.instanceName).setParent(this);
 		this.portName = (InstancePortName) childNodes[2];
+		((CmNodeImpl) this.portName).setParent(this);
 	}
 
 	public InstanceReferenceName getInstanceName() {

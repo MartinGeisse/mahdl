@@ -12,7 +12,9 @@ public final class ImplementationItem_DoBlockImpl extends ImplementationItemImpl
 	public ImplementationItem_DoBlockImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.trigger = (DoBlockTrigger) childNodes[2];
+		((CmNodeImpl) this.trigger).setParent(this);
 		this.statement = (Statement) childNodes[4];
+		((CmNodeImpl) this.statement).setParent(this);
 	}
 
 	public DoBlockTrigger getTrigger() {

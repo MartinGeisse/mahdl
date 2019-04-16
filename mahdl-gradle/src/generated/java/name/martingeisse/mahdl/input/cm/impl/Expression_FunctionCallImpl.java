@@ -13,7 +13,9 @@ public final class Expression_FunctionCallImpl extends ExpressionImpl implements
 	public Expression_FunctionCallImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.functionName = (CmToken) childNodes[0];
+		((CmNodeImpl) this.functionName).setParent(this);
 		this.arguments = (CmList<Expression>) childNodes[2];
+		((CmNodeImpl) this.arguments).setParent(this);
 	}
 
 	public CmToken getFunctionName() {

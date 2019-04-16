@@ -10,6 +10,7 @@ public final class InstancePortNameImpl extends CmNodeImpl implements InstancePo
 	public InstancePortNameImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.identifier = (CmToken) childNodes[0];
+		((CmNodeImpl) this.identifier).setParent(this);
 	}
 
 	public CmToken getIdentifier() {

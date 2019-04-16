@@ -11,6 +11,7 @@ public final class QualifiedModuleNameImpl extends CmNodeImpl implements Qualifi
 	public QualifiedModuleNameImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.segments = (CmList<CmToken>) childNodes[0];
+		((CmNodeImpl) this.segments).setParent(this);
 	}
 
 	public CmList<CmToken> getSegments() {

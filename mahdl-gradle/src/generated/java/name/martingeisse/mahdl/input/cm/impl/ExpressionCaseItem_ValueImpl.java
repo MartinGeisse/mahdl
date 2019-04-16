@@ -13,7 +13,9 @@ public final class ExpressionCaseItem_ValueImpl extends ExpressionCaseItemImpl i
 	public ExpressionCaseItem_ValueImpl(int row, int column, Object[] childNodes) {
 		super(row, column);
 		this.selectorValues = (CmList<Expression>) childNodes[1];
+		((CmNodeImpl) this.selectorValues).setParent(this);
 		this.resultValue = (ExtendedExpression) childNodes[3];
+		((CmNodeImpl) this.resultValue).setParent(this);
 	}
 
 	public CmList<Expression> getSelectorValues() {
