@@ -9,14 +9,12 @@ import org.gradle.api.Project
 class MahdlGradlePlugin implements Plugin<Project> {
 
 	void apply(Project project) {
-		project.task('mahdlCodegen') {
-			group 'build'
-			description 'Generates Java code from MaHDL sources.'
-			project.tasks.compileJava.dependsOn(delegate)
-			doLast {
-				MahdlGradleMain.main(project.projectDir);
-			}
-		}
+		MahdlCodegenTask task = project.tasks.create("mahdlCodegen", MahdlCodegenTask.class);
+		task.group = 'build';
+		task.description = 'Generates Java code from MaHDL sources.';
+		task.sourceDirectory = new File(project.projectDir, "src/mahdl");
+		task.outputDirectory = new File(project.getBuildDir(), "mahdl-java");
+		project.tasks.compileJava.dependsOn(task);
 	}
 
 }

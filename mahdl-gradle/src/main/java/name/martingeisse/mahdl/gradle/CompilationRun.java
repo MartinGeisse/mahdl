@@ -3,8 +3,11 @@ package name.martingeisse.mahdl.gradle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.input.cm.Module;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -21,7 +24,7 @@ public class CompilationRun {
 		this.javaDir = javaDir;
 	}
 
-	public void run() {
+	public void run() throws IOException {
 
 		// load sources
 		SourceLoader sourceLoader = new SourceLoader(mahdlDir);
@@ -31,6 +34,8 @@ public class CompilationRun {
 
 		// TODO ...
 		System.out.println();
+		File dummyOutput = new File(javaDir, "dummy.txt");
+		FileUtils.writeStringToFile(dummyOutput, "Hello world", StandardCharsets.UTF_8);
 
 	}
 
