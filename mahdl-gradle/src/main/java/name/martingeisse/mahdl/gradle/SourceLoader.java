@@ -8,6 +8,7 @@ import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
+import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -26,7 +27,7 @@ public final class SourceLoader {
 	private static final String MAHDL_FILENAME_SUFFIX = ".mahdl";
 
 	private final File mahdlDir;
-	private final Map<ImmutableList<String>, Module> codeModels = new HashMap<>();
+	private final Map<ImmutableList<String>, ModuleWrapper> codeModels = new HashMap<>();
 	private final Map<ImmutableList<String>, File> dataFiles = new HashMap<>();
 	private final List<String> segments = new ArrayList<>();
 
@@ -34,7 +35,7 @@ public final class SourceLoader {
 		this.mahdlDir = mahdlDir;
 	}
 
-	public ImmutableMap<ImmutableList<String>, Module> getCodeModels() {
+	public ImmutableMap<ImmutableList<String>, ModuleWrapper> getCodeModels() {
 		return ImmutableMap.copyOf(codeModels);
 	}
 
@@ -63,7 +64,7 @@ public final class SourceLoader {
 					String moduleName = filename.substring(0, filename.length() - MAHDL_FILENAME_SUFFIX.length());
 					Module codeModel = loadSourceFile(entry);
 					if (codeModel != null) {
-						codeModels.put(buildName(moduleName), codeModel);
+						codeModels.put(buildName(moduleName), new ModuleWrapper(entry, codeModel));
 					}
 				} else {
 					dataFiles.put(buildName(filename), entry);

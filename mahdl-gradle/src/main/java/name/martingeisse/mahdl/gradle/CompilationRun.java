@@ -3,6 +3,7 @@ package name.martingeisse.mahdl.gradle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -17,7 +18,7 @@ public class CompilationRun {
 
 	private final File mahdlDir;
 	private final File javaDir;
-	private ImmutableMap<ImmutableList<String>, Module> codeModels = null;
+	private ImmutableMap<ImmutableList<String>, ModuleWrapper> codeModels = null;
 	private ImmutableMap<ImmutableList<String>, File> dataFiles = null;
 
 	public CompilationRun(File mahdlDir, File javaDir) {
@@ -26,6 +27,7 @@ public class CompilationRun {
 	}
 
 	public void run() throws IOException {
+		GradleEnvironment.initialize();
 
 		// clear old build results
 		FileUtils.deleteDirectory(javaDir);
