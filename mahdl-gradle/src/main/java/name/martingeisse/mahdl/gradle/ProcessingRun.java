@@ -55,38 +55,17 @@ public class ProcessingRun {
 			try {
 				moduleWrapper.setProcessingRun(this);
 				Module moduleCm = moduleWrapper.getModule();
-				ErrorHandler errorHandler = (errorSource, message) -> {
-					CmNodeImpl node = (CmNodeImpl)errorSource;
-					File file = moduleWrapper.getFile();
-					CompilationErrors.reportError(file.getPath(), node.getRow(), node.getColumn(), message);
-				};
+				ErrorHandler errorHandler = CompilationErrors::reportError;
 				ModuleDefinition moduleDefinition = new ModuleProcessor(moduleCm, errorHandler).process();
-
-				ImmutableList<String> packageName = qualifiedName.subList(0, qualifiedName.size() - 1);
-				String localName = qualifiedName.get(qualifiedName.size() - 1);
-
-				StringBuilder builder = new StringBuilder();
-				if (!packageName.isEmpty()) {
-					builder.append("package ").append(StringUtils.join(packageName, '.')).append(";\n");
-					builder.append("\n");
+				if (moduleDefinition.isNative()) {
+					continue;
 				}
-				builder.append("import name.martingeisse.esdk.core.rtl.*;\n");
-				builder.append("import name.martingeisse.esdk.core.rtl.synthesis.verilog.*;\n");
-				builder.append("\n");
-				builder.append("public class ").append(localName).append(" extends RtlItem {\n");
-				builder.append("\n");
-				builder.append("	public ").append(localName).append("(RtlRealm realm) {\n");
-				builder.append("		super(realm);\n");
-				builder.append("	}\n");
-				builder.append("\n");
-				builder.append("	@Override\n");
-				builder.append("	public VerilogContribution getVerilogContribution() {\n");
-				builder.append("		return new EmptyVerilogContribution();\n");
-				builder.append("	}\n");
-				builder.append("\n");
-				builder.append("}\n");
-
-				generatedCode.put(qualifiedName, builder.toString());
+				String packageName = StringUtils.join(qualifiedName.subList(0, qualifiedName.size() - 1), '.');
+				String localName = qualifiedName.get(qualifiedName.size() - 1);
+				EsdkGenerationModel model = new EsdkGenerationModel(moduleDefinition, packageName, localName);
+				EsdkCodeGenerator codeGenerator = new EsdkCodeGenerator(model);
+				codeGenerator.run();
+				generatedCode.put(qualifiedName, codeGenerator.getCode());
 			} finally {
 				moduleWrapper.setProcessingRun(null);
 			}
