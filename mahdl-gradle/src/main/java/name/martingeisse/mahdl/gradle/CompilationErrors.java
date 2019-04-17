@@ -4,6 +4,10 @@
  */
 package name.martingeisse.mahdl.gradle;
 
+import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
+import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
+
 /**
  *
  */
@@ -14,6 +18,13 @@ public class CompilationErrors {
 
 	public static boolean isHasErrors() {
 		return hasErrors.get() != null;
+	}
+
+	public static void reportError(CmNode node, String message) {
+		CmNodeImpl nodeImpl = (CmNodeImpl) node;
+		ModuleWrapper moduleWrapper = ModuleWrapper.get(node);
+		String path = (moduleWrapper != null && moduleWrapper.getFile() != null) ? moduleWrapper.getFile().getPath() : "???";
+		CompilationErrors.reportError(path, nodeImpl.getRow(), nodeImpl.getColumn(), message);
 	}
 
 	public static void reportError(String path, int row, int column, String message) {

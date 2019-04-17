@@ -23,7 +23,7 @@ public class GradleEnvironment implements Environment {
 
 	@Override
 	public InputStream openDataFile(CmNode anchor, String filename) throws IOException {
-		ModuleWrapper moduleWrapper = getModuleWrapper(anchor);
+		ModuleWrapper moduleWrapper = ModuleWrapper.get(anchor);
 		if (moduleWrapper == null) {
 			throw new IOException("could not locate data file due to previous errors");
 		}
@@ -32,7 +32,7 @@ public class GradleEnvironment implements Environment {
 
 	@Override
 	public void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException {
-		ModuleWrapper moduleWrapper = getModuleWrapper(module);
+		ModuleWrapper moduleWrapper = ModuleWrapper.get(module);
 		if (moduleWrapper == null) {
 			throw new IOException("could not validate module name due to previous errors");
 		}
@@ -41,18 +41,11 @@ public class GradleEnvironment implements Environment {
 
 	@Override
 	public Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
-		ModuleWrapper moduleWrapper = getModuleWrapper(name);
+		ModuleWrapper moduleWrapper = ModuleWrapper.get(name);
 		if (moduleWrapper == null) {
 			throw new ReferenceResolutionException("could not resolve module reference due to previous errors");
 		}
 		return moduleWrapper.getProcessingRun().resolveModuleReference(moduleWrapper, name);
-	}
-
-	private ModuleWrapper getModuleWrapper(CmNode node) {
-		while (node.getCmParent() != null) {
-			node = node.getCmParent();
-		}
-		return (node instanceof ModuleWrapper) ? (ModuleWrapper) node : null;
 	}
 
 }

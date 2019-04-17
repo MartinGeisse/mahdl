@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.input.cm.impl;
 
 import name.martingeisse.mahdl.gradle.ProcessingRun;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.Module;
 
 import java.io.File;
@@ -35,6 +36,13 @@ public final class ModuleWrapper extends CmNodeImpl {
 
 	public void setProcessingRun(ProcessingRun processingRun) {
 		this.processingRun = processingRun;
+	}
+
+	public static ModuleWrapper get(CmNode node) {
+		while (node.getCmParent() != null) {
+			node = node.getCmParent();
+		}
+		return (node instanceof ModuleWrapper) ? (ModuleWrapper) node : null;
 	}
 
 }
