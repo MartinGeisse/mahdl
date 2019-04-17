@@ -1,6 +1,5 @@
 package name.martingeisse.mahdl.input;
 
-import name.martingeisse.mahdl.gradle.MahdlElementType;
 import name.martingeisse.mahdl.input.cm.*;
 import name.martingeisse.mahdl.input.cm.impl.*;
 

@@ -7,10 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IElementType {
 
 	private static final AtomicInteger INDEX_ALLOCATOR = new AtomicInteger();
-
 	public static final IElementType BAD_CHARACTER = new IElementType("%badchar", null);
 	public static final IElementType WHITE_SPACE = new IElementType("%whitespace", null);
-
 	private final int index;
 	private final String debugName;
 	private final CmNodeFactory cmNodeFactory;

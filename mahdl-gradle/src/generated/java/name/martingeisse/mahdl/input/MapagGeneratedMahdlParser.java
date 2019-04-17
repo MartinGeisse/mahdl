@@ -1461,6 +1461,16 @@ public class MapagGeneratedMahdlParser {
 	// elementType is the IElementType of the list itself, not of the list's elements
 	private void collectListChildNodes(Object[] reduction, IElementType elementType, List<CmNode> childNodeDestination) {
 		for (int i = 1; i < reduction.length; i++) {
+
+			// We have to include valid children here, but exclude separators. To avoid looking for (possibly multiple)
+			// IElementTypes of valid children and separators, we make use of the fact that the only way a separator can
+			// appear is a (ListNodeGenerationWrapper // remainingList, separator, child) reduction, which is also the
+			// only possible reduction with three child nodes (4 array elements including the ListNodeGenerationWrapper).
+			if (i == 2 && reduction.length == 4) {
+				continue;
+			}
+
+			// check if the reduction item is a list-type reduction of the same IElementTyp, and if so, flatten the lists
 			Object reductionItem = reduction[i];
 			if (reductionItem instanceof Object[]) {
 				Object[] subReduction = (Object[]) reductionItem;
@@ -1472,7 +1482,10 @@ public class MapagGeneratedMahdlParser {
 					}
 				}
 			}
+
+			// default case: just convert the reduction item to a CM node recursively
 			childNodeDestination.add(buildCm(reductionItem));
+
 		}
 	}
 
