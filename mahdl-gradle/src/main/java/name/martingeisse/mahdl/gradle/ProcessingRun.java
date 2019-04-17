@@ -56,9 +56,9 @@ public class ProcessingRun {
 				moduleWrapper.setProcessingRun(this);
 				Module moduleCm = moduleWrapper.getModule();
 				ErrorHandler errorHandler = (errorSource, message) -> {
+					CmNodeImpl node = (CmNodeImpl)errorSource;
 					File file = moduleWrapper.getFile();
-					int row = ((CmNodeImpl)errorSource).getRow();
-					CompilationErrors.reportError(file.getPath(), row, message);
+					CompilationErrors.reportError(file.getPath(), node.getRow(), node.getColumn(), message);
 				};
 				ModuleDefinition moduleDefinition = new ModuleProcessor(moduleCm, errorHandler).process();
 
@@ -131,7 +131,6 @@ public class ProcessingRun {
 	private ImmutableList<String> convertQualifiedModuleName(QualifiedModuleName qualifiedModuleName) {
 		List<String> segments = new ArrayList<>();
 		for (CmToken token : qualifiedModuleName.getSegments().getAll()) {
-			System.out.println("(((" + token.getText() + ")))");
 			segments.add(token.getText());
 		}
 		return ImmutableList.copyOf(segments);

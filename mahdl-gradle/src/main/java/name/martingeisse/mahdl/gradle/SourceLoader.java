@@ -94,7 +94,7 @@ public final class SourceLoader {
 			String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 			return loadSourceFile(file.getPath(), content);
 		} catch (IOException e) {
-			CompilationErrors.reportError(file.getPath(), 0, e.toString());
+			CompilationErrors.reportError(file.getPath(), 0, 0, e.toString());
 			return null;
 		}
 	}
@@ -115,7 +115,7 @@ public final class SourceLoader {
 			}
 		}
 		if (tokens.isEmpty()) {
-			CompilationErrors.reportError(path, 0, "empty source file");
+			CompilationErrors.reportError(path, 0, 0, "empty source file");
 			return null;
 		}
 
@@ -130,7 +130,7 @@ public final class SourceLoader {
 		if (rootNode instanceof Module) {
 			return (Module) rootNode;
 		} else {
-			CompilationErrors.reportError(path, 0, "wrong root CM node: " + rootNode);
+			CompilationErrors.reportError(path, 0, 0, "wrong root CM node: " + rootNode);
 			return null;
 		}
 

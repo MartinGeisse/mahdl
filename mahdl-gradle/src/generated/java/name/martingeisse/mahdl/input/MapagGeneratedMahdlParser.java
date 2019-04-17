@@ -1467,6 +1467,8 @@ public class MapagGeneratedMahdlParser {
 			// appear is a (ListNodeGenerationWrapper // remainingList, separator, child) reduction, which is also the
 			// only possible reduction with three child nodes (4 array elements including the ListNodeGenerationWrapper).
 			if (i == 2 && reduction.length == 4) {
+				// run buildCm so the tokens get consumed, but discard the result
+				buildCm(reduction[i]);
 				continue;
 			}
 

@@ -15,9 +15,13 @@ class MahdlCodegenTask extends DefaultTask {
 
 	@TaskAction
 	void run() {
-		CompilationRun compilationRun = new CompilationRun(sourceDirectory, outputDirectory);
-		compilationRun.run();
-		CompilationErrors.failOnErrors();
+		try {
+			CompilationRun compilationRun = new CompilationRun(sourceDirectory, outputDirectory);
+			compilationRun.run();
+			CompilationErrors.failOnErrors();
+		} finally {
+			CompilationErrors.clearErrors();
+		}
 	}
 
 }
