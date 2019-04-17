@@ -57,7 +57,7 @@ public final class DefinitionProcessor {
 					DataType dataType = portDefinitionGroup.getDataType();
 					ProcessedDataType processedDataType = dataTypeProcessor.processDataType(dataType);
 					ProcessedDataType.Family family = processedDataType.getFamily();
-					if (family != ProcessedDataType.Family.UNKNOWN && family != ProcessedDataType.Family.BIT && family != ProcessedDataType.Family.VECTOR) {
+					if (family != ProcessedDataType.Family.UNKNOWN && family != ProcessedDataType.Family.BIT && family != ProcessedDataType.Family.VECTOR && family != ProcessedDataType.Family.CLOCK) {
 						errorHandler.onError(dataType, family.getDisplayString() + " type not allowed for ports");
 						processedDataType = ProcessedDataType.Unknown.INSTANCE;
 					}

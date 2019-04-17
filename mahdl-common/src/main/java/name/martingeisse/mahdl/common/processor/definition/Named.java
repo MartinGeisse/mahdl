@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  *
  */
-public abstract class Named {
+public abstract class Named implements Comparable<Named> {
 
 	@NotNull
 	private final CmToken nameElement;
@@ -31,5 +31,10 @@ public abstract class Named {
 	}
 
 	public abstract void processExpressions(@NotNull ExpressionProcessor expressionProcessor);
+
+	@Override
+	public int compareTo(@NotNull Named other) {
+		return getName().compareTo(other.getName());
+	}
 
 }
