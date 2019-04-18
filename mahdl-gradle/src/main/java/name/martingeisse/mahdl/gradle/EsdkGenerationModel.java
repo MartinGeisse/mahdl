@@ -33,7 +33,8 @@ public final class EsdkGenerationModel {
 
 	private final List<SignalLike> signalConnectors;
 
-	private final List<DoBlockInfo> doBlockInfos;
+	private final List<DoBlockInfo<SignalLike>> continuousDoBlockInfos;
+	private final List<DoBlockInfo<Register>> clockedDoBlockInfos;
 
 	public EsdkGenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
 		this.moduleDefinition = moduleDefinition;
@@ -101,13 +102,16 @@ public final class EsdkGenerationModel {
 		});
 
 		// derived: associate do-blocks with the registers they assign to
-		doBlockInfos = new ArrayList<>();
+		continuousDoBlockInfos = new ArrayList<>();
+		clockedDoBlockInfos = new ArrayList<>();
 		SortedSet<Register> remainingRegisters = new TreeSet<>(registers.values());
 		for (ProcessedDoBlock doBlock : moduleDefinition.getDoBlocks()) {
-			SortedSet<Register> registers = new TreeSet<>();
-			collectAssignedRegisters(doBlock.getBody(), registers);
-			doBlockInfos.add(new DoBlockInfo("___block" + doBlockInfos.size(), doBlock, registers));
-			remainingRegisters.removeAll(registers);
+			if (doBlock.getClock() == null) {
+				handleDoBlock(doBlock, SignalLike.class, continuousDoBlockInfos, "___continuousBlock");
+			} else {
+				DoBlockInfo<Register> info = handleDoBlock(doBlock, Register.class, clockedDoBlockInfos, "___clockedBlock");
+				remainingRegisters.removeAll(info.getAssignmentTargets());
+			}
 		}
 		for (Register unassignedRegister : remainingRegisters) {
 			CompilationErrors.reportError(unassignedRegister.getNameElement(), "registers that are never assigned to are not yet supported");
@@ -115,41 +119,49 @@ public final class EsdkGenerationModel {
 
 	}
 
-	private void collectAssignedRegisters(ProcessedStatement statement, Set<Register> registers) {
+	private <T extends SignalLike> DoBlockInfo<T> handleDoBlock(ProcessedDoBlock doBlock, Class<T> signalLikeClass, List<DoBlockInfo<T>> list, String namePrefix) {
+		SortedSet<T> targets = new TreeSet<>();
+		collectAssignmentTargets(doBlock.getBody(), signalLikeClass, targets);
+		DoBlockInfo<T> info = new DoBlockInfo<>(namePrefix + list.size(), doBlock, targets);
+		list.add(info);
+		return info;
+	}
+
+	private <T extends SignalLike> void collectAssignmentTargets(ProcessedStatement statement, Class<T> targetClass, Set<T> targetCollector) {
 		if (statement instanceof ProcessedAssignment) {
-			collectAssignedRegisters(((ProcessedAssignment) statement).getLeftHandSide(), registers);
+			collectAssignmentTargets(((ProcessedAssignment) statement).getLeftHandSide(), targetClass, targetCollector);
 		} else if (statement instanceof ProcessedBlock) {
 			for (ProcessedStatement childStatement : ((ProcessedBlock) statement).getStatements()) {
-				collectAssignedRegisters(childStatement, registers);
+				collectAssignmentTargets(childStatement, targetClass, targetCollector);
 			}
 		} else if (statement instanceof ProcessedIf) {
 			ProcessedIf processedIf = (ProcessedIf) statement;
-			collectAssignedRegisters(processedIf.getThenBranch(), registers);
-			collectAssignedRegisters(processedIf.getElseBranch(), registers);
+			collectAssignmentTargets(processedIf.getThenBranch(), targetClass, targetCollector);
+			collectAssignmentTargets(processedIf.getElseBranch(), targetClass, targetCollector);
 		} else if (statement instanceof ProcessedSwitchStatement) {
 			ProcessedSwitchStatement processedSwitch = (ProcessedSwitchStatement) statement;
 			for (ProcessedSwitchStatement.Case aCase : processedSwitch.getCases()) {
-				collectAssignedRegisters(aCase.getBranch(), registers);
+				collectAssignmentTargets(aCase.getBranch(), targetClass, targetCollector);
 			}
-			collectAssignedRegisters(processedSwitch.getDefaultBranch(), registers);
+			collectAssignmentTargets(processedSwitch.getDefaultBranch(), targetClass, targetCollector);
 		}
 	}
 
-	private void collectAssignedRegisters(ProcessedExpression destination, Set<Register> registers) {
+	private <T extends SignalLike> void collectAssignmentTargets(ProcessedExpression destination, Class<T> targetClass, Set<T> targetCollector) {
 		if (destination instanceof SignalLikeReference) {
 			SignalLike signalLike = ((SignalLikeReference) destination).getDefinition();
-			if (signalLike instanceof Register) {
-				registers.add((Register) signalLike);
+			if (targetClass.isInstance(signalLike)) {
+				targetCollector.add(targetClass.cast(signalLike));
 			}
 		} else if (destination instanceof ProcessedIndexSelection) {
-			collectAssignedRegisters(((ProcessedIndexSelection) destination).getContainer(), registers);
+			collectAssignmentTargets(((ProcessedIndexSelection) destination).getContainer(), targetClass, targetCollector);
 		} else if (destination instanceof ProcessedRangeSelection) {
-			collectAssignedRegisters(((ProcessedRangeSelection) destination).getContainer(), registers);
+			collectAssignmentTargets(((ProcessedRangeSelection) destination).getContainer(), targetClass, targetCollector);
 		} else if (destination instanceof ProcessedBinaryOperation) {
 			ProcessedBinaryOperation binaryOperation = (ProcessedBinaryOperation) destination;
 			if (binaryOperation.getOperator() == ProcessedBinaryOperator.VECTOR_CONCAT) {
-				collectAssignedRegisters(binaryOperation.getLeftOperand(), registers);
-				collectAssignedRegisters(binaryOperation.getRightOperand(), registers);
+				collectAssignmentTargets(binaryOperation.getLeftOperand(), targetClass, targetCollector);
+				collectAssignmentTargets(binaryOperation.getRightOperand(), targetClass, targetCollector);
 			}
 		}
 	}
@@ -198,20 +210,24 @@ public final class EsdkGenerationModel {
 		return signalConnectors;
 	}
 
-	public List<DoBlockInfo> getDoBlockInfos() {
-		return doBlockInfos;
+	public List<DoBlockInfo<SignalLike>> getContinuousDoBlockInfos() {
+		return continuousDoBlockInfos;
 	}
 
-	public static final class DoBlockInfo {
+	public List<DoBlockInfo<Register>> getClockedDoBlockInfos() {
+		return clockedDoBlockInfos;
+	}
+
+	public static final class DoBlockInfo<T extends SignalLike> {
 
 		private final String name;
 		private final ProcessedDoBlock doBlock;
-		private final SortedSet<Register> registers;
+		private final SortedSet<T> assignmentTargets;
 
-		public DoBlockInfo(String name, ProcessedDoBlock doBlock, SortedSet<Register> registers) {
+		public DoBlockInfo(String name, ProcessedDoBlock doBlock, SortedSet<T> assignmentTargets) {
 			this.name = name;
 			this.doBlock = doBlock;
-			this.registers = registers;
+			this.assignmentTargets = assignmentTargets;
 		}
 
 		public String getName() {
@@ -222,8 +238,8 @@ public final class EsdkGenerationModel {
 			return doBlock;
 		}
 
-		public SortedSet<Register> getRegisters() {
-			return registers;
+		public SortedSet<T> getAssignmentTargets() {
+			return assignmentTargets;
 		}
 
 	}

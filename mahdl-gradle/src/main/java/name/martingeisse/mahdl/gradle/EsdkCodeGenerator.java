@@ -2,7 +2,9 @@ package name.martingeisse.mahdl.gradle;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.Statement;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -12,6 +14,8 @@ public final class EsdkCodeGenerator {
 
 	private final EsdkGenerationModel model;
 	private final StringBuilder builder;
+
+	private int statementSequenceCounter = 0;
 
 	public EsdkCodeGenerator(EsdkGenerationModel model) {
 		this.model = model;
@@ -58,8 +62,8 @@ public final class EsdkCodeGenerator {
 		}
 
 		// generate register variables
-		for (EsdkGenerationModel.DoBlockInfo doBlockInfo : model.getDoBlockInfos()) {
-			for (Register register : doBlockInfo.getRegisters()) {
+		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+			for (Register register : doBlockInfo.getAssignmentTargets()) {
 				builder.append("\n");
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 					builder.append("	private final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
@@ -94,13 +98,13 @@ public final class EsdkCodeGenerator {
 			}
 		}
 
-		// create do-blocks and registers
-		for (EsdkGenerationModel.DoBlockInfo doBlockInfo : model.getDoBlockInfos()) {
+		// create clocked do-blocks and registers
+		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			builder.append("		{\n");
 			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
 			builder.append(doBlockInfo.getDoBlock().getClock()); // TODO convert properly
 			builder.append(");\n");
-			for (Register register : doBlockInfo.getRegisters()) {
+			for (Register register : doBlockInfo.getAssignmentTargets()) {
 				builder.append("			").append(register.getName());
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 					builder.append(" = ").append(doBlockInfo.getName()).append(".createBit(");
@@ -125,7 +129,9 @@ public final class EsdkCodeGenerator {
 		// TODO
 
 		// generate block statements
-		// TODO
+		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+			generateStatements(builder, doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
+		}
 
 		// end of constructor
 		builder.append("	}\n");
@@ -204,6 +210,25 @@ public final class EsdkCodeGenerator {
 		} else {
 			return "null";
 		}
+	}
+
+	private void generateStatements(StringBuilder builder, String sequence, ProcessedStatement statement) {
+		if (statement instanceof ProcessedBlock) {
+			for (ProcessedStatement child : ((ProcessedBlock) statement).getStatements()) {
+				generateStatements(builder, sequence, child);
+			}
+		} else if (statement instanceof ProcessedAssignment) {
+			ProcessedAssignment assignment = (ProcessedAssignment)statement;
+			builder.append(sequence).append(".assign(").append(assignment.getLeftHandSide()).append(", ")
+				.append(assignment.getRightHandSide()).append(");\n"); // TODO render expressions
+		} else if (statement instanceof ProcessedIf) {
+			ProcessedIf processedIf = (ProcessedIf)statement;
+
+
+		} else if (statement instanceof ProcessedSwitchStatement) {
+
+		}
+		// TODO
 	}
 
 }
