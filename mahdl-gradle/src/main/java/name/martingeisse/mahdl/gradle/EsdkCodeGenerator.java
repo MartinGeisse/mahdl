@@ -45,13 +45,13 @@ public final class EsdkCodeGenerator {
 				.append(" = ").append(valueToString(constant.getValue())).append(";\n");
 		}
 
-		// clocks
+		// fields part: clocks
 		for (ModulePort clock : model.getClocks()) {
 			builder.append("\n");
 			builder.append("private final RtlClockNetwork ").append(clock.getName()).append(";\n");
 		}
 
-		// generate signal connectors for data ports and local signals (not including registers)
+		// fields part: signal connectors for data ports and local signals (not including registers)
 		for (SignalLike signalLike : model.getSignalConnectors()) {
 			builder.append("\n");
 			if (signalLike.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
@@ -61,7 +61,7 @@ public final class EsdkCodeGenerator {
 			}
 		}
 
-		// generate register variables
+		// fields part: register variables
 		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			for (Register register : doBlockInfo.getAssignmentTargets()) {
 				builder.append("\n");
@@ -87,7 +87,7 @@ public final class EsdkCodeGenerator {
 			builder.append("		this.").append(port.getName()).append(" = ").append(port.getName()).append(";\n");
 		}
 
-		// create signal connectors
+		// definition part: create signal connectors
 		for (SignalLike signalLike : model.getSignalConnectors()) {
 			builder.append("		this.").append(signalLike.getName()).append(" = new ");
 			if (signalLike.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
@@ -98,7 +98,7 @@ public final class EsdkCodeGenerator {
 			}
 		}
 
-		// create clocked do-blocks and registers
+		// definition part: create clocked do-blocks and registers
 		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			builder.append("		{\n");
 			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
@@ -125,10 +125,10 @@ public final class EsdkCodeGenerator {
 			builder.append("		}\n");
 		}
 
-		// generate signal expressions
+		// implementation part: generate signal expressions
 		// TODO
 
-		// generate block statements
+		// implementation part: generate block statements
 		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			generateStatements(builder, doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
 		}
@@ -137,7 +137,7 @@ public final class EsdkCodeGenerator {
 		builder.append("	}\n");
 		builder.append("\n");
 
-		// port accessors
+		// accessors part: generate port accessors
 		for (ModulePort port : model.getDataPorts()) {
 			builder.append("\n");
 			if (port.getDirection() == PortDirection.IN) {
