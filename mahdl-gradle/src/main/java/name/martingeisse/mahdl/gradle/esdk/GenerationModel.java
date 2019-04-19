@@ -1,9 +1,10 @@
-package name.martingeisse.mahdl.gradle;
+package name.martingeisse.mahdl.gradle.esdk;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 
 import java.util.*;
 
@@ -17,7 +18,7 @@ import java.util.*;
  * The only exception to this rule, i.e. places where errors can still be generated here, is cases of valid MaHDL
  * that is not supported by the code generator, such as not-yet-implemented features.
  */
-public final class EsdkGenerationModel {
+public final class GenerationModel {
 
 	private final ModuleDefinition moduleDefinition;
 	private final String packageName;
@@ -38,7 +39,7 @@ public final class EsdkGenerationModel {
 
 	private int syntheticConstructCounter = 0;
 
-	public EsdkGenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
+	public GenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
 		this.moduleDefinition = moduleDefinition;
 		this.packageName = packageName;
 		this.localName = localName;

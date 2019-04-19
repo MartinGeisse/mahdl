@@ -1,30 +1,31 @@
-package name.martingeisse.mahdl.gradle;
+package name.martingeisse.mahdl.gradle.esdk;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.EsdkUtil.typeToString;
-import static name.martingeisse.mahdl.gradle.EsdkUtil.valueToString;
+import static name.martingeisse.mahdl.gradle.esdk.Util.typeToString;
+import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
 
 /**
  *
  */
-public final class EsdkCodeGenerator {
+public final class CodeGenerator {
 
-	private final EsdkGenerationModel model;
+	private final GenerationModel model;
 	private final StringBuilder builder;
-	private final EsdkExpressionGenerator expressionGenerator;
+	private final ExpressionGenerator expressionGenerator;
 
 	private int statementSequenceCounter = 0;
 
-	public EsdkCodeGenerator(EsdkGenerationModel model) {
+	public CodeGenerator(GenerationModel model) {
 		this.model = model;
 		this.builder = new StringBuilder();
-		this.expressionGenerator = new EsdkExpressionGenerator(model, builder);
+		this.expressionGenerator = new ExpressionGenerator(model, builder);
 	}
 
 	public void run() {
@@ -67,7 +68,7 @@ public final class EsdkCodeGenerator {
 		}
 
 		// fields part: register variables
-		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			for (Register register : doBlockInfo.getAssignmentTargets()) {
 				builder.append("\n");
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
@@ -104,7 +105,7 @@ public final class EsdkCodeGenerator {
 		}
 
 		// definition part: create clocked do-blocks and registers
-		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			ProcessedExpression clock = doBlockInfo.getDoBlock().getClock();
 			if (!(clock instanceof SignalLikeReference)) {
 				CompilationErrors.reportError(clock.getErrorSource(), "this compiler currently only supports clocks that are input ports");
@@ -144,7 +145,7 @@ public final class EsdkCodeGenerator {
 		// TODO
 
 		// implementation part: generate block statements
-		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			generateStatements(builder, doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
 		}
 

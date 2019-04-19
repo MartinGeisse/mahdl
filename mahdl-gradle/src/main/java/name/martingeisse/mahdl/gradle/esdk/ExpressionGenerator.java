@@ -1,19 +1,19 @@
-package name.martingeisse.mahdl.gradle;
+package name.martingeisse.mahdl.gradle.esdk;
 
 import name.martingeisse.mahdl.common.processor.expression.*;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.EsdkUtil.valueToString;
+import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
 
 /**
  *
  */
-public class EsdkExpressionGenerator {
+public class ExpressionGenerator {
 
-	private final EsdkGenerationModel model;
+	private final GenerationModel model;
 	private final StringBuilder builder;
 
-	public EsdkExpressionGenerator(EsdkGenerationModel model, StringBuilder builder) {
+	public ExpressionGenerator(GenerationModel model, StringBuilder builder) {
 		this.model = model;
 		this.builder = builder;
 	}

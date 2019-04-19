@@ -1,4 +1,4 @@
-package name.martingeisse.mahdl.gradle;
+package name.martingeisse.mahdl.gradle.esdk;
 
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -6,13 +6,13 @@ import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 /**
  *
  */
-public final class EsdkUtil {
+final class Util {
 
 	// prevent instantiation
-	private EsdkUtil() {
+	private Util() {
 	}
 
-	public static String typeToString(ProcessedDataType type) {
+	static String typeToString(ProcessedDataType type) {
 		switch (type.getFamily()) {
 
 			case BIT:
@@ -39,7 +39,7 @@ public final class EsdkUtil {
 		}
 	}
 
-	public static String valueToString(ConstantValue value) {
+	static String valueToString(ConstantValue value) {
 		if (value instanceof ConstantValue.Bit) {
 			return ((ConstantValue.Bit) value).isSet() ? "true" : "false";
 		} else if (value instanceof ConstantValue.Vector) {

@@ -6,6 +6,8 @@ import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.ModuleProcessor;
 import name.martingeisse.mahdl.common.processor.definition.ModuleDefinition;
+import name.martingeisse.mahdl.gradle.esdk.CodeGenerator;
+import name.martingeisse.mahdl.gradle.esdk.GenerationModel;
 import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
@@ -61,8 +63,8 @@ public class ProcessingRun {
 				}
 				String packageName = StringUtils.join(qualifiedName.subList(0, qualifiedName.size() - 1), '.');
 				String localName = qualifiedName.get(qualifiedName.size() - 1);
-				EsdkGenerationModel model = new EsdkGenerationModel(moduleDefinition, packageName, localName);
-				EsdkCodeGenerator codeGenerator = new EsdkCodeGenerator(model);
+				GenerationModel model = new GenerationModel(moduleDefinition, packageName, localName);
+				CodeGenerator codeGenerator = new CodeGenerator(model);
 				codeGenerator.run();
 				generatedCode.put(qualifiedName, codeGenerator.getCode());
 			} finally {
