@@ -125,7 +125,10 @@ public final class EsdkCodeGenerator {
 			builder.append("		}\n");
 		}
 
-		// implementation part: generate signal expressions
+		// implementation part: generate signal connector inputs  from signal initializers
+		// TODO
+
+		// implementation part: generate signal connector inputs from continuous do-blocks
 		// TODO
 
 		// implementation part: generate block statements

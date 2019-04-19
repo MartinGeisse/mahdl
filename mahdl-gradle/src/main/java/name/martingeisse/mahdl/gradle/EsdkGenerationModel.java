@@ -36,6 +36,8 @@ public final class EsdkGenerationModel {
 	private final List<DoBlockInfo<SignalLike>> continuousDoBlockInfos;
 	private final List<DoBlockInfo<Register>> clockedDoBlockInfos;
 
+	private int syntheticConstructCounter = 0;
+
 	public EsdkGenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
 		this.moduleDefinition = moduleDefinition;
 		this.packageName = packageName;
@@ -107,9 +109,10 @@ public final class EsdkGenerationModel {
 		SortedSet<Register> remainingRegisters = new TreeSet<>(registers.values());
 		for (ProcessedDoBlock doBlock : moduleDefinition.getDoBlocks()) {
 			if (doBlock.getClock() == null) {
-				handleDoBlock(doBlock, SignalLike.class, continuousDoBlockInfos, "___continuousBlock");
+				continuousDoBlockInfos.add(handleDoBlock(doBlock, SignalLike.class, "___continuousBlock"));
 			} else {
-				DoBlockInfo<Register> info = handleDoBlock(doBlock, Register.class, clockedDoBlockInfos, "___clockedBlock");
+				DoBlockInfo<Register> info = handleDoBlock(doBlock, Register.class, "___clockedBlock");
+				clockedDoBlockInfos.add(info);
 				remainingRegisters.removeAll(info.getAssignmentTargets());
 			}
 		}
@@ -119,11 +122,10 @@ public final class EsdkGenerationModel {
 
 	}
 
-	private <T extends SignalLike> DoBlockInfo<T> handleDoBlock(ProcessedDoBlock doBlock, Class<T> signalLikeClass, List<DoBlockInfo<T>> list, String namePrefix) {
+	private <T extends SignalLike> DoBlockInfo<T> handleDoBlock(ProcessedDoBlock doBlock, Class<T> signalLikeClass, String namePrefix) {
 		SortedSet<T> targets = new TreeSet<>();
 		collectAssignmentTargets(doBlock.getBody(), signalLikeClass, targets);
-		DoBlockInfo<T> info = new DoBlockInfo<>(namePrefix + list.size(), doBlock, targets);
-		list.add(info);
+		DoBlockInfo<T> info = new DoBlockInfo<>(namePrefix + newSyntheticConstruct(), doBlock, targets);
 		return info;
 	}
 
@@ -244,4 +246,8 @@ public final class EsdkGenerationModel {
 
 	}
 
+	public int newSyntheticConstruct() {
+		syntheticConstructCounter++;
+		return syntheticConstructCounter;
+	}
 }
