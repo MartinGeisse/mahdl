@@ -21,13 +21,11 @@ public final class CodeGenerator {
 	private final ContinuousStatementExpressionGenerator continuousStatementExpressionGenerator;
 	private final ClockedStatementGenerator clockedStatementGenerator;
 
-	private int statementSequenceCounter = 0;
-
 	public CodeGenerator(GenerationModel model) {
 		this.model = model;
 		this.builder = new StringBuilder();
 		this.expressionGenerator = new ExpressionGenerator(model, builder);
-		this.continuousStatementExpressionGenerator = new ContinuousStatementExpressionGenerator(model, builder, expressionGenerator);
+		this.continuousStatementExpressionGenerator = new ContinuousStatementExpressionGenerator(model, builder);
 		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, expressionGenerator);
 	}
 
@@ -153,8 +151,9 @@ public final class CodeGenerator {
 		// implementation part: generate signal connector inputs from continuous do-blocks
 		for (GenerationModel.DoBlockInfo<SignalLike> doBlockInfo : model.getContinuousDoBlockInfos()) {
 			for (SignalLike target : doBlockInfo.getAssignmentTargets()) {
-				String expression = continuousStatementExpressionGenerator.buildEquivalentExpression(doBlockInfo, target);
-				builder.append("		").append(target.getName()).append(".setConnected(").append(expression).append(");\n");
+				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(doBlockInfo, target);
+				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
+				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 		}
 
