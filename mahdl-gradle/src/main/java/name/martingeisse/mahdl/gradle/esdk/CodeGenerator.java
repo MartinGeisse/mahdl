@@ -3,7 +3,6 @@ package name.martingeisse.mahdl.gradle.esdk;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
-import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +18,7 @@ public final class CodeGenerator {
 	private final GenerationModel model;
 	private final StringBuilder builder;
 	private final ExpressionGenerator expressionGenerator;
+	private final ClockedStatementGenerator clockedStatementGenerator;
 
 	private int statementSequenceCounter = 0;
 
@@ -26,6 +26,7 @@ public final class CodeGenerator {
 		this.model = model;
 		this.builder = new StringBuilder();
 		this.expressionGenerator = new ExpressionGenerator(model, builder);
+		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, expressionGenerator);
 	}
 
 	public void run() {
@@ -138,15 +139,22 @@ public final class CodeGenerator {
 			builder.append("		}\n");
 		}
 
-		// implementation part: generate signal connector inputs  from signal initializers
-		// TODO
+		// implementation part: generate signal connector inputs from signal initializers
+		for (Signal signal : model.getSignals().values()) {
+			ProcessedExpression initializer = signal.getProcessedInitializer();
+			if (initializer != null) {
+				// TODO
+			}
+		}
 
 		// implementation part: generate signal connector inputs from continuous do-blocks
-		// TODO
+		for (GenerationModel.DoBlockInfo<SignalLike> doBlockInfo : model.getContinuousDoBlockInfos()) {
+			// TODO
+		}
 
 		// implementation part: generate block statements
 		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
-			generateStatements(builder, doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
+			clockedStatementGenerator.generateStatements(doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
 		}
 
 		// end of constructor
@@ -183,32 +191,6 @@ public final class CodeGenerator {
 
 	public String getCode() {
 		return builder.toString();
-	}
-
-
-	private void generateStatements(StringBuilder builder, String sequence, ProcessedStatement statement) {
-		if (statement instanceof ProcessedBlock) {
-			for (ProcessedStatement child : ((ProcessedBlock) statement).getStatements()) {
-				generateStatements(builder, sequence, child);
-			}
-		} else if (statement instanceof ProcessedAssignment) {
-			ProcessedAssignment assignment = (ProcessedAssignment)statement;
-			if (!(assignment.getLeftHandSide() instanceof SignalLikeReference)) {
-				CompilationErrors.reportError(assignment.getLeftHandSide().getErrorSource(),
-					"only assignment to whole registers are currently supported");
-				return;
-			}
-			String leftHandSide = ((SignalLikeReference)assignment.getLeftHandSide()).getDefinition().getName();
-			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
-			builder.append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
-		} else if (statement instanceof ProcessedIf) {
-			ProcessedIf processedIf = (ProcessedIf)statement;
-			// TODO
-
-		} else if (statement instanceof ProcessedSwitchStatement) {
-			ProcessedSwitchStatement processedSwitchStatement = (ProcessedSwitchStatement)statement;
-			// TODO
-		}
 	}
 
 }
