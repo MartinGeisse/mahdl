@@ -9,7 +9,6 @@ import name.martingeisse.mahdl.common.processor.definition.ModuleDefinition;
 import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
-import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.lang3.StringUtils;
 

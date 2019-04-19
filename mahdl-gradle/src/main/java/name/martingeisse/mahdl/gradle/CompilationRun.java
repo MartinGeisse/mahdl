@@ -2,7 +2,6 @@ package name.martingeisse.mahdl.gradle;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.io.FileUtils;
 

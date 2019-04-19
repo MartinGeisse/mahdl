@@ -3,7 +3,7 @@ package name.martingeisse.mahdl.gradle;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.EsdkUtil.*;
+import static name.martingeisse.mahdl.gradle.EsdkUtil.valueToString;
 
 /**
  *

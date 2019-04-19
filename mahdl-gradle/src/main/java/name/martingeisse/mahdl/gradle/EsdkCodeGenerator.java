@@ -1,13 +1,14 @@
 package name.martingeisse.mahdl.gradle;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
-import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
+import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.input.cm.Statement;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.EsdkUtil.*;
+import static name.martingeisse.mahdl.gradle.EsdkUtil.typeToString;
+import static name.martingeisse.mahdl.gradle.EsdkUtil.valueToString;
 
 /**
  *
@@ -16,12 +17,14 @@ public final class EsdkCodeGenerator {
 
 	private final EsdkGenerationModel model;
 	private final StringBuilder builder;
+	private final EsdkExpressionGenerator expressionGenerator;
 
 	private int statementSequenceCounter = 0;
 
 	public EsdkCodeGenerator(EsdkGenerationModel model) {
 		this.model = model;
 		this.builder = new StringBuilder();
+		this.expressionGenerator = new EsdkExpressionGenerator(model, builder);
 	}
 
 	public void run() {
@@ -102,9 +105,16 @@ public final class EsdkCodeGenerator {
 
 		// definition part: create clocked do-blocks and registers
 		for (EsdkGenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+			ProcessedExpression clock = doBlockInfo.getDoBlock().getClock();
+			if (!(clock instanceof SignalLikeReference)) {
+				CompilationErrors.reportError(clock.getErrorSource(), "this compiler currently only supports clocks that are input ports");
+				continue;
+			}
+			String clockName = ((SignalLikeReference) clock).getDefinition().getName();
+
 			builder.append("		{\n");
 			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
-			builder.append(doBlockInfo.getDoBlock().getClock()); // TODO convert properly
+			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getAssignmentTargets()) {
 				builder.append("			").append(register.getName());
@@ -182,16 +192,22 @@ public final class EsdkCodeGenerator {
 			}
 		} else if (statement instanceof ProcessedAssignment) {
 			ProcessedAssignment assignment = (ProcessedAssignment)statement;
-			builder.append(sequence).append(".assign(").append(assignment.getLeftHandSide()).append(", ")
-				.append(assignment.getRightHandSide()).append(");\n"); // TODO render expressions
+			if (!(assignment.getLeftHandSide() instanceof SignalLikeReference)) {
+				CompilationErrors.reportError(assignment.getLeftHandSide().getErrorSource(),
+					"only assignment to whole registers are currently supported");
+				return;
+			}
+			String leftHandSide = ((SignalLikeReference)assignment.getLeftHandSide()).getDefinition().getName();
+			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
+			builder.append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
 		} else if (statement instanceof ProcessedIf) {
 			ProcessedIf processedIf = (ProcessedIf)statement;
-
+			// TODO
 
 		} else if (statement instanceof ProcessedSwitchStatement) {
-
+			ProcessedSwitchStatement processedSwitchStatement = (ProcessedSwitchStatement)statement;
+			// TODO
 		}
-		// TODO
 	}
 
 }
