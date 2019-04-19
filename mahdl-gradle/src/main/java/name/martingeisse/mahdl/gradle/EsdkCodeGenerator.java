@@ -7,6 +7,8 @@ import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.Statement;
 import org.apache.commons.lang3.StringUtils;
 
+import static name.martingeisse.mahdl.gradle.EsdkUtil.*;
+
 /**
  *
  */
@@ -172,48 +174,6 @@ public final class EsdkCodeGenerator {
 		return builder.toString();
 	}
 
-	private String typeToString(ProcessedDataType type) {
-		switch (type.getFamily()) {
-
-			case BIT:
-				return "boolean";
-
-			case VECTOR:
-				return "VectorValue";
-
-			case MATRIX:
-				return "Matrix";
-
-			case INTEGER:
-				return "int";
-
-			case TEXT:
-				return "String";
-
-			case CLOCK:
-				return "RtlClockNetwork";
-
-			default:
-				return "Object";
-
-		}
-	}
-
-	private String valueToString(ConstantValue value) {
-		if (value instanceof ConstantValue.Bit) {
-			return ((ConstantValue.Bit) value).isSet() ? "true" : "false";
-		} else if (value instanceof ConstantValue.Vector) {
-			return "TODO";
-		} else if (value instanceof ConstantValue.Matrix) {
-			return "TODO";
-		} else if (value instanceof ConstantValue.Integer) {
-			return ((ConstantValue.Integer) value).getValue().toString();
-		} else if (value instanceof ConstantValue.Text) {
-			return "\"" + ((ConstantValue.Text) value).getValue().replace("\\", "\\\\").replace("\"", "\\\"");
-		} else {
-			return "null";
-		}
-	}
 
 	private void generateStatements(StringBuilder builder, String sequence, ProcessedStatement statement) {
 		if (statement instanceof ProcessedBlock) {
