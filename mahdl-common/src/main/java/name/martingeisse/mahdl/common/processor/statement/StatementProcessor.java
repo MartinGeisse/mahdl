@@ -147,7 +147,7 @@ public final class StatementProcessor {
 						errorInCases = true;
 					}
 				}
-				processedCases.add(new ProcessedSwitchStatement.Case(caseSelectorValues, caseStatement));
+				processedCases.add(new ProcessedSwitchStatement.Case(ImmutableList.copyOf(caseSelectorValues), caseStatement));
 
 			} else if (caseItem instanceof StatementCaseItem_Default) {
 

@@ -1,5 +1,6 @@
 package name.martingeisse.mahdl.gradle.esdk;
 
+import com.google.common.collect.ImmutableList;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.statement.*;
@@ -8,8 +9,11 @@ import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
+ * TODO remove: v1 done
  */
 public class ContinuousStatementExpressionGenerator {
 
@@ -80,7 +84,22 @@ public class ContinuousStatementExpressionGenerator {
 		} else if (statement instanceof ProcessedSwitchStatement) {
 
 			ProcessedSwitchStatement processedSwitchStatement = (ProcessedSwitchStatement) statement;
-			TODO
+
+			List<ProcessedSwitchExpression.Case> outputCases = new ArrayList<>();
+			for (ProcessedSwitchStatement.Case inputCase : processedSwitchStatement.getCases()) {
+				outputCases.add(new ProcessedSwitchExpression.Case(inputCase.getSelectorValues(),
+					buildEquivalentExpression(inputCase.getBranch(), target, soFar)));
+			}
+
+			ProcessedExpression outputDefaultBranch = processedSwitchStatement.getDefaultBranch() == null ? soFar :
+				buildEquivalentExpression(processedSwitchStatement.getDefaultBranch(), target, soFar);
+
+			try {
+				return new ProcessedSwitchExpression(statement.getErrorSource(), target.getProcessedDataType(),
+					processedSwitchStatement.getSelector(), ImmutableList.copyOf(outputCases), outputDefaultBranch);
+			} catch (TypeErrorException e) {
+				return soFar; // error has been reported during processing already
+			}
 
 		} else {
 

@@ -63,18 +63,18 @@ public final class ProcessedSwitchStatement extends ProcessedStatement {
 	public static final class Case {
 
 		@NotNull
-		private final List<ConstantValue.Vector> selectorValues;
+		private final ImmutableList<ConstantValue.Vector> selectorValues;
 
 		@NotNull
 		private final ProcessedStatement branch;
 
-		public Case(@NotNull List<ConstantValue.Vector> selectorValues, @NotNull ProcessedStatement branch) {
+		public Case(@NotNull ImmutableList<ConstantValue.Vector> selectorValues, @NotNull ProcessedStatement branch) {
 			this.selectorValues = selectorValues;
 			this.branch = branch;
 		}
 
 		@NotNull
-		public List<ConstantValue.Vector> getSelectorValues() {
+		public ImmutableList<ConstantValue.Vector> getSelectorValues() {
 			return selectorValues;
 		}
 
