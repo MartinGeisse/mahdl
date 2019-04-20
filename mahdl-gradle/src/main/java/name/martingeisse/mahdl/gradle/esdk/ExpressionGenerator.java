@@ -27,7 +27,10 @@ public class ExpressionGenerator {
 	 */
 	public String buildExpression(ProcessedExpression expression) {
 
-		TODO try folding first; some constant expressions cannot be compiled but must be folded instead!
+		// We rely on the MaHDL processor to have constant (sub-)expressions folded for us. So anything that cannot be
+		// compiled to runtime constructs should have been disappeared by now. If not, errors should have been reported
+		// already, and we only have to fail gracefully, not generate sensible code. We do that by returning a "null"
+		// expression.
 
 		if (expression instanceof ProcessedConstantValue) {
 

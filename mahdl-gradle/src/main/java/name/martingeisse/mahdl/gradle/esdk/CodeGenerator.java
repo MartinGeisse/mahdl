@@ -11,6 +11,22 @@ import static name.martingeisse.mahdl.gradle.esdk.Util.typeToString;
 import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
 
 /**
+ * TODO: MODULE INSTANCES
+ *
+ * For each module instance, a field is created (fields part) and the module instance created (definition part). The
+ * constructor only needs the RtlRealm (implicit first constructor parameter of all generated modules) and clocks.
+ * For the latter, we scan the ports of the module instance for all clock ports (Which must be input ports), sort them
+ * by name, then pass them. It is currently not possible to use anything beyond a simple reference to a clock input port
+ * of the enclosing module here; if it were, we would have to refine the ordering (esp.: currently the order with
+ * signal definitions is undefined, so other signals cannot be used; using data ouputs of other module instances is
+ * especially tricks. Probably the only way to handle this would be to make the clock a settable field in ESDK like
+ * data fields).
+ *
+ * Note that after creating the module instances, their output ports are ready to use (since they are pre-created
+ * signal connectors, too).
+ *
+ * -------
+ *
  *
  */
 public final class CodeGenerator {
@@ -153,11 +169,12 @@ public final class CodeGenerator {
 			for (SignalLike target : doBlockInfo.getAssignmentTargets()) {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(doBlockInfo, target);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
+				// TODO target.getName() won't work for module instance ports. Where else was this error made?
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 		}
 
-		// implementation part: generate block statements
+		// implementation part: generate clocked do-block statements
 		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
 			clockedStatementGenerator.generateStatements(doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
 		}
