@@ -49,6 +49,20 @@ public abstract class ProcessedExpression {
 		return null;
 	}
 
+	/**
+	 * TODO: formally-constant evaluation and folding are similar and might be merged. Issues:
+	 * - folding might fold things that are not formally constant but may still be determined as constant. We might
+	 *   still need to have an isFormallyConstant() method. OTOH, non-formally constant evaluation is not reliable and
+	 *   so we might just skip it.
+	 * - if an expression cannot be folded, sub-expression might still be foldable. So we need sub-folding. We also
+	 *   need formally constant evaluation in some contexts, e.g. to call built-in functions at compile time. The
+	 *   only way I see to merge them is to always fold (*), then reduce formally constant evaluation to a check if
+	 *   the relevant expression is a constant (after folding).
+	 *   (*) Folding must succeed at least for each formally constant expression. If folding can handle more than that,
+	 *   we also need an isFormallyConstant() method to properly report formal errors to the user. (Treatment of
+	 *   expressions that are not formally constant but can still be folded is not reliable and so should be reported
+	 *   as an error).
+	 */
 	public final ConstantValue evaluateFormallyConstant(FormallyConstantEvaluationContext context) {
 		ConstantValue value = evaluateFormallyConstantInternal(context);
 		if (value == null) {
