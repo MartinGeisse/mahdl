@@ -8,9 +8,11 @@ import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- *
+ * Sorting: This class can be sorted by port name. This may mix instance ports from different
+ * module instances or even different modules, but we don't care since sorting is only used to
+ * keep the generated code from changing randomly.
  */
-public final class InstancePort {
+public final class InstancePort implements Comparable<InstancePort> {
 
 	@NotNull
 	private final String name;
@@ -40,6 +42,11 @@ public final class InstancePort {
 	@NotNull
 	public ProcessedDataType getDataType() {
 		return dataType;
+	}
+
+	@Override
+	public int compareTo(@NotNull InstancePort other) {
+		return name.compareTo(other.getName());
 	}
 
 }
