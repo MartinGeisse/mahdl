@@ -27,11 +27,11 @@ public final class GenerationModel {
 	private final ModuleDefinition moduleDefinition;
 	private final String packageName;
 	private final String localName;
-	private final Map<String, ModulePort> ports;
-	private final Map<String, Constant> constants;
-	private final Map<String, Signal> signals;
-	private final Map<String, Register> registers;
-	private final Map<String, ModuleInstance> moduleInstances;
+	private final SortedSet<ModulePort> ports;
+	private final SortedSet<Constant> constants;
+	private final SortedSet<Signal> signals;
+	private final SortedSet<Register> registers;
+	private final SortedSet<ModuleInstance> moduleInstances;
 	private final List<ModulePort> clocks;
 	private final List<ModulePort> dataPorts;
 	private final List<SignalLike> signalConnectors;
@@ -47,29 +47,29 @@ public final class GenerationModel {
 
 		// Group named definitions by type. Use a sorted map to make tracking down problems easier and more reproducible.
 		// Also, sorting makes the order of clock constructor parameters stable.
-		ports = new TreeMap<>();
-		constants = new TreeMap<>();
-		signals = new TreeMap<>();
-		registers = new TreeMap<>();
-		moduleInstances = new TreeMap<>();
+		ports = new TreeSet<>();
+		constants = new TreeSet<>();
+		signals = new TreeSet<>();
+		registers = new TreeSet<>();
+		moduleInstances = new TreeSet<>();
 		for (Named named : moduleDefinition.getDefinitions().values()) {
 			if (named instanceof ModulePort) {
-				ports.put(named.getName(), (ModulePort) named);
+				ports.add((ModulePort) named);
 			} else if (named instanceof Constant) {
-				constants.put(named.getName(), (Constant) named);
+				constants.add((Constant) named);
 			} else if (named instanceof Signal) {
-				signals.put(named.getName(), (Signal) named);
+				signals.add((Signal) named);
 			} else if (named instanceof Register) {
-				registers.put(named.getName(), (Register) named);
+				registers.add((Register) named);
 			} else if (named instanceof ModuleInstance) {
-				moduleInstances.put(named.getName(), (ModuleInstance) named);
+				moduleInstances.add((ModuleInstance) named);
 			}
 		}
 
 		// derived: separate clocks from other ports
 		clocks = new ArrayList<>();
 		dataPorts = new ArrayList<>();
-		for (ModulePort port : ports.values()) {
+		for (ModulePort port : ports) {
 			if (port.getProcessedDataType().getFamily() == ProcessedDataType.Family.CLOCK) {
 				if (port.getDirection() == PortDirection.IN) {
 					clocks.add(port);
@@ -94,7 +94,7 @@ public final class GenerationModel {
 		// derived: use signal connectors for data ports and local signals
 		signalConnectors = new ArrayList<>();
 		signalConnectors.addAll(dataPorts);
-		signalConnectors.addAll(signals.values());
+		signalConnectors.addAll(signals);
 		signalConnectors.removeIf(signalLike -> {
 			ProcessedDataType type = signalLike.getProcessedDataType();
 			ProcessedDataType.Family family = type.getFamily();
@@ -108,7 +108,7 @@ public final class GenerationModel {
 		// derived: associate do-blocks with the registers they assign to
 		continuousDoBlockInfos = new ArrayList<>();
 		clockedDoBlockInfos = new ArrayList<>();
-		SortedSet<Register> remainingRegisters = new TreeSet<>(registers.values());
+		SortedSet<Register> remainingRegisters = new TreeSet<>(registers);
 		for (ProcessedDoBlock doBlock : moduleDefinition.getDoBlocks()) {
 			if (doBlock.getClock() == null) {
 				String name = "___continuousBlock" + newSyntheticConstruct();
@@ -126,7 +126,7 @@ public final class GenerationModel {
 
 		// derived: module instances and which clocks to use for them
 		moduleInstanceInfos = new ArrayList<>();
-		for (ModuleInstance moduleInstance : moduleInstances.values()) {
+		for (ModuleInstance moduleInstance : moduleInstances) {
 			String canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
 
 			// collect clock ports, sorted by name
@@ -179,23 +179,23 @@ public final class GenerationModel {
 		return localName;
 	}
 
-	public Map<String, ModulePort> getPorts() {
+	public SortedSet<ModulePort> getPorts() {
 		return ports;
 	}
 
-	public Map<String, Constant> getConstants() {
+	public SortedSet<Constant> getConstants() {
 		return constants;
 	}
 
-	public Map<String, Signal> getSignals() {
+	public SortedSet<Signal> getSignals() {
 		return signals;
 	}
 
-	public Map<String, Register> getRegisters() {
+	public SortedSet<Register> getRegisters() {
 		return registers;
 	}
 
-	public Map<String, ModuleInstance> getModuleInstances() {
+	public SortedSet<ModuleInstance> getModuleInstances() {
 		return moduleInstances;
 	}
 

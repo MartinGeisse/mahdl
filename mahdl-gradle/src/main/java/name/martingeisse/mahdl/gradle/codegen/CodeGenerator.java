@@ -54,7 +54,7 @@ public final class CodeGenerator {
 		builder.append("public class ").append(model.getLocalName()).append(" extends RtlItem {\n");
 
 		// constants
-		for (Constant constant : model.getConstants().values()) {
+		for (Constant constant : model.getConstants()) {
 			builder.append("\n");
 			builder.append("	public static final ").append(typeToString(constant.getProcessedDataType()))
 				.append(" = ").append(valueToString(constant.getValue())).append(";\n");
@@ -89,7 +89,7 @@ public final class CodeGenerator {
 		}
 
 		// fields part: module instances
-		for (ModuleInstance moduleInstance : model.getModuleInstances().values()) {
+		for (ModuleInstance moduleInstance : model.getModuleInstances()) {
 			String canonicalName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
 			builder.append("\n");
 			builder.append("	private final ").append(canonicalName).append(" ").append(moduleInstance.getName()).append(";\n");
@@ -165,7 +165,7 @@ public final class CodeGenerator {
 		}
 
 		// implementation part: generate signal connector inputs from signal initializers
-		for (Signal signal : model.getSignals().values()) {
+		for (Signal signal : model.getSignals()) {
 			ProcessedExpression initializer = signal.getProcessedInitializer();
 			if (initializer != null) {
 				String expression = expressionGenerator.buildExpression(initializer);
