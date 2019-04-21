@@ -6,7 +6,7 @@ import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 
 /**
- * TODO remove: v1 done
+ *
  */
 public class ClockedStatementGenerator {
 

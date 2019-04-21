@@ -1,6 +1,5 @@
 package name.martingeisse.mahdl.gradle.model;
 
-import name.martingeisse.mahdl.common.processor.definition.InstancePort;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.statement.*;
@@ -50,7 +49,7 @@ public abstract class DoBlockInfo {
 		if (destination instanceof SignalLikeReference) {
 			analyzeAssignmentTo(((SignalLikeReference) destination).getDefinition());
 		} else if (destination instanceof InstancePortReference) {
-			analyzeAssignmentTo(((InstancePortReference) destination).getPort());
+			analyzeAssignmentTo((InstancePortReference) destination);
 		} else if (destination instanceof ProcessedIndexSelection) {
 			analyzeAssignmentTo(((ProcessedIndexSelection) destination).getContainer());
 		} else if (destination instanceof ProcessedRangeSelection) {
@@ -66,6 +65,6 @@ public abstract class DoBlockInfo {
 
 	protected abstract void analyzeAssignmentTo(SignalLike destination);
 
-	protected abstract void analyzeAssignmentTo(InstancePort destination);
+	protected abstract void analyzeAssignmentTo(InstancePortReference destination);
 
 }

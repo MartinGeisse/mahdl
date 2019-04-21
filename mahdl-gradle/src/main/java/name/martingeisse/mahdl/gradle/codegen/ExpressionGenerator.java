@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import static name.martingeisse.mahdl.gradle.codegen.Util.valueToString;
 
 /**
- * TODO remove: v1 done
+ *
  */
 public class ExpressionGenerator {
 

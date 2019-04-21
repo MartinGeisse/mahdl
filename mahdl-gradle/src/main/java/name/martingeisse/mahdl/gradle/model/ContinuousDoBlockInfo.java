@@ -1,7 +1,7 @@
 package name.martingeisse.mahdl.gradle.model;
 
-import name.martingeisse.mahdl.common.processor.definition.InstancePort;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
+import name.martingeisse.mahdl.common.processor.expression.InstancePortReference;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 
 import java.util.SortedSet;
@@ -13,12 +13,12 @@ import java.util.TreeSet;
 public final class ContinuousDoBlockInfo extends DoBlockInfo {
 
 	private final SortedSet<SignalLike> signalLikes;
-	private final SortedSet<InstancePort> instancePorts;
+	private final SortedSet<InstancePortReference> instancePortReferences;
 
 	public ContinuousDoBlockInfo(String name, ProcessedDoBlock doBlock) {
 		super(name, doBlock);
 		this.signalLikes = new TreeSet<>();
-		this.instancePorts = new TreeSet<>();
+		this.instancePortReferences = new TreeSet<>();
 		analyze(doBlock.getBody());
 	}
 
@@ -26,8 +26,8 @@ public final class ContinuousDoBlockInfo extends DoBlockInfo {
 		return signalLikes;
 	}
 
-	public SortedSet<InstancePort> getInstancePorts() {
-		return instancePorts;
+	public SortedSet<InstancePortReference> getInstancePortReferences() {
+		return instancePortReferences;
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public final class ContinuousDoBlockInfo extends DoBlockInfo {
 	}
 
 	@Override
-	protected void analyzeAssignmentTo(InstancePort destination) {
-		instancePorts.add(destination);
+	protected void analyzeAssignmentTo(InstancePortReference destination) {
+		instancePortReferences.add(destination);
 	}
 
 }

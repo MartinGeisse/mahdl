@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
+import name.martingeisse.mahdl.common.processor.expression.InstancePortReference;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -187,19 +188,20 @@ public final class CodeGenerator {
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
-			for (InstancePort target : doBlockInfo.getInstancePorts()) {
+			for (InstancePortReference target : doBlockInfo.getInstancePortReferences()) {
+				String targetText = target.getModuleInstance().getName() + '.' + target.getPort().getName();
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
-
+					if (expression instanceof InstancePortReference) {
+						InstancePortReference reference = (InstancePortReference) expression;
+						return reference.getModuleInstance().getName().equals(target.getModuleInstance().getName()) &&
+							reference.getPort().getName().equals(target.getPort().getName());
+					}
+					return false;
 				};
-
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
 					doBlockInfo, target.getDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
-
-				// TODO target.getName() won't work for module instance ports. Where else was this error made?
-				// The original problem is that we have a SignalLike here, but module instance ports don't inherit
-				// from SignalLike. How are they processed at all?
-				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
+				builder.append("		").append(targetText).append(".setConnected(").append(expressionText).append(");\n");
 			}
 
 		}

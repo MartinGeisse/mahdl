@@ -1,8 +1,8 @@
 package name.martingeisse.mahdl.gradle.model;
 
-import name.martingeisse.mahdl.common.processor.definition.InstancePort;
 import name.martingeisse.mahdl.common.processor.definition.Register;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
+import name.martingeisse.mahdl.common.processor.expression.InstancePortReference;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 
 import java.util.SortedSet;
@@ -33,7 +33,7 @@ public final class ClockedDoBlockInfo extends DoBlockInfo {
 	}
 
 	@Override
-	protected void analyzeAssignmentTo(InstancePort destination) {
+	protected void analyzeAssignmentTo(InstancePortReference destination) {
 		// this is an error and should have been reported already
 	}
 
