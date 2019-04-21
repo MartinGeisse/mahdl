@@ -1,9 +1,11 @@
 package name.martingeisse.mahdl.gradle.model;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
+import name.martingeisse.mahdl.common.processor.expression.InstancePortReference;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
+import name.martingeisse.mahdl.input.cm.CmUtil;
 
 import java.util.*;
 
@@ -130,10 +132,37 @@ public final class GenerationModel {
 		// derived: module instances and which clocks to use for them
 		moduleInstanceInfos = new ArrayList<>();
 		for (ModuleInstance moduleInstance : moduleInstances.values()) {
-			TODO collect clock ports;
-			TODO collect assignments to them;
-			TODO sort by port name;
-			TODO return list of local signal names (no other expressions allowed)
+			String canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
+
+			// collect clock ports, sorted by name
+			SortedSet<String> clockPortNames = new TreeSet<>();
+			for (InstancePort port : moduleInstance.getPorts().values()) {
+				if (port.getDataType().getFamily() == ProcessedDataType.Family.CLOCK) {
+					clockPortNames.add(port.getName());
+				}
+			}
+
+			// collect assignments to them and remember the local source signal names (no complex expressions allowed for now)
+			Map<String, String> clockPortToLocalClock = new HashMap<>();
+			for (ContinuousDoBlockInfo info : continuousDoBlockInfos) {
+				for (InstancePortReference instancePortReference : info.getInstancePortReferences()) {
+					if (instancePortReference.getModuleInstance().getName().equals(moduleInstance.getName())) {
+						String portName = instancePortReference.getPort().getName();
+						if (clockPortNames.contains(portName)) {
+							String localClock = info.findLocalClockSource(instancePortReference);
+							clockPortToLocalClock.put(portName, localClock);
+						}
+					}
+				}
+			}
+
+			// build a list of local clocks, sorted by name of the clock port
+			List<String> localClockSignalsToPass = new ArrayList<>();
+			for (String clockPort : clockPortNames) {
+				localClockSignalsToPass.add(clockPortToLocalClock.get(clockPort));
+			}
+
+			moduleInstanceInfos.add(new ModuleInstanceInfo(moduleInstance, canonicalModuleName, localClockSignalsToPass));
 		}
 
 	}
@@ -200,13 +229,18 @@ public final class GenerationModel {
 	}
 
 	// TODO move to toplevel
+
+	/**
+	 * Note: "local clocks to pass" are sorted by name of the clock port, NOT by name of the local clock signal
+	 * (that's why it is a list and not a sorted set).
+	 */
 	public static final class ModuleInstanceInfo {
 
 		private final ModuleInstance moduleInstance;
 		private final String canonicalModuleName;
-		private final SortedSet<String> localClocksToPass;
+		private final List<String> localClocksToPass;
 
-		public ModuleInstanceInfo(ModuleInstance moduleInstance, String canonicalModuleName, SortedSet<String> localClocksToPass) {
+		public ModuleInstanceInfo(ModuleInstance moduleInstance, String canonicalModuleName, List<String> localClocksToPass) {
 			this.moduleInstance = moduleInstance;
 			this.canonicalModuleName = canonicalModuleName;
 			this.localClocksToPass = localClocksToPass;
@@ -220,7 +254,7 @@ public final class GenerationModel {
 			return canonicalModuleName;
 		}
 
-		public SortedSet<String> getLocalClocksToPass() {
+		public List<String> getLocalClocksToPass() {
 			return localClocksToPass;
 		}
 

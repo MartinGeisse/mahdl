@@ -40,4 +40,8 @@ public final class ContinuousDoBlockInfo extends DoBlockInfo {
 		instancePortReferences.add(destination);
 	}
 
+	public String findLocalClockSource(InstancePortReference target) {
+
+	}
+
 }
