@@ -194,8 +194,7 @@ public final class CodeGenerator {
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
 					if (expression instanceof InstancePortReference) {
 						InstancePortReference reference = (InstancePortReference) expression;
-						return reference.getModuleInstance().getName().equals(target.getModuleInstance().getName()) &&
-							reference.getPort().getName().equals(target.getPort().getName());
+						return reference.isSameAs(target);
 					}
 					return false;
 				};

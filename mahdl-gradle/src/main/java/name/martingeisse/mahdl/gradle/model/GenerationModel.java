@@ -32,18 +32,13 @@ public final class GenerationModel {
 	private final Map<String, Signal> signals;
 	private final Map<String, Register> registers;
 	private final Map<String, ModuleInstance> moduleInstances;
-
-	private int syntheticConstructCounter = 0;
-
 	private final List<ModulePort> clocks;
 	private final List<ModulePort> dataPorts;
-
 	private final List<SignalLike> signalConnectors;
-
 	private final List<ContinuousDoBlockInfo> continuousDoBlockInfos;
 	private final List<ClockedDoBlockInfo> clockedDoBlockInfos;
-
 	private final List<ModuleInstanceInfo> moduleInstanceInfos;
+	private int syntheticConstructCounter = 0;
 
 	public GenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
 		this.moduleDefinition = moduleDefinition;

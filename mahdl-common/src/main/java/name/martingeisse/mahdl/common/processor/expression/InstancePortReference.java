@@ -57,4 +57,12 @@ public class InstancePortReference extends ProcessedExpression {
 		return this;
 	}
 
+	/**
+	 * This is a kind of equality, but the argument is typed and we don't want to use equals() here since all other
+	 * processed objects have an equals method but it won't work correctly, so that would be error-prone.
+	 */
+	public boolean isSameAs(InstancePortReference other) {
+		return moduleInstance == other.getModuleInstance() && port == other.getPort();
+	}
+
 }
