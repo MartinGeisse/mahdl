@@ -170,6 +170,8 @@ public final class CodeGenerator {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(doBlockInfo, target);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
 				// TODO target.getName() won't work for module instance ports. Where else was this error made?
+				// The original problem is that we have a SignalLike here, but module instance ports don't inherit
+				// from SignalLike. How are they processed at all?
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 		}
