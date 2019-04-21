@@ -20,17 +20,17 @@ public class ValueGenerator {
 	 * Like buildValue(), but handles multiple values and returns them as a comma-separated string.
 	 */
 	public String buildValues(Iterable<? extends ConstantValue> values) {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder valueBuilder = new StringBuilder();
 		boolean first = true;
 		for (ConstantValue value : values) {
 			if (first) {
 				first = false;
 			} else {
-				builder.append(", ");
+				valueBuilder.append(", ");
 			}
-			builder.append(buildValue(value));
+			valueBuilder.append(buildValue(value));
 		}
-		return builder.toString();
+		return valueBuilder.toString();
 	}
 
 	/**
@@ -50,9 +50,12 @@ public class ValueGenerator {
 			}
 			return "VectorValue.ofUnsigned(" + vector.getSize() + ", " + vector.convertToInteger().longValue() + ")";
 		} else if (value instanceof ConstantValue.Matrix) {
-			StringBuilder builder = new StringBuilder();
-
-			return "TODO";
+			ConstantValue.Matrix matrix = (ConstantValue.Matrix)value;
+			String name = "___matrix" + model.newSyntheticConstruct();
+			builder.append("		Matrix ").append(name).append(" = new Matrix(").append(matrix.getFirstSize())
+				.append(", ").append(matrix.getSecondSize()).append(");\n");
+			// TODO contents
+			return name;
 		} else if (value instanceof ConstantValue.Integer) {
 			return ((ConstantValue.Integer) value).getValue().toString();
 		} else if (value instanceof ConstantValue.Text) {
