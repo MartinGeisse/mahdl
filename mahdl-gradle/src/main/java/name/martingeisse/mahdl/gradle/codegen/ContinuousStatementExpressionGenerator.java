@@ -1,16 +1,18 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.codegen;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.processor.definition.SignalLike;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.statement.*;
-import name.martingeisse.mahdl.gradle.CompilationErrors;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.gradle.model.ContinuousDoBlockInfo;
+import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * TODO remove: v1 done
@@ -37,15 +39,20 @@ public class ContinuousStatementExpressionGenerator {
 	 * This method may use the string builder provided in the constructor to build helper expressions as Java
 	 * constructor statements; therefore, this method must not be called while building a Java statement is in progress.
 	 */
-	public ProcessedExpression buildEquivalentExpression(GenerationModel.DoBlockInfo<SignalLike> doBlockInfo, SignalLike target) {
-		return buildEquivalentExpression(doBlockInfo.getDoBlock().getBody(), target, UNCHANGED);
+	public ProcessedExpression buildEquivalentExpression(ContinuousDoBlockInfo doBlockInfo,
+														 ProcessedDataType type,
+														 Predicate<ProcessedExpression> leftHandSideMatcher) {
+		return buildEquivalentExpression(doBlockInfo.getDoBlock().getBody(), type, leftHandSideMatcher, UNCHANGED);
 	}
 
-	private ProcessedExpression buildEquivalentExpression(ProcessedStatement statement, SignalLike target, ProcessedExpression soFar) {
+	private ProcessedExpression buildEquivalentExpression(ProcessedStatement statement,
+														  ProcessedDataType type,
+														  Predicate<ProcessedExpression> leftHandSideMatcher,
+														  ProcessedExpression soFar) {
 		if (statement instanceof ProcessedBlock) {
 
 			for (ProcessedStatement child : ((ProcessedBlock) statement).getStatements()) {
-				soFar = buildEquivalentExpression(child, target, soFar);
+				soFar = buildEquivalentExpression(child, type, leftHandSideMatcher, soFar);
 			}
 			return soFar;
 
@@ -53,12 +60,7 @@ public class ContinuousStatementExpressionGenerator {
 
 			ProcessedAssignment assignment = (ProcessedAssignment) statement;
 			ProcessedExpression leftHandSide = assignment.getLeftHandSide();
-			if (!(leftHandSide instanceof SignalLikeReference)) {
-				CompilationErrors.reportError(assignment.getLeftHandSide().getErrorSource(),
-					"only assignment to whole registers are currently supported");
-				return soFar;
-			}
-			if (((SignalLikeReference) leftHandSide).getDefinition() == target) {
+			if (leftHandSideMatcher.test(leftHandSide)) {
 				return assignment.getRightHandSide();
 			} else {
 				return soFar;
@@ -70,8 +72,8 @@ public class ContinuousStatementExpressionGenerator {
 			// not a real problem though since at worst we get a conditional expression with equal "then" and "else"
 			// expressions.
 			ProcessedIf processedIf = (ProcessedIf) statement;
-			ProcessedExpression thenBranch = buildEquivalentExpression(processedIf.getThenBranch(), target, soFar);
-			ProcessedExpression elseBranch = buildEquivalentExpression(processedIf.getElseBranch(), target, soFar);
+			ProcessedExpression thenBranch = buildEquivalentExpression(processedIf.getThenBranch(), type, leftHandSideMatcher, soFar);
+			ProcessedExpression elseBranch = buildEquivalentExpression(processedIf.getElseBranch(), type, leftHandSideMatcher, soFar);
 			if (thenBranch == elseBranch) {
 				return thenBranch;
 			}
@@ -88,14 +90,14 @@ public class ContinuousStatementExpressionGenerator {
 			List<ProcessedSwitchExpression.Case> outputCases = new ArrayList<>();
 			for (ProcessedSwitchStatement.Case inputCase : processedSwitchStatement.getCases()) {
 				outputCases.add(new ProcessedSwitchExpression.Case(inputCase.getSelectorValues(),
-					buildEquivalentExpression(inputCase.getBranch(), target, soFar)));
+					buildEquivalentExpression(inputCase.getBranch(), type, leftHandSideMatcher, soFar)));
 			}
 
 			ProcessedExpression outputDefaultBranch = processedSwitchStatement.getDefaultBranch() == null ? soFar :
-				buildEquivalentExpression(processedSwitchStatement.getDefaultBranch(), target, soFar);
+				buildEquivalentExpression(processedSwitchStatement.getDefaultBranch(), type, leftHandSideMatcher, soFar);
 
 			try {
-				return new ProcessedSwitchExpression(statement.getErrorSource(), target.getProcessedDataType(),
+				return new ProcessedSwitchExpression(statement.getErrorSource(), type,
 					processedSwitchStatement.getSelector(), ImmutableList.copyOf(outputCases), outputDefaultBranch);
 			} catch (TypeErrorException e) {
 				return soFar; // error has been reported during processing already

@@ -1,15 +1,20 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
+import name.martingeisse.mahdl.gradle.model.ClockedDoBlockInfo;
+import name.martingeisse.mahdl.gradle.model.ContinuousDoBlockInfo;
+import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import name.martingeisse.mahdl.input.cm.CmUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.esdk.Util.typeToString;
-import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
+import java.util.function.Predicate;
+
+import static name.martingeisse.mahdl.gradle.codegen.Util.typeToString;
+import static name.martingeisse.mahdl.gradle.codegen.Util.valueToString;
 
 /**
  *
@@ -70,8 +75,8 @@ public final class CodeGenerator {
 		}
 
 		// fields part: register variables
-		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
-			for (Register register : doBlockInfo.getAssignmentTargets()) {
+		for (ClockedDoBlockInfo doBlockInfo : model.getClockedDoBlockInfos()) {
+			for (Register register : doBlockInfo.getRegisters()) {
 				builder.append("\n");
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 					builder.append("	private final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
@@ -124,7 +129,7 @@ public final class CodeGenerator {
 		}
 
 		// definition part: create clocked do-blocks and registers
-		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+		for (ClockedDoBlockInfo doBlockInfo : model.getClockedDoBlockInfos()) {
 			ProcessedExpression clock = doBlockInfo.getDoBlock().getClock();
 			if (!(clock instanceof SignalLikeReference)) {
 				CompilationErrors.reportError(clock.getErrorSource(), "this compiler currently only supports clocks that are input ports");
@@ -136,7 +141,7 @@ public final class CodeGenerator {
 			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
 			builder.append(clockName);
 			builder.append(");\n");
-			for (Register register : doBlockInfo.getAssignmentTargets()) {
+			for (Register register : doBlockInfo.getRegisters()) {
 				builder.append("			").append(register.getName());
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 					builder.append(" = ").append(doBlockInfo.getName()).append(".createBit(");
@@ -167,19 +172,40 @@ public final class CodeGenerator {
 		}
 
 		// implementation part: generate signal connector inputs from continuous do-blocks
-		for (GenerationModel.DoBlockInfo<SignalLike> doBlockInfo : model.getContinuousDoBlockInfos()) {
-			for (SignalLike target : doBlockInfo.getAssignmentTargets()) {
-				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(doBlockInfo, target);
+		for (ContinuousDoBlockInfo doBlockInfo : model.getContinuousDoBlockInfos()) {
+			for (SignalLike target : doBlockInfo.getSignalLikes()) {
+				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
+					if (!(expression instanceof SignalLikeReference)) {
+						CompilationErrors.reportError(expression.getErrorSource(),
+							"only assignment to whole registers are currently supported");
+						return false;
+					}
+					return (((SignalLikeReference) expression).getDefinition() == target);
+				};
+				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
+					doBlockInfo, target.getProcessedDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
+				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
+			}
+			for (InstancePort target : doBlockInfo.getInstancePorts()) {
+				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
+
+				};
+
+				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
+					doBlockInfo, target.getDataType(), leftHandSideMatcher);
+				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
+
 				// TODO target.getName() won't work for module instance ports. Where else was this error made?
 				// The original problem is that we have a SignalLike here, but module instance ports don't inherit
 				// from SignalLike. How are they processed at all?
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
+
 		}
 
 		// implementation part: generate clocked do-block statements
-		for (GenerationModel.DoBlockInfo<Register> doBlockInfo : model.getClockedDoBlockInfos()) {
+		for (ClockedDoBlockInfo doBlockInfo : model.getClockedDoBlockInfos()) {
 			clockedStatementGenerator.generateStatements(doBlockInfo.getName() + ".getStatements()", doBlockInfo.getDoBlock().getBody());
 		}
 

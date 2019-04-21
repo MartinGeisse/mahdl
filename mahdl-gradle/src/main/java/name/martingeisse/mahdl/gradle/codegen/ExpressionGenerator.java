@@ -1,9 +1,10 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
+import static name.martingeisse.mahdl.gradle.codegen.Util.valueToString;
 
 /**
  * TODO remove: v1 done

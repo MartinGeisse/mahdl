@@ -1,4 +1,4 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;

@@ -1,8 +1,7 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.model;
 
 import name.martingeisse.mahdl.common.processor.definition.*;
-import name.martingeisse.mahdl.common.processor.expression.*;
-import name.martingeisse.mahdl.common.processor.statement.*;
+import name.martingeisse.mahdl.common.processor.statement.ProcessedDoBlock;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
 
@@ -17,8 +16,8 @@ import java.util.*;
  * <p>
  * The only exception to this rule, i.e. places where errors can still be generated here, is cases of valid MaHDL
  * that is not supported by the code generator, such as not-yet-implemented features.
- *
- *
+ * <p>
+ * <p>
  * TODO turn sorted maps into sorted sets -- we never use them as maps
  */
 public final class GenerationModel {
@@ -39,8 +38,8 @@ public final class GenerationModel {
 
 	private final List<SignalLike> signalConnectors;
 
-	private final List<DoBlockInfo<SignalLike>> continuousDoBlockInfos;
-	private final List<DoBlockInfo<Register>> clockedDoBlockInfos;
+	private final List<ContinuousDoBlockInfo> continuousDoBlockInfos;
+	private final List<ClockedDoBlockInfo> clockedDoBlockInfos;
 
 	private final List<ModuleInstanceInfo> moduleInstanceInfos;
 
@@ -115,11 +114,13 @@ public final class GenerationModel {
 		SortedSet<Register> remainingRegisters = new TreeSet<>(registers.values());
 		for (ProcessedDoBlock doBlock : moduleDefinition.getDoBlocks()) {
 			if (doBlock.getClock() == null) {
-				continuousDoBlockInfos.add(handleDoBlock(doBlock, SignalLike.class, "___continuousBlock"));
+				String name = "___continuousBlock" + newSyntheticConstruct();
+				continuousDoBlockInfos.add(new ContinuousDoBlockInfo(name, doBlock));
 			} else {
-				DoBlockInfo<Register> info = handleDoBlock(doBlock, Register.class, "___clockedBlock");
+				String name = "___clockedBlock" + newSyntheticConstruct();
+				ClockedDoBlockInfo info = new ClockedDoBlockInfo(name, doBlock);
 				clockedDoBlockInfos.add(info);
-				remainingRegisters.removeAll(info.getAssignmentTargets());
+				remainingRegisters.removeAll(info.getRegisters());
 			}
 		}
 		for (Register unassignedRegister : remainingRegisters) {
@@ -140,52 +141,6 @@ public final class GenerationModel {
 	public int newSyntheticConstruct() {
 		syntheticConstructCounter++;
 		return syntheticConstructCounter;
-	}
-
-	private <T extends SignalLike> DoBlockInfo<T> handleDoBlock(ProcessedDoBlock doBlock, Class<T> signalLikeClass, String namePrefix) {
-		SortedSet<T> targets = new TreeSet<>();
-		collectAssignmentTargets(doBlock.getBody(), signalLikeClass, targets);
-		DoBlockInfo<T> info = new DoBlockInfo<>(namePrefix + newSyntheticConstruct(), doBlock, targets);
-		return info;
-	}
-
-	private <T extends SignalLike> void collectAssignmentTargets(ProcessedStatement statement, Class<T> targetClass, Set<T> targetCollector) {
-		if (statement instanceof ProcessedAssignment) {
-			collectAssignmentTargets(((ProcessedAssignment) statement).getLeftHandSide(), targetClass, targetCollector);
-		} else if (statement instanceof ProcessedBlock) {
-			for (ProcessedStatement childStatement : ((ProcessedBlock) statement).getStatements()) {
-				collectAssignmentTargets(childStatement, targetClass, targetCollector);
-			}
-		} else if (statement instanceof ProcessedIf) {
-			ProcessedIf processedIf = (ProcessedIf) statement;
-			collectAssignmentTargets(processedIf.getThenBranch(), targetClass, targetCollector);
-			collectAssignmentTargets(processedIf.getElseBranch(), targetClass, targetCollector);
-		} else if (statement instanceof ProcessedSwitchStatement) {
-			ProcessedSwitchStatement processedSwitch = (ProcessedSwitchStatement) statement;
-			for (ProcessedSwitchStatement.Case aCase : processedSwitch.getCases()) {
-				collectAssignmentTargets(aCase.getBranch(), targetClass, targetCollector);
-			}
-			collectAssignmentTargets(processedSwitch.getDefaultBranch(), targetClass, targetCollector);
-		}
-	}
-
-	private <T extends SignalLike> void collectAssignmentTargets(ProcessedExpression destination, Class<T> targetClass, Set<T> targetCollector) {
-		if (destination instanceof SignalLikeReference) {
-			SignalLike signalLike = ((SignalLikeReference) destination).getDefinition();
-			if (targetClass.isInstance(signalLike)) {
-				targetCollector.add(targetClass.cast(signalLike));
-			}
-		} else if (destination instanceof ProcessedIndexSelection) {
-			collectAssignmentTargets(((ProcessedIndexSelection) destination).getContainer(), targetClass, targetCollector);
-		} else if (destination instanceof ProcessedRangeSelection) {
-			collectAssignmentTargets(((ProcessedRangeSelection) destination).getContainer(), targetClass, targetCollector);
-		} else if (destination instanceof ProcessedBinaryOperation) {
-			ProcessedBinaryOperation binaryOperation = (ProcessedBinaryOperation) destination;
-			if (binaryOperation.getOperator() == ProcessedBinaryOperator.VECTOR_CONCAT) {
-				collectAssignmentTargets(binaryOperation.getLeftOperand(), targetClass, targetCollector);
-				collectAssignmentTargets(binaryOperation.getRightOperand(), targetClass, targetCollector);
-			}
-		}
 	}
 
 	public ModuleDefinition getModuleDefinition() {
@@ -232,11 +187,11 @@ public final class GenerationModel {
 		return signalConnectors;
 	}
 
-	public List<DoBlockInfo<SignalLike>> getContinuousDoBlockInfos() {
+	public List<ContinuousDoBlockInfo> getContinuousDoBlockInfos() {
 		return continuousDoBlockInfos;
 	}
 
-	public List<DoBlockInfo<Register>> getClockedDoBlockInfos() {
+	public List<ClockedDoBlockInfo> getClockedDoBlockInfos() {
 		return clockedDoBlockInfos;
 	}
 
@@ -244,32 +199,7 @@ public final class GenerationModel {
 		return moduleInstanceInfos;
 	}
 
-	public static final class DoBlockInfo<T extends SignalLike> {
-
-		private final String name;
-		private final ProcessedDoBlock doBlock;
-		private final SortedSet<T> assignmentTargets;
-
-		public DoBlockInfo(String name, ProcessedDoBlock doBlock, SortedSet<T> assignmentTargets) {
-			this.name = name;
-			this.doBlock = doBlock;
-			this.assignmentTargets = assignmentTargets;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public ProcessedDoBlock getDoBlock() {
-			return doBlock;
-		}
-
-		public SortedSet<T> getAssignmentTargets() {
-			return assignmentTargets;
-		}
-
-	}
-
+	// TODO move to toplevel
 	public static final class ModuleInstanceInfo {
 
 		private final ModuleInstance moduleInstance;

@@ -1,8 +1,9 @@
-package name.martingeisse.mahdl.gradle.esdk;
+package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
+import name.martingeisse.mahdl.gradle.model.GenerationModel;
 
 /**
  * TODO remove: v1 done
