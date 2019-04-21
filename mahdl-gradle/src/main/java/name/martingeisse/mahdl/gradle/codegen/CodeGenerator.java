@@ -9,6 +9,7 @@ import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.ClockedDoBlockInfo;
 import name.martingeisse.mahdl.gradle.model.ContinuousDoBlockInfo;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
+import name.martingeisse.mahdl.gradle.model.ModuleInstanceInfo;
 import name.martingeisse.mahdl.input.cm.CmUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -109,7 +110,7 @@ public final class CodeGenerator {
 		}
 
 		// definition part: create module instances
-		for (GenerationModel.ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
+		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 			builder.append("	this.").append(info.getModuleInstance().getName()).append(" = new ")
 				.append(info.getCanonicalModuleName()).append("(realm");
 			for (String clockToPass : info.getLocalClocksToPass()) {

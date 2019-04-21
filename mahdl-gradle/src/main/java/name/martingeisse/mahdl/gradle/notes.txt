@@ -27,8 +27,6 @@ name so the order is stable between rebuilds), storing it in a final field (in t
 at the top of the constructor even before the definition part), and passing it to all clocked do-blocks that use it
 as well as all module instances that use it (implementation part). See those sections below for details.
 
---- TODO implemented until here
-
 This leaves the following MaHDL constructs:
 - data ports
 - data signals
