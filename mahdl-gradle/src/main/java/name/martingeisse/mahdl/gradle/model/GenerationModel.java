@@ -19,8 +19,6 @@ import java.util.*;
  * The only exception to this rule, i.e. places where errors can still be generated here, is cases of valid MaHDL
  * that is not supported by the code generator, such as not-yet-implemented features.
  * <p>
- * <p>
- * TODO turn sorted maps into sorted sets -- we never use them as maps
  */
 public final class GenerationModel {
 
