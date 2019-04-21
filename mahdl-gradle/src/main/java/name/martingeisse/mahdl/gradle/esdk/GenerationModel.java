@@ -17,6 +17,9 @@ import java.util.*;
  * <p>
  * The only exception to this rule, i.e. places where errors can still be generated here, is cases of valid MaHDL
  * that is not supported by the code generator, such as not-yet-implemented features.
+ *
+ *
+ * TODO turn sorted maps into sorted sets -- we never use them as maps
  */
 public final class GenerationModel {
 
@@ -29,6 +32,8 @@ public final class GenerationModel {
 	private final Map<String, Register> registers;
 	private final Map<String, ModuleInstance> moduleInstances;
 
+	private int syntheticConstructCounter = 0;
+
 	private final List<ModulePort> clocks;
 	private final List<ModulePort> dataPorts;
 
@@ -37,7 +42,7 @@ public final class GenerationModel {
 	private final List<DoBlockInfo<SignalLike>> continuousDoBlockInfos;
 	private final List<DoBlockInfo<Register>> clockedDoBlockInfos;
 
-	private int syntheticConstructCounter = 0;
+	private final List<ModuleInstanceInfo> moduleInstanceInfos;
 
 	public GenerationModel(ModuleDefinition moduleDefinition, String packageName, String localName) {
 		this.moduleDefinition = moduleDefinition;
@@ -121,6 +126,20 @@ public final class GenerationModel {
 			CompilationErrors.reportError(unassignedRegister.getNameElement(), "registers that are never assigned to are not yet supported");
 		}
 
+		// derived: module instances and which clocks to use for them
+		moduleInstanceInfos = new ArrayList<>();
+		for (ModuleInstance moduleInstance : moduleInstances.values()) {
+			TODO collect clock ports;
+			TODO collect assignments to them;
+			TODO sort by port name;
+			TODO return list of local signal names (no other expressions allowed)
+		}
+
+	}
+
+	public int newSyntheticConstruct() {
+		syntheticConstructCounter++;
+		return syntheticConstructCounter;
 	}
 
 	private <T extends SignalLike> DoBlockInfo<T> handleDoBlock(ProcessedDoBlock doBlock, Class<T> signalLikeClass, String namePrefix) {
@@ -221,6 +240,10 @@ public final class GenerationModel {
 		return clockedDoBlockInfos;
 	}
 
+	public List<ModuleInstanceInfo> getModuleInstanceInfos() {
+		return moduleInstanceInfos;
+	}
+
 	public static final class DoBlockInfo<T extends SignalLike> {
 
 		private final String name;
@@ -247,8 +270,30 @@ public final class GenerationModel {
 
 	}
 
-	public int newSyntheticConstruct() {
-		syntheticConstructCounter++;
-		return syntheticConstructCounter;
+	public static final class ModuleInstanceInfo {
+
+		private final ModuleInstance moduleInstance;
+		private final String canonicalModuleName;
+		private final SortedSet<String> localClocksToPass;
+
+		public ModuleInstanceInfo(ModuleInstance moduleInstance, String canonicalModuleName, SortedSet<String> localClocksToPass) {
+			this.moduleInstance = moduleInstance;
+			this.canonicalModuleName = canonicalModuleName;
+			this.localClocksToPass = localClocksToPass;
+		}
+
+		public ModuleInstance getModuleInstance() {
+			return moduleInstance;
+		}
+
+		public String getCanonicalModuleName() {
+			return canonicalModuleName;
+		}
+
+		public SortedSet<String> getLocalClocksToPass() {
+			return localClocksToPass;
+		}
+
 	}
+
 }

@@ -156,17 +156,9 @@ public class ExpressionGenerator {
 				.append(" = new RtlSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
 				.append(");\n");
 			for (ProcessedSwitchExpression.Case aCase : switchExpression.getCases()) {
-				builder.append("			").append(helperName).append(".addCase(ImmutableList.of(");
-				boolean first = true;
-				for (ConstantValue.Vector vector : aCase.getSelectorValues()) {
-					if (first) {
-						first = false;
-					} else {
-						builder.append(", ");
-					}
-					builder.append(Util.valueToString(vector));
-				}
-				builder.append("), ").append(buildExpression(aCase.getResultValue())).append(");\n");
+				builder.append("			").append(helperName).append(".addCase(ImmutableList.of(")
+					.append(Util.valuesToString(aCase.getSelectorValues())).append("), ")
+					.append(buildExpression(aCase.getResultValue())).append(");\n");
 			}
 			builder.append("			").append(helperName).append(".setDefaultSignal(")
 				.append(buildExpression(switchExpression.getDefaultBranch())).append(");\n");

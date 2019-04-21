@@ -55,4 +55,18 @@ final class Util {
 		}
 	}
 
+	static String valuesToString(Iterable<? extends ConstantValue> values) {
+		StringBuilder builder = new StringBuilder();
+		boolean first = true;
+		for (ConstantValue value : values) {
+			if (first) {
+				first = false;
+			} else {
+				builder.append(", ");
+			}
+			builder.append(valueToString(value));
+		}
+		return builder.toString();
+	}
+
 }

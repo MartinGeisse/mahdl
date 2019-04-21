@@ -5,28 +5,13 @@ import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
+import name.martingeisse.mahdl.input.cm.CmUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import static name.martingeisse.mahdl.gradle.esdk.Util.typeToString;
 import static name.martingeisse.mahdl.gradle.esdk.Util.valueToString;
 
 /**
- * TODO: MODULE INSTANCES
- *
- * For each module instance, a field is created (fields part) and the module instance created (definition part). The
- * constructor only needs the RtlRealm (implicit first constructor parameter of all generated modules) and clocks.
- * For the latter, we scan the ports of the module instance for all clock ports (Which must be input ports), sort them
- * by name, then pass them. It is currently not possible to use anything beyond a simple reference to a clock input port
- * of the enclosing module here; if it were, we would have to refine the ordering (esp.: currently the order with
- * signal definitions is undefined, so other signals cannot be used; using data ouputs of other module instances is
- * especially tricks. Probably the only way to handle this would be to make the clock a settable field in ESDK like
- * data fields).
- *
- * Note that after creating the module instances, their output ports are ready to use (since they are pre-created
- * signal connectors, too).
- *
- * -------
- *
  *
  */
 public final class CodeGenerator {
@@ -96,6 +81,13 @@ public final class CodeGenerator {
 			}
 		}
 
+		// fields part: module instances
+		for (ModuleInstance moduleInstance : model.getModuleInstances().values()) {
+			String canonicalName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
+			builder.append("\n");
+			builder.append("	private final ").append(canonicalName).append(" ").append(moduleInstance.getName()).append(";\n");
+		}
+
 		// constructor intro
 		builder.append("\n");
 		builder.append("	public ").append(model.getLocalName()).append("(RtlRealm realm");
@@ -108,6 +100,16 @@ public final class CodeGenerator {
 		// assign clock networks (final variables)
 		for (ModulePort port : model.getClocks()) {
 			builder.append("		this.").append(port.getName()).append(" = ").append(port.getName()).append(";\n");
+		}
+
+		// definition part: create module instances
+		for (GenerationModel.ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
+			builder.append("	this.").append(info.getModuleInstance().getName()).append(" = new ")
+				.append(info.getCanonicalModuleName()).append("(realm");
+			for (String clockToPass : info.getLocalClocksToPass()) {
+				builder.append(", ").append(clockToPass);
+			}
+			builder.append(");\n");
 		}
 
 		// definition part: create signal connectors

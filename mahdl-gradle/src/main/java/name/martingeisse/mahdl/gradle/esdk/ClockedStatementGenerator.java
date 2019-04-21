@@ -5,7 +5,7 @@ import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
 
 /**
- *
+ * TODO remove: v1 done
  */
 public class ClockedStatementGenerator {
 
@@ -25,10 +25,13 @@ public class ClockedStatementGenerator {
 	 */
 	public void generateStatements(String sequence, ProcessedStatement statement) {
 		if (statement instanceof ProcessedBlock) {
+
 			for (ProcessedStatement child : ((ProcessedBlock) statement).getStatements()) {
 				generateStatements(sequence, child);
 			}
+
 		} else if (statement instanceof ProcessedAssignment) {
+
 			ProcessedAssignment assignment = (ProcessedAssignment) statement;
 			if (!(assignment.getLeftHandSide() instanceof SignalLikeReference)) {
 				CompilationErrors.reportError(assignment.getLeftHandSide().getErrorSource(),
@@ -38,13 +41,33 @@ public class ClockedStatementGenerator {
 			String leftHandSide = ((SignalLikeReference) assignment.getLeftHandSide()).getDefinition().getName();
 			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
 			builder.append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
+
 		} else if (statement instanceof ProcessedIf) {
+
 			ProcessedIf processedIf = (ProcessedIf) statement;
-			// TODO
+			String helperName = "___when" + model.newSyntheticConstruct();
+			builder.append("		RtlWhenStatement ").append(helperName).append(" ").append(sequence)
+				.append(".when(").append(expressionGenerator.buildExpression(processedIf.getCondition())).append(");\n");
+			generateStatements(helperName + ".getThenBranch()", processedIf.getThenBranch());
+			generateStatements(helperName + ".getElseBranch()", processedIf.getElseBranch());
 
 		} else if (statement instanceof ProcessedSwitchStatement) {
+
 			ProcessedSwitchStatement processedSwitchStatement = (ProcessedSwitchStatement) statement;
-			// TODO
+			String helperName = "___switch" + model.newSyntheticConstruct();
+			builder.append("		RtlSwitchStatement ").append(helperName).append(" ").append(sequence).append(".switchOn(")
+				.append(expressionGenerator.buildExpression(processedSwitchStatement.getSelector())).append(");\n");
+			for (ProcessedSwitchStatement.Case aCase : processedSwitchStatement.getCases()) {
+				String caseName = "___case" + model.newSyntheticConstruct();
+				builder.append("		RtlStatementSequence ").append(caseName).append(" = ").append(helperName)
+					.append(".addCase(ImmutableList.of(").append(Util.valuesToString(aCase.getSelectorValues()))
+					.append("));\n");
+				generateStatements(caseName, aCase.getBranch());
+			}
+			if (processedSwitchStatement.getDefaultBranch() != null) {
+				generateStatements(helperName + ".getDefaultBranch()", processedSwitchStatement.getDefaultBranch());
+			}
+
 		}
 	}
 
