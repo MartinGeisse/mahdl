@@ -4,8 +4,6 @@ import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import org.apache.commons.lang3.StringUtils;
 
-import static name.martingeisse.mahdl.gradle.codegen.Util.valueToString;
-
 /**
  *
  */
@@ -13,10 +11,12 @@ public class ExpressionGenerator {
 
 	private final GenerationModel model;
 	private final StringBuilder builder;
+	private final ValueGenerator valueGenerator;
 
-	public ExpressionGenerator(GenerationModel model, StringBuilder builder) {
+	public ExpressionGenerator(GenerationModel model, StringBuilder builder, ValueGenerator valueGenerator) {
 		this.model = model;
 		this.builder = builder;
+		this.valueGenerator = valueGenerator;
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class ExpressionGenerator {
 
 		if (expression instanceof ProcessedConstantValue) {
 
-			return valueToString(((ProcessedConstantValue) expression).getValue());
+			return valueGenerator.buildValue(((ProcessedConstantValue) expression).getValue());
 
 		} else if (expression instanceof SignalLikeReference) {
 
@@ -158,7 +158,7 @@ public class ExpressionGenerator {
 				.append(");\n");
 			for (ProcessedSwitchExpression.Case aCase : switchExpression.getCases()) {
 				builder.append("			").append(helperName).append(".addCase(ImmutableList.of(")
-					.append(Util.valuesToString(aCase.getSelectorValues())).append("), ")
+					.append(valueGenerator.buildValues(aCase.getSelectorValues())).append("), ")
 					.append(buildExpression(aCase.getResultValue())).append(");\n");
 			}
 			builder.append("			").append(helperName).append(".setDefaultSignal(")

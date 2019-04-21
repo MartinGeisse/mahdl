@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.function.Predicate;
 
 import static name.martingeisse.mahdl.gradle.codegen.Util.typeToString;
-import static name.martingeisse.mahdl.gradle.codegen.Util.valueToString;
 
 /**
  *
@@ -25,6 +24,7 @@ public final class CodeGenerator {
 
 	private final GenerationModel model;
 	private final StringBuilder builder;
+	private final ValueGenerator valueGenerator;
 	private final ExpressionGenerator expressionGenerator;
 	private final ContinuousStatementExpressionGenerator continuousStatementExpressionGenerator;
 	private final ClockedStatementGenerator clockedStatementGenerator;
@@ -32,9 +32,10 @@ public final class CodeGenerator {
 	public CodeGenerator(GenerationModel model) {
 		this.model = model;
 		this.builder = new StringBuilder();
-		this.expressionGenerator = new ExpressionGenerator(model, builder);
+		this.valueGenerator = new ValueGenerator(model, builder);
+		this.expressionGenerator = new ExpressionGenerator(model, builder, valueGenerator);
 		this.continuousStatementExpressionGenerator = new ContinuousStatementExpressionGenerator(model, builder);
-		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, expressionGenerator);
+		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, valueGenerator, expressionGenerator);
 	}
 
 	public void run() {
@@ -57,7 +58,7 @@ public final class CodeGenerator {
 		for (Constant constant : model.getConstants()) {
 			builder.append("\n");
 			builder.append("	public static final ").append(typeToString(constant.getProcessedDataType()))
-				.append(" = ").append(valueToString(constant.getValue())).append(";\n");
+				.append(" = ").append(valueGenerator.buildValue(constant.getValue())).append(";\n");
 		}
 
 		// fields part: clocks
@@ -157,7 +158,7 @@ public final class CodeGenerator {
 				if (register.getInitializerValue() == null) {
 					builder.append(");\n");
 				} else {
-					builder.append(valueToString(register.getInitializerValue()));
+					builder.append(valueGenerator.buildValue(register.getInitializerValue()));
 					builder.append(");\n");
 				}
 			}

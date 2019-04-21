@@ -12,11 +12,16 @@ public class ClockedStatementGenerator {
 
 	private final GenerationModel model;
 	private final StringBuilder builder;
+	private final ValueGenerator valueGenerator;
 	private final ExpressionGenerator expressionGenerator;
 
-	public ClockedStatementGenerator(GenerationModel model, StringBuilder builder, ExpressionGenerator expressionGenerator) {
+	public ClockedStatementGenerator(GenerationModel model,
+									 StringBuilder builder,
+									 ValueGenerator valueGenerator,
+									 ExpressionGenerator expressionGenerator) {
 		this.model = model;
 		this.builder = builder;
+		this.valueGenerator = valueGenerator;
 		this.expressionGenerator = expressionGenerator;
 	}
 
@@ -61,7 +66,7 @@ public class ClockedStatementGenerator {
 			for (ProcessedSwitchStatement.Case aCase : processedSwitchStatement.getCases()) {
 				String caseName = "___case" + model.newSyntheticConstruct();
 				builder.append("		RtlStatementSequence ").append(caseName).append(" = ").append(helperName)
-					.append(".addCase(ImmutableList.of(").append(Util.valuesToString(aCase.getSelectorValues()))
+					.append(".addCase(ImmutableList.of(").append(valueGenerator.buildValues(aCase.getSelectorValues()))
 					.append("));\n");
 				generateStatements(caseName, aCase.getBranch());
 			}
