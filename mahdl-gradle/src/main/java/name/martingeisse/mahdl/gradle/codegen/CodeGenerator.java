@@ -147,12 +147,11 @@ public final class CodeGenerator {
 			}
 			String clockName = ((SignalLikeReference) clock).getDefinition().getName();
 
-			builder.append("		{\n");
-			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
+			builder.append("		RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
 			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getRegisters()) {
-				builder.append("			").append(register.getName());
+				builder.append("		").append(register.getName());
 				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 					builder.append(" = ").append(doBlockInfo.getName()).append(".createBit(");
 				} else {
@@ -169,7 +168,6 @@ public final class CodeGenerator {
 					builder.append(");\n");
 				}
 			}
-			builder.append("		}\n");
 		}
 
 		// implementation part: generate signal connector inputs from signal initializers
