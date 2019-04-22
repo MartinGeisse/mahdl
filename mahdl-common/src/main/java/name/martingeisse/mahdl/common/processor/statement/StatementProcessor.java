@@ -46,7 +46,7 @@ public final class StatementProcessor {
 		} else if (trigger instanceof DoBlockTrigger_Clocked) {
 			triggerKind = AssignmentValidator.TriggerKind.CLOCKED;
 			Expression clockExpression = ((DoBlockTrigger_Clocked) trigger).getClockExpression();
-			clock = expressionProcessor.process(clockExpression, ProcessedDataType.Bit.INSTANCE);
+			clock = expressionProcessor.process(clockExpression, ProcessedDataType.Clock.INSTANCE);
 		} else {
 			error(trigger, "unknown trigger type");
 			return null;
