@@ -48,7 +48,14 @@ public final class CodeGenerator {
 
 		// imports
 		builder.append("import name.martingeisse.esdk.core.rtl.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.block.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.block.statement.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.memory.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.signal.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.signal.connector.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.synthesis.verilog.*;\n");
+		builder.append("import name.martingeisse.esdk.core.util.*;\n");
+		builder.append("import name.martingeisse.esdk.core.util.vector.VectorValue;\n");
 		builder.append("\n");
 
 		// class intro
@@ -226,9 +233,9 @@ public final class CodeGenerator {
 				builder.append("		this.").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
 				builder.append("	}\n");
 			} else {
-				builder.append("	public ").append(port.getProcessedDataType()).append(" get")
+				builder.append("	public ").append(typeToString(port.getProcessedDataType())).append(" get")
 					.append(StringUtils.capitalize(port.getName())).append("() {\n");
-				builder.append("		return ").append(port.getName()).append(".getConnected();\n");
+				builder.append("		return ").append(port.getName()).append(";\n");
 				builder.append("	}\n");
 			}
 			builder.append("\n");

@@ -35,7 +35,19 @@ public class ExpressionGenerator {
 
 		if (expression instanceof ProcessedConstantValue) {
 
-			return valueGenerator.buildValue(((ProcessedConstantValue) expression).getValue());
+			String value = valueGenerator.buildValue(((ProcessedConstantValue) expression).getValue());
+			switch (expression.getDataType().getFamily()) {
+
+				case BIT:
+					return "new RtlBitConstant(realm, " + value + ")";
+
+				case VECTOR:
+					return "new RtlVectorConstant(realm, " + value + ")";
+
+				default:
+					return "null";
+
+			}
 
 		} else if (expression instanceof SignalLikeReference) {
 
