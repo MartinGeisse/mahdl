@@ -60,7 +60,7 @@ public class IntellijEnvironment implements Environment {
 		if (psiFile == null) {
 			return;
 		}
-		VirtualFile virtualFile = psiFile.getVirtualFile();
+		VirtualFile virtualFile = psiFile.getOriginalFile().getVirtualFile();
 		if (virtualFile == null) {
 			return;
 		}
