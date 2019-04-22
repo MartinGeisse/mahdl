@@ -5,6 +5,7 @@
 package name.martingeisse.mahdl.intellij.input;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -26,6 +27,9 @@ import name.martingeisse.mahdl.intellij.input.reference.ModuleReference;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -74,47 +78,74 @@ public final class PsiUtil {
 	}
 
 	@Nullable
-	public static VirtualFile getSourceRoot(@NotNull PsiElement psiElement) {
-		PsiFile originPsiFile = psiElement.getContainingFile();
-		if (originPsiFile == null) {
+	public static VirtualFile[] getSourceRoots(@NotNull PsiElement psiElement) {
+		PsiFile psiFile = psiElement.getContainingFile();
+		if (psiFile == null) {
 			return null;
 		}
-		VirtualFile originVirtualFile = originPsiFile.getOriginalFile().getVirtualFile();
-		if (originVirtualFile == null) {
+		VirtualFile virtualFile = psiFile.getOriginalFile().getVirtualFile();
+		if (virtualFile == null) {
 			return null;
 		}
-		return ProjectRootManager.getInstance(originPsiFile.getProject()).getFileIndex().getSourceRootForFile(originVirtualFile);
+		com.intellij.openapi.module.Module projectModule =
+			ProjectRootManager.getInstance(psiFile.getProject()).getFileIndex().getModuleForFile(virtualFile);
+		if (projectModule == null) {
+			return null;
+		}
+		List<VirtualFile> sourceRoots = new ArrayList<>();
+		for (VirtualFile moduleRoot : ModuleRootManager.getInstance(projectModule).getContentRoots()) {
+			VirtualFile srcFolder = moduleRoot.findChild("src");
+			if (srcFolder == null) {
+				continue;
+			}
+			VirtualFile mahdlFolder = srcFolder.findChild("mahdl");
+			if (mahdlFolder == null) {
+				continue;
+			}
+			sourceRoots.add(mahdlFolder);
+		}
+		return sourceRoots.toArray(new VirtualFile[0]);
 	}
 
 	@NotNull
 	public static ModuleImpl resolveModuleName(QualifiedModuleNameImpl moduleName) throws ReferenceResolutionException {
-		VirtualFile sourceRoot = getSourceRoot(moduleName);
-		if (sourceRoot == null) {
-			throw new ReferenceResolutionException("the module name is not located inside a source root");
-		}
 		String[] segments = CmUtil.parseQualifiedModuleName(moduleName);
-		VirtualFile targetVirtualFile = sourceRoot;
-		for (int i = 0; i < segments.length - 1; i++) {
-			targetVirtualFile = targetVirtualFile.findChild(segments[i]);
-			if (targetVirtualFile == null) {
-				String path = sourceRoot.getPath() + '/' + StringUtils.join(segments, '/') + ".mahdl";
-				throw new ReferenceResolutionException("could not locate module file " + path + ": folder " + segments[i] + " not found");
+		VirtualFile[] sourceRoots = getSourceRoots(moduleName);
+		if (sourceRoots == null) {
+			throw new ReferenceResolutionException("could not determine source roots");
+		}
+		ReferenceResolutionException exception = null;
+		boolean multipleExceptions = false;
+		sourceRootLoop: for (VirtualFile sourceRoot : sourceRoots) {
+			VirtualFile targetVirtualFile = sourceRoot;
+			for (int i = 0; i < segments.length - 1; i++) {
+				targetVirtualFile = targetVirtualFile.findChild(segments[i]);
+				if (targetVirtualFile == null) {
+					continue sourceRootLoop;
+				}
 			}
+			targetVirtualFile = targetVirtualFile.findChild(segments[segments.length - 1] + ".mahdl");
+			if (targetVirtualFile == null) {
+				continue sourceRootLoop;
+			}
+			PsiFile targetPsiFile = PsiManager.getInstance(moduleName.getProject()).findFile(targetVirtualFile);
+			if (!(targetPsiFile instanceof MahdlSourceFile)) {
+				multipleExceptions |= (exception != null);
+				exception = new ReferenceResolutionException(targetVirtualFile.getPath() + " is not a MaHDL source file");
+				continue sourceRootLoop;
+			}
+			ModuleImpl module = ((MahdlSourceFile) targetPsiFile).getModule();
+			if (module == null) {
+				multipleExceptions |= (exception != null);
+				exception = new ReferenceResolutionException("target file does not contain a module");
+				continue sourceRootLoop;
+			}
+			return module;
 		}
-		targetVirtualFile = targetVirtualFile.findChild(segments[segments.length - 1] + ".mahdl");
-		if (targetVirtualFile == null) {
-			String path = sourceRoot.getPath() + '/' + StringUtils.join(segments, '/') + ".mahdl";
-			throw new ReferenceResolutionException("module file " + path + " not found");
+		if (multipleExceptions || exception == null) {
+			exception = new ReferenceResolutionException("could not resolve module " + CmUtil.canonicalizeQualifiedModuleName(moduleName));
 		}
-		PsiFile targetPsiFile = PsiManager.getInstance(moduleName.getProject()).findFile(targetVirtualFile);
-		if (!(targetPsiFile instanceof MahdlSourceFile)) {
-			throw new ReferenceResolutionException(targetVirtualFile.getPath() + " is not a MaHDL source file");
-		}
-		ModuleImpl module = ((MahdlSourceFile) targetPsiFile).getModule();
-		if (module == null) {
-			throw new ReferenceResolutionException("target file does not contain a module");
-		}
-		return module;
+		throw exception;
 	}
 
 	//

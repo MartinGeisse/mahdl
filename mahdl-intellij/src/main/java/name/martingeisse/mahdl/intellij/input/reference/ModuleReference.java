@@ -20,8 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -104,23 +104,25 @@ public class ModuleReference implements PsiReference {
 		// A simple file-based index doesn't work here since it doesn't delete obsolete keys, and we can't
 		// distinguish those from real ones. If performance becomes a problem, use stub trees (stub-backed PSI
 		// instead of AST-backed PSI) and stub indexes.
-		List<Object> variants = new ArrayList<>();
-		VirtualFile sourceRoot = PsiUtil.getSourceRoot(moduleName);
-		if (sourceRoot != null) {
-			VfsUtilCore.visitChildrenRecursively(sourceRoot, new VirtualFileVisitor<Object>(VirtualFileVisitor.SKIP_ROOT) {
-				@Override
-				public boolean visitFile(@NotNull VirtualFile file) {
-					String name = file.getName();
-					String prefix = (String) getCurrentValue();
-					if (!file.isDirectory() && name.endsWith(".mahdl")) {
-						String simpleModuleName = name.substring(0, name.length() - ".mahdl".length());
-						String fullModuleName = (prefix == null ? simpleModuleName : (prefix + '.' + simpleModuleName));
-						variants.add(fullModuleName);
+		Set<String> variants = new HashSet<>();
+		VirtualFile[] sourceRoots = PsiUtil.getSourceRoots(moduleName);
+		if (sourceRoots != null) {
+			for (VirtualFile sourceRoot : sourceRoots) {
+				VfsUtilCore.visitChildrenRecursively(sourceRoot, new VirtualFileVisitor<Object>(VirtualFileVisitor.SKIP_ROOT) {
+					@Override
+					public boolean visitFile(@NotNull VirtualFile file) {
+						String name = file.getName();
+						String prefix = (String) getCurrentValue();
+						if (!file.isDirectory() && name.endsWith(".mahdl")) {
+							String simpleModuleName = name.substring(0, name.length() - ".mahdl".length());
+							String fullModuleName = (prefix == null ? simpleModuleName : (prefix + '.' + simpleModuleName));
+							variants.add(fullModuleName);
+						}
+						setValueForChildren(prefix == null ? name : (prefix + '.' + name));
+						return (name.indexOf('.') < 0);
 					}
-					setValueForChildren(prefix == null ? name : (prefix + '.' + name));
-					return (name.indexOf('.') < 0);
-				}
-			});
+				});
+			}
 		}
 		return variants.toArray();
 

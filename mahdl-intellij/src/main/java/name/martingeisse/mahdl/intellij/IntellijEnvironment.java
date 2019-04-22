@@ -1,5 +1,7 @@
 package name.martingeisse.mahdl.intellij;
 
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -11,7 +13,6 @@ import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.InternalPsiUtil;
 import name.martingeisse.mahdl.input.cm.impl.QualifiedModuleNameImpl;
-import name.martingeisse.mahdl.intellij.input.PsiUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,20 +52,54 @@ public class IntellijEnvironment implements Environment {
 	}
 
 	@Override
-	public void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException {
+	public void validateModuleNameAgainstFilePath(Module mahdlModule, QualifiedModuleName name) throws IOException {
+
+		// determine the IntelliJ project module
 		QualifiedModuleNameImpl namePsi = (QualifiedModuleNameImpl) InternalPsiUtil.getPsiFromCm(name);
-		String canonicalName = CmUtil.canonicalizeQualifiedModuleName(namePsi);
-		Module moduleForName;
-		try {
-			moduleForName = PsiUtil.resolveModuleName(namePsi);
-		} catch (ReferenceResolutionException e) {
-			throw new IOException("could not resolve name " + canonicalName, e);
+		PsiFile psiFile = namePsi.getContainingFile();
+		if (psiFile == null) {
+			return;
 		}
-		if (moduleForName != module) {
-			String otherCanonicalName = module.getModuleName() == null ? "(null)" :
-				CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
-			throw new IOException("name " + canonicalName + " resolves to different module " + otherCanonicalName);
+		VirtualFile virtualFile = psiFile.getVirtualFile();
+		if (virtualFile == null) {
+			return;
 		}
+		com.intellij.openapi.module.Module projectModule =
+			ProjectRootManager.getInstance(psiFile.getProject()).getFileIndex().getModuleForFile(virtualFile);
+		if (projectModule == null) {
+			return;
+		}
+
+		// determine the path of the source file relative to any one of the module roots
+		VirtualFile[] moduleRoots = ModuleRootManager.getInstance(projectModule).getContentRoots();
+		StringBuilder pathBuilder = new StringBuilder(virtualFile.getName());
+		VirtualFile currentFolder = virtualFile.getParent();
+		folderLoop: while (true) {
+			if (currentFolder == null) {
+				return;
+			}
+			for (VirtualFile moduleRoot : moduleRoots) {
+				if (currentFolder.equals(moduleRoot)) {
+					break folderLoop;
+				}
+			}
+			pathBuilder.insert(0, currentFolder.getName() + '/');
+			currentFolder = currentFolder.getParent();
+		}
+		String path = pathBuilder.toString();
+
+		// analyze the path just determined
+		String expectedPrefix = "src/mahdl/";
+		String expectedSuffix = ".mahdl";
+		if (!path.startsWith(expectedPrefix) || !path.endsWith(expectedSuffix)) {
+			return;
+		}
+		String qualifiedNameFromPath = path.substring(expectedPrefix.length(), path.length() - expectedSuffix.length()).replace('/', '.');
+		String qualifiedNameFromCm = CmUtil.canonicalizeQualifiedModuleName(name);
+		if (!qualifiedNameFromCm.equals(qualifiedNameFromPath)) {
+			throw new IOException("file should contain module " + qualifiedNameFromPath + ", contains " + qualifiedNameFromCm);
+		}
+
 	}
 
 	@Override
