@@ -152,6 +152,10 @@ public class ExpressionGenerator {
 
 		} else if (expression instanceof ProcessedIndexSelection) {
 
+			// TODO handle matrix-typed containers.
+			// case 1: the matrix expression is a constant (possibly after resolving a SignalLikeReference).
+			//   Other accesses to the same constant are irrelevant. Compile to a LUT (single-async-read-only matrix).
+			// case 2: the matrix expression is a reference to a register. Compile to a procedural memory.
 			ProcessedIndexSelection indexSelection = (ProcessedIndexSelection) expression;
 			String container = buildExpression(indexSelection.getContainer());
 			String index = buildExpression(indexSelection.getIndex());

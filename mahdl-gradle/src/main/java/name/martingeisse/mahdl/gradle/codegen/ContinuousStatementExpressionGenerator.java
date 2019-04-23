@@ -58,6 +58,8 @@ public class ContinuousStatementExpressionGenerator {
 
 		} else if (statement instanceof ProcessedAssignment) {
 
+			// TODO handle index-selection and range-selection targets.
+
 			ProcessedAssignment assignment = (ProcessedAssignment) statement;
 			ProcessedExpression leftHandSide = assignment.getLeftHandSide();
 			if (leftHandSideMatcher.test(leftHandSide)) {

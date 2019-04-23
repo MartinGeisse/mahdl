@@ -48,6 +48,9 @@ public class ClockedStatementGenerator {
 			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
 			builder.append("		").append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
 
+			// TODO handle index-selection and range-selection targets.
+			// TODO handle matrix-typed containers.
+
 		} else if (statement instanceof ProcessedIf) {
 
 			ProcessedIf processedIf = (ProcessedIf) statement;
