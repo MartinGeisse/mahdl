@@ -46,7 +46,7 @@ public class ClockedStatementGenerator {
 			}
 			String leftHandSide = ((SignalLikeReference) assignment.getLeftHandSide()).getDefinition().getName();
 			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
-			builder.append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
+			builder.append("		").append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
 
 		} else if (statement instanceof ProcessedIf) {
 

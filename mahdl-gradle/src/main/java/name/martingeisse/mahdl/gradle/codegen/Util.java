@@ -11,7 +11,7 @@ final class Util {
 	private Util() {
 	}
 
-	static String typeToString(ProcessedDataType type) {
+	static String valueTypeToString(ProcessedDataType type) {
 		switch (type.getFamily()) {
 
 			case BIT:
@@ -28,6 +28,24 @@ final class Util {
 
 			case TEXT:
 				return "String";
+
+			case CLOCK:
+				return "RtlClockNetwork";
+
+			default:
+				return "Object";
+
+		}
+	}
+
+	static String signalTypeToString(ProcessedDataType type) {
+		switch (type.getFamily()) {
+
+			case BIT:
+				return "RtlBitSignal";
+
+			case VECTOR:
+				return "RtlVectorSignal";
 
 			case CLOCK:
 				return "RtlClockNetwork";

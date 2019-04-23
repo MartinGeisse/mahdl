@@ -15,7 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Predicate;
 
-import static name.martingeisse.mahdl.gradle.codegen.Util.typeToString;
+import static name.martingeisse.mahdl.gradle.codegen.Util.signalTypeToString;
+import static name.martingeisse.mahdl.gradle.codegen.Util.valueTypeToString;
 
 /**
  *
@@ -64,7 +65,7 @@ public final class CodeGenerator {
 		// constants
 		for (Constant constant : model.getConstants()) {
 			builder.append("\n");
-			builder.append("	public static final ").append(typeToString(constant.getProcessedDataType()))
+			builder.append("	public static final ").append(valueTypeToString(constant.getProcessedDataType()))
 				.append(" = ").append(valueGenerator.buildValue(constant.getValue())).append(";\n");
 		}
 
@@ -226,12 +227,12 @@ public final class CodeGenerator {
 			builder.append("\n");
 			if (port.getDirection() == PortDirection.IN) {
 				builder.append("	public void set").append(StringUtils.capitalize(port.getName())).append("(")
-					.append(typeToString(port.getProcessedDataType())).append(' ').append(port.getName())
+					.append(signalTypeToString(port.getProcessedDataType())).append(' ').append(port.getName())
 					.append(") {\n");
 				builder.append("		this.").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
 				builder.append("	}\n");
 			} else {
-				builder.append("	public ").append(typeToString(port.getProcessedDataType())).append(" get")
+				builder.append("	public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
 					.append(StringUtils.capitalize(port.getName())).append("() {\n");
 				builder.append("		return ").append(port.getName()).append(";\n");
 				builder.append("	}\n");
