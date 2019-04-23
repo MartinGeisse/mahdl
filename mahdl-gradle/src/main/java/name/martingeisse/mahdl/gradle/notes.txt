@@ -7,6 +7,7 @@ A MaHDL module has a name. It is possibly native, meaning that no code is genera
 Below the header, there are six differend kinds of language constructs that must be compiled to ESDK-style Java code:
 - constants. Theses are compiled to public static final fields at the top. They are public since some of these may be
     part of a "contract" with the code that uses the module, but ESDK has no concept of marking them public.
+    Matrix-typed constants are omitted since they are too complex to build in the static field part.
 - ports. We distinguish clock ports and non-clock (data) ports. For clock ports, we only support input ports at the
     moment.
 - signals. We disallow local clock signals at the moment.
