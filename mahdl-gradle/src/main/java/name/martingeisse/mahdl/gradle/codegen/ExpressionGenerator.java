@@ -44,6 +44,8 @@ public class ExpressionGenerator {
 				case VECTOR:
 					return "new RtlVectorConstant(realm, " + value + ")";
 
+				// TODO support matrix, but not as an expression in general but in supported special cases as sub-expressions of other expressions
+
 				default:
 					return "null";
 
