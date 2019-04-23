@@ -64,9 +64,11 @@ public final class CodeGenerator {
 
 		// constants
 		for (Constant constant : model.getConstants()) {
-			builder.append("\n");
-			builder.append("	public static final ").append(valueTypeToString(constant.getProcessedDataType()))
-				.append(" = ").append(valueGenerator.buildValue(constant.getValue())).append(";\n");
+			if (constant.getProcessedDataType().getFamily() != ProcessedDataType.Family.MATRIX) {
+				builder.append("\n");
+				builder.append("	public static final ").append(valueTypeToString(constant.getProcessedDataType()))
+					.append(" = ").append(valueGenerator.buildValue(constant.getValue())).append(";\n");
+			}
 		}
 
 		// fields part: clocks
