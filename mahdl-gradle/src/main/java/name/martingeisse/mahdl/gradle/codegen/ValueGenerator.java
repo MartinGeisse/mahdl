@@ -54,7 +54,14 @@ public class ValueGenerator {
 			String name = "___matrix" + model.newSyntheticConstruct();
 			builder.append("		Matrix ").append(name).append(" = new Matrix(").append(matrix.getFirstSize())
 				.append(", ").append(matrix.getSecondSize()).append(");\n");
-			// TODO contents
+			for (int i = 0; i < matrix.getFirstSize(); i++) {
+				ConstantValue row = matrix.selectIndex(i);
+				if (row instanceof ConstantValue.Vector) {
+					builder.append("		").append(name).append("setRow(").append(i).append(", VectorValue.ofUnsigned(")
+						.append(matrix.getSecondSize()).append(", ").append(buildValue(row)).append("));\n");
+
+				}
+			}
 			return name;
 		} else if (value instanceof ConstantValue.Integer) {
 			return ((ConstantValue.Integer) value).getValue().toString();
