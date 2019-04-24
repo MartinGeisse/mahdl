@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,8 +44,6 @@ public class ExpressionGenerator {
 
 				case VECTOR:
 					return "new RtlVectorConstant(realm, " + value + ")";
-
-				// TODO support matrix, but not as an expression in general but in supported special cases as sub-expressions of other expressions
 
 				default:
 					return "null";
@@ -152,11 +151,17 @@ public class ExpressionGenerator {
 
 		} else if (expression instanceof ProcessedIndexSelection) {
 
-			// TODO handle matrix-typed containers.
-			// case 1: the matrix expression is a constant (possibly after resolving a SignalLikeReference).
-			//   Other accesses to the same constant are irrelevant. Compile to a LUT (single-async-read-only matrix).
-			// case 2: the matrix expression is a reference to a register. Compile to a procedural memory.
 			ProcessedIndexSelection indexSelection = (ProcessedIndexSelection) expression;
+
+			// handle LUTs specially since they don't use the .select() syntax
+			if (indexSelection.getContainer().getDataType().getFamily() == ProcessedDataType.Family.MATRIX &&
+				indexSelection.getContainer() instanceof ProcessedConstantValue) {
+				String matrix = valueGenerator.buildValue(((ProcessedConstantValue) indexSelection.getContainer()).getValue());
+				String index = buildExpression(indexSelection.getIndex());
+				return "new RtlLookupTable(realm, " + matrix + ", " + index + ")";
+			}
+
+			// select bit from vector or vector from procedural memory
 			String container = buildExpression(indexSelection.getContainer());
 			String index = buildExpression(indexSelection.getIndex());
 			return container + ".select(" + index + ")";
