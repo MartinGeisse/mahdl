@@ -1,8 +1,6 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
-import name.martingeisse.mahdl.common.processor.expression.SignalLikeReference;
 import name.martingeisse.mahdl.common.processor.statement.*;
-import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 
 /**
@@ -14,6 +12,7 @@ public class ClockedStatementGenerator {
 	private final StringBuilder builder;
 	private final ValueGenerator valueGenerator;
 	private final ExpressionGenerator expressionGenerator;
+	private final AssignmentTargetGenerator assignmentTargetGenerator;
 
 	public ClockedStatementGenerator(GenerationModel model,
 									 StringBuilder builder,
@@ -23,6 +22,7 @@ public class ClockedStatementGenerator {
 		this.builder = builder;
 		this.valueGenerator = valueGenerator;
 		this.expressionGenerator = expressionGenerator;
+		this.assignmentTargetGenerator = new AssignmentTargetGenerator(model, builder, valueGenerator, expressionGenerator);
 	}
 
 	/**
@@ -39,17 +39,9 @@ public class ClockedStatementGenerator {
 		} else if (statement instanceof ProcessedAssignment) {
 
 			ProcessedAssignment assignment = (ProcessedAssignment) statement;
-			if (!(assignment.getLeftHandSide() instanceof SignalLikeReference)) {
-				CompilationErrors.reportError(assignment.getLeftHandSide().getErrorSource(),
-					"only assignment to whole registers are currently supported");
-				return;
-			}
-			String leftHandSide = ((SignalLikeReference) assignment.getLeftHandSide()).getDefinition().getName();
+			String leftHandSide = assignmentTargetGenerator.buildAssignmentTarget(assignment.getLeftHandSide());
 			String rightHandSide = expressionGenerator.buildExpression(assignment.getRightHandSide());
 			builder.append("		").append(sequence).append(".assign(").append(leftHandSide).append(", ").append(rightHandSide).append(");\n");
-
-			// TODO handle index-selection and range-selection targets.
-			// TODO handle matrix-typed containers.
 
 		} else if (statement instanceof ProcessedIf) {
 
