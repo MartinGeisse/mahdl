@@ -91,10 +91,20 @@ public final class CodeGenerator {
 		for (ClockedDoBlockInfo doBlockInfo : model.getClockedDoBlockInfos()) {
 			for (Register register : doBlockInfo.getRegisters()) {
 				builder.append("\n");
-				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
-					builder.append("	private final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
-				} else {
-					builder.append("	private final RtlProceduralVectorSignal ").append(register.getName()).append(";\n");
+				switch (register.getProcessedDataType().getFamily()) {
+
+					case BIT:
+						builder.append("	private final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
+						break;
+
+					case VECTOR:
+						builder.append("	private final RtlProceduralVectorSignal ").append(register.getName()).append(";\n");
+						break;
+
+					case MATRIX:
+						builder.append("	private final RtlProceduralMemory ").append(register.getName()).append(";\n");
+						break;
+
 				}
 			}
 		}
@@ -154,15 +164,31 @@ public final class CodeGenerator {
 			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getRegisters()) {
-				builder.append("		").append(register.getName());
-				if (register.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
-					builder.append(" = ").append(doBlockInfo.getName()).append(".createBit(");
-				} else {
-					ProcessedDataType.Vector vectorType = (ProcessedDataType.Vector) register.getProcessedDataType();
-					builder.append(" = ").append(doBlockInfo.getName()).append(".createVector(").append(vectorType.getSize());
-					if (register.getInitializerValue() != null) {
-						builder.append(", ");
+				builder.append("		").append(register.getName()).append(" = ").append(doBlockInfo.getName());
+				switch (register.getProcessedDataType().getFamily()) {
+
+					case BIT: {
+						builder.append(".createBit(");
+						break;
 					}
+
+					case VECTOR: {
+						ProcessedDataType.Vector vectorType = (ProcessedDataType.Vector) register.getProcessedDataType();
+						builder.append(".createVector(").append(vectorType.getSize());
+						if (register.getInitializerValue() != null) {
+							builder.append(", ");
+						}
+						break;
+					}
+
+					case MATRIX: {
+						builder.append(".createMatrix(");
+						if (register.getInitializerValue() == null) {
+							ProcessedDataType.Matrix matrixType = (ProcessedDataType.Matrix) register.getProcessedDataType();
+							builder.append(", ").append(matrixType.getFirstSize()).append(", ").append(matrixType.getSecondSize());
+						}
+					}
+
 				}
 				if (register.getInitializerValue() == null) {
 					builder.append(");\n");
