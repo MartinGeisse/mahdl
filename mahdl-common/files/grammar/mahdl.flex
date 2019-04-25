@@ -34,6 +34,7 @@ CommentContent = ( [^*] | \*+[^*/] )*
 // other
 PositiveInteger = ([1-9][0-9]*)
 UnsignedInteger = "0" | {PositiveInteger}
+TextLiteral = "\"" ("\\" . | [^\"\\])* "\""
 
 %%
 
@@ -116,6 +117,7 @@ default { return Symbols.KW_DEFAULT; }
 {PositiveInteger}[o][0-7]+ { return Symbols.VECTOR_LITERAL; }
 {PositiveInteger}[d][0-9]+ { return Symbols.VECTOR_LITERAL; }
 {PositiveInteger}[h][0-9a-fA-F]+ { return Symbols.VECTOR_LITERAL; }
+{TextLiteral} { return Symbols.TEXT_LITERAL; }
 
 // identifiers
 [a-zA-Z_][a-zA-Z_0-9]* { return Symbols.IDENTIFIER; }
