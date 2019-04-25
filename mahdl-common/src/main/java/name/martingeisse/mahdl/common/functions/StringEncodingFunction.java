@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.List;
 
@@ -25,24 +26,47 @@ public abstract class StringEncodingFunction extends FixedSignatureFunction {
 
 	public StringEncodingFunction() {
 		super(ImmutableList.of(
-			ProcessedDataType.Text.INSTANCE,
-			ProcessedDataType.Integer.INSTANCE
+			ProcessedDataType.Integer.INSTANCE,
+			ProcessedDataType.Text.INSTANCE
 		));
 	}
 
 	@NotNull
 	@Override
 	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ErrorHandler errorHandler) {
-		int size = arguments.get(1).evaluateFormallyConstant(new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler)).
-			convertToInteger().intValueExact();
+		ConstantValue value = arguments.get(0).evaluateFormallyConstant(new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler));
+		BigInteger integerValue = value.convertToInteger();
+		if (integerValue == null) {
+			return ProcessedDataType.Unknown.INSTANCE;
+		}
+		int size;
+		try {
+			size = integerValue.intValueExact();
+		} catch (ArithmeticException e) {
+			errorHandler.onError(arguments.get(0).getErrorSource(), "size too large");
+			return ProcessedDataType.Unknown.INSTANCE;
+		}
 		return new ProcessedDataType.Matrix(size, 8);
 	}
 
 	@NotNull
 	@Override
 	public ConstantValue applyToConstantValues(@NotNull CmNode errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
-		String text = arguments.get(0).convertToString();
-		int size = arguments.get(1).convertToInteger().intValueExact();
+
+		// determine size
+		BigInteger integerValue = arguments.get(0).convertToInteger();
+		if (integerValue == null) {
+			return ConstantValue.Unknown.INSTANCE;
+		}
+		int size;
+		try {
+			size = integerValue.intValueExact();
+		} catch (ArithmeticException e) {
+			return ConstantValue.Unknown.INSTANCE;
+		}
+
+		// encode text
+		String text = arguments.get(1).convertToString();
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try {
 			encode(text, byteArrayOutputStream);
@@ -54,6 +78,8 @@ public abstract class StringEncodingFunction extends FixedSignatureFunction {
 				" bytes, but target size is only " + size + " bytes");
 		}
 		byte[] data = byteArrayOutputStream.toByteArray();
+
+		// convert bytes to bits
 		BitSet bits = new BitSet();
 		for (int i = 0; i < data.length; i++) {
 			byte b = data[i];
@@ -64,6 +90,7 @@ public abstract class StringEncodingFunction extends FixedSignatureFunction {
 				b = (byte) (b << 1);
 			}
 		}
+
 		return new ConstantValue.Matrix(size, 8, bits);
 	}
 

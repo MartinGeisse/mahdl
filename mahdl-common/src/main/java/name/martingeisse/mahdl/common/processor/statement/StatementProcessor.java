@@ -67,6 +67,9 @@ public final class StatementProcessor {
 			ProcessedExpression leftHandSide = expressionProcessor.process(assignment.getLeftSide());
 			ProcessedExpression rightHandSide = expressionProcessor.process(assignment.getRightSide(), leftHandSide.getDataType());
 			assignmentValidator.validateAssignmentTo(leftHandSide, triggerKind);
+			if (leftHandSide.getDataType().getFamily() == ProcessedDataType.Family.MATRIX) {
+				return error(statement, "cannot assign the whole matrix at once");
+			}
 			try {
 				return new ProcessedAssignment(statement, leftHandSide, rightHandSide);
 			} catch (TypeErrorException e) {
