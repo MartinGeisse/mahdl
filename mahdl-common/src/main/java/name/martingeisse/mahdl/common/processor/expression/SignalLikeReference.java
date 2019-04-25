@@ -51,7 +51,7 @@ public final class SignalLikeReference extends ProcessedExpression {
 		if (definition instanceof Constant) {
 			ConstantValue value = ((Constant) definition).getValue();
 			if (value == null) {
-				throw new RuntimeException("defined constant has no value: " + definition.getName());
+				return ConstantValue.Unknown.INSTANCE;
 			}
 			return value;
 		} else {
