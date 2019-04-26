@@ -21,4 +21,6 @@ public abstract class ProcessedStatement {
 		return errorSource;
 	}
 
+	public abstract <R> R visitBranches(BranchVisitor<R> visitor);
+
 }

@@ -38,4 +38,9 @@ public final class ProcessedAssignment extends ProcessedStatement {
 		return rightHandSide;
 	}
 
+	@Override
+	public <R> R visitBranches(BranchVisitor<R> visitor) {
+		return visitor.getAssignmentHandler().apply(this);
+	}
+	
 }

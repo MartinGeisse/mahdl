@@ -16,4 +16,8 @@ public final class UnknownStatement extends ProcessedStatement {
 		super(errorSource);
 	}
 
+	public <R> R visitBranches(BranchVisitor<R> visitor) {
+		return visitor.getEmptyResult();
+	}
+
 }

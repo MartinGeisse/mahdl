@@ -35,4 +35,9 @@ public final class ProcessedIf extends ProcessedStatement {
 		return elseBranch;
 	}
 
+	@Override
+	public <R> R visitBranches(BranchVisitor<R> visitor) {
+		return visitor.getBranchOperator().apply(visitor.visit(thenBranch), visitor.visit(elseBranch));
+	}
+
 }

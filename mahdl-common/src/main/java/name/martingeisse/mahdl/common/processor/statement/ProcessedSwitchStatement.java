@@ -12,8 +12,6 @@ import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 /**
  *
  */
@@ -58,6 +56,15 @@ public final class ProcessedSwitchStatement extends ProcessedStatement {
 	@Nullable
 	public ProcessedStatement getDefaultBranch() {
 		return defaultBranch;
+	}
+
+	@Override
+	public <R> R visitBranches(BranchVisitor<R> visitor) {
+		R result = visitor.visit(defaultBranch);
+		for (Case aCase : cases) {
+			result = visitor.getBranchOperator().apply(result, visitor.visit(aCase.getBranch()));
+		}
+		return result;
 	}
 
 	public static final class Case {

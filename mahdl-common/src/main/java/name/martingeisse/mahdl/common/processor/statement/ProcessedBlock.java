@@ -23,4 +23,13 @@ public final class ProcessedBlock extends ProcessedStatement {
 		return statements;
 	}
 
+	@Override
+	public <R> R visitBranches(BranchVisitor<R> visitor) {
+		R result = visitor.getEmptyResult();
+		for (ProcessedStatement statement : statements) {
+			result = visitor.getSequenceOperator().apply(result, visitor.visit(statement));
+		}
+		return result;
+	}
+
 }
