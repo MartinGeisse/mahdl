@@ -41,7 +41,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			if (expression instanceof ExtendedExpression_Normal) {
 				return process(((ExtendedExpression_Normal) expression).getExpression());
 			} else if (expression instanceof ExtendedExpression_Switch) {
-				return process((ExtendedExpression_Switch) expression);
+				return process((ExtendedExpression_Switch) expression).performFolding(errorHandler);
 			} else {
 				return error(expression, "unknown expression type");
 			}
