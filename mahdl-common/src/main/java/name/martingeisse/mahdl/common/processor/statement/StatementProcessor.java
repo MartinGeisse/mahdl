@@ -52,7 +52,11 @@ public final class StatementProcessor {
 			return null;
 		}
 		ProcessedStatement body = process(doBlock.getStatement(), triggerKind);
-		return new ProcessedDoBlock(clock, body);
+		ProcessedDoBlock result = new ProcessedDoBlock(clock, body);
+		if (triggerKind == AssignmentValidator.TriggerKind.CONTINUOUS) {
+			new AssignmentBranchCompletenessValidator(errorHandler, result).run();
+		}
+		return result;
 	}
 
 	public ProcessedStatement process(Statement statement, AssignmentValidator.TriggerKind triggerKind) {
