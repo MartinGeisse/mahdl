@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.common.processor.statement;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -38,6 +39,14 @@ public final class BranchVisitor<R> {
 
 	public R visit(ProcessedStatement statement) {
 		return (statement == null ? emptyResult : statement.visitBranches(this));
+	}
+
+	public static BranchVisitor<Void> createAssignmentsWithoutResultVisitor(Consumer<ProcessedAssignment> assignmentConsumer) {
+		BiFunction<Void, Void, Void> ignore = (x, y) -> null;
+		return new BranchVisitor<>(null, ignore, ignore, assignment -> {
+			assignmentConsumer.accept(assignment);
+			return null;
+		});
 	}
 
 }
