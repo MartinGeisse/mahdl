@@ -79,20 +79,66 @@ public class LiteralParser {
 		StringBuilder builder = new StringBuilder();
 		boolean escape = false;
 		for (int i = 1; i < rawText.length() - 1; i++) {
-			char c = rawText.charAt(i);
 			if (escape) {
-				// escapes are not supported (yet), and it's not clear whether we need them
-				throw new ParseException("text escape sequences are not supported yet");
-			} else if (c == '\\') {
-				escape = true;
+				i = i + parseEscapeSequence(rawText, i, builder) - 1;
 			} else {
-				builder.append(c);
+				char c = rawText.charAt(i);
+				if (c == '\\') {
+					escape = true;
+				} else {
+					builder.append(c);
+				}
 			}
 		}
 		if (escape) {
 			throw new ParseException("unterminated escape sequence");
 		}
 		return new ConstantValue.Text(builder.toString());
+	}
+
+	private static int parseEscapeSequence(String source, int index, StringBuilder builder) throws ParseException {
+		char c = source.charAt(index);
+		switch (c) {
+
+			case 'b':
+				builder.append('\b');
+				return 1;
+
+			case 'n':
+				builder.append('\n');
+				return 1;
+
+			case 't':
+				builder.append('\t');
+				return 1;
+
+			case 'f':
+				builder.append('\f');
+				return 1;
+
+			case 'r':
+				builder.append('\r');
+				return 1;
+
+			case 'u':
+				if (source.length() < index + 5) {
+					throw new ParseException("interrupted unicode escape sequence");
+				}
+				try {
+					builder.append((char) (Integer.parseInt(source.substring(index + 1, index + 5), 16)));
+				} catch (NumberFormatException e) {
+					throw new ParseException("malformed unicode escape sequence");
+				}
+				return 5;
+
+			default:
+				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+					throw new ParseException("invalid escape sequence: \\" + c);
+				} else {
+					builder.append(c);
+					return 1;
+				}
+		}
 	}
 
 	public static final class ParseException extends Exception {
