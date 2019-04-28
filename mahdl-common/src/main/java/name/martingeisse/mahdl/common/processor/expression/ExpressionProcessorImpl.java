@@ -79,11 +79,13 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				List<ConstantValue.Vector> caseSelectorValues = new ArrayList<>();
 				for (Expression currentCaseSelectorExpression : typedCaseItem.getSelectorValues().getAll()) {
 					ConstantValue.Vector selectorVectorValue = processCaseSelectorValue(currentCaseSelectorExpression, selector.getDataType());
-					if (foundSelectorValues.add(selectorVectorValue)) {
-						caseSelectorValues.add(selectorVectorValue);
-					} else {
-						error(currentCaseSelectorExpression, "duplicate selector value");
-						errorInCases = true;
+					if (selectorVectorValue != null) {
+						if (foundSelectorValues.add(selectorVectorValue)) {
+							caseSelectorValues.add(selectorVectorValue);
+						} else {
+							error(currentCaseSelectorExpression, "duplicate selector value");
+							errorInCases = true;
+						}
 					}
 				}
 				processedCases.add(new ProcessedSwitchExpression.Case(ImmutableList.copyOf(caseSelectorValues), resultValueExpression));

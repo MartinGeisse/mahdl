@@ -147,11 +147,13 @@ public final class StatementProcessor {
 				List<ConstantValue.Vector> caseSelectorValues = new ArrayList<>();
 				for (Expression currentCaseSelectorExpression : typedCaseItem.getSelectorValues().getAll()) {
 					ConstantValue.Vector selectorVectorValue = expressionProcessor.processCaseSelectorValue(currentCaseSelectorExpression, selector.getDataType());
-					if (foundSelectorValues.add(selectorVectorValue)) {
-						caseSelectorValues.add(selectorVectorValue);
-					} else {
-						error(currentCaseSelectorExpression, "duplicate selector value");
-						errorInCases = true;
+					if (selectorVectorValue != null) {
+						if (foundSelectorValues.add(selectorVectorValue)) {
+							caseSelectorValues.add(selectorVectorValue);
+						} else {
+							error(currentCaseSelectorExpression, "duplicate selector value");
+							errorInCases = true;
+						}
 					}
 				}
 				processedCases.add(new ProcessedSwitchStatement.Case(ImmutableList.copyOf(caseSelectorValues), caseStatement));
