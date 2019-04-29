@@ -48,12 +48,6 @@ public class CompilationRun {
 			FileUtils.writeStringToFile(outputFile, javaEntry.getValue(), StandardCharsets.UTF_8);
 		}
 
-		// copy data files
-		for (Map.Entry<ImmutableList<String>, File> dataFileEntry : dataFiles.entrySet()) {
-			File destination = prepareOutputFile(dataFileEntry.getKey(), "");
-			FileUtils.copyFile(dataFileEntry.getValue(), destination);
-		}
-
 	}
 
 	private File prepareOutputFile(ImmutableList<String> qualifiedName, String filenameSuffix) throws IOException {
