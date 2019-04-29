@@ -225,7 +225,6 @@ public final class CodeGenerator {
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 			for (InstancePortReference target : doBlockInfo.getInstancePortReferences()) {
-				String targetText = target.getModuleInstance().getName() + '.' + target.getPort().getName();
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
 					if (expression instanceof InstancePortReference) {
 						InstancePortReference reference = (InstancePortReference) expression;
@@ -236,7 +235,9 @@ public final class CodeGenerator {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
 					doBlockInfo, target.getDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
-				builder.append("		").append(targetText).append(".setConnected(").append(expressionText).append(");\n");
+				builder.append("		").append(target.getModuleInstance().getName()).append(".set")
+					.append(StringUtils.capitalize(target.getPort().getName())).append("(")
+					.append(expressionText).append(");\n");
 			}
 
 		}

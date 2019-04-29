@@ -42,6 +42,8 @@ public class ContinuousStatementExpressionGenerator {
 	public ProcessedExpression buildEquivalentExpression(ContinuousDoBlockInfo doBlockInfo,
 														 ProcessedDataType type,
 														 Predicate<ProcessedExpression> leftHandSideMatcher) {
+		// We don't check whether the result is/contains UNCHANGED because the processing phase will already flag
+		// that as an error.
 		return buildEquivalentExpression(doBlockInfo.getDoBlock().getBody(), type, leftHandSideMatcher, UNCHANGED);
 	}
 
@@ -77,6 +79,7 @@ public class ContinuousStatementExpressionGenerator {
 			ProcessedExpression thenBranch = buildEquivalentExpression(processedIf.getThenBranch(), type, leftHandSideMatcher, soFar);
 			ProcessedExpression elseBranch = buildEquivalentExpression(processedIf.getElseBranch(), type, leftHandSideMatcher, soFar);
 			if (thenBranch == elseBranch) {
+				// in particular, this handles the case that both sub-results are the same as soFar
 				return thenBranch;
 			}
 			try {
