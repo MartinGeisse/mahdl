@@ -50,7 +50,7 @@ public abstract class FixedSignatureFunction extends AbstractFunction {
 		if (arguments.size() != argumentTypes.size()) {
 			errorHandler.onError(errorSource, getSignatureText() + " cannot be invoked with " + arguments.size() + " arguments");
 		}
-		for (int i = 0; i < argumentTypes.size(); i++) {
+		for (int i = 0; i < Math.min(arguments.size(), argumentTypes.size()); i++) {
 			ProcessedExpression argument = arguments.get(i);
 			if (!argument.getDataType().equals(argumentTypes.get(i))) {
 				errorHandler.onError(argument.getErrorSource(),
