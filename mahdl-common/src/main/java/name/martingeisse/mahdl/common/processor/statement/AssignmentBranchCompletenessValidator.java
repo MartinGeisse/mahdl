@@ -74,7 +74,7 @@ class AssignmentBranchCompletenessValidator {
 			if (bits.isEmpty()) {
 				errorHandler.onError(doBlock.getBody().getErrorSource(), name + " is not assigned in all branches");
 			} else {
-				bits.flip(0, width - 1);
+				bits.flip(0, width);
 				if (!bits.isEmpty()) {
 					errorHandler.onError(doBlock.getBody().getErrorSource(), "not all bits of " + name + " are assigned in all branches");
 				}
@@ -83,13 +83,15 @@ class AssignmentBranchCompletenessValidator {
 	}
 
 	private BitSet bitAnd(BitSet x, BitSet y) {
-		x.and(y);
-		return y;
+		BitSet result = (BitSet)x.clone();
+		result.and(y);
+		return result;
 	}
 
 	private BitSet bitOr(BitSet x, BitSet y) {
-		x.or(y);
-		return y;
+		BitSet result = (BitSet)x.clone();
+		result.or(y);
+		return result;
 	}
 
 	// TODO simplified for now: we don't properly check that all bits get assigned, but rather just say that everything
@@ -105,7 +107,7 @@ class AssignmentBranchCompletenessValidator {
 		BitSet result = new BitSet();
 		if (type != null && type.getFamily() == ProcessedDataType.Family.VECTOR) {
 			int width = ((ProcessedDataType.Vector) type).getSize();
-			result.set(0, width - 1);
+			result.set(0, width);
 		}
 		return result;
 	}
