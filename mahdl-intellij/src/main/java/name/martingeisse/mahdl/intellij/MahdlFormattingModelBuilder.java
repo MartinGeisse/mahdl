@@ -33,6 +33,7 @@ public class MahdlFormattingModelBuilder implements FormattingModelBuilder {
 	private static final TokenSet NORMALLY_INDENTED_SYMBOLS = TokenSet.create(
 		Symbols.synthetic_List_PortDefinitionGroup,
 		Symbols.synthetic_List_Statement,
+		Symbols.synthetic_List_Statement_Nonempty,
 		Symbols.synthetic_List_StatementCaseItem_Nonempty,
 		Symbols.synthetic_List_ExpressionCaseItem_Nonempty
 	);
