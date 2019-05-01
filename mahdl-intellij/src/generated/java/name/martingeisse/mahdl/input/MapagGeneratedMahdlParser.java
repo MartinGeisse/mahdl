@@ -1406,13 +1406,18 @@ public class MapagGeneratedMahdlParser implements PsiParser, LightPsiParser {
 		psiBuilder.advanceLexer();
 	}
 
-	private void reportErrorForCurrentToken(String errorMessage) {
-		psiBuilder.error(errorMessage);
-	}
+	private String pendingErrorMessage = null;
 
 	private void feedPsiBuilder(Object what, IElementType parentElementType) {
 		if (what == null) {
-			nextToken();
+			if (pendingErrorMessage == null) {
+				nextToken();
+			} else {
+				PsiBuilder.Marker errorMarker = psiBuilder.mark();
+				nextToken();
+				errorMarker.error(pendingErrorMessage);
+				pendingErrorMessage = null;
+			}
 		} else if (what instanceof Object[]) {
 			Object[] reduction = (Object[]) what;
 			IElementType elementType;
@@ -1440,9 +1445,12 @@ public class MapagGeneratedMahdlParser implements PsiParser, LightPsiParser {
 			feedPsiBuilder(((List<?>) what).toArray(), parentElementType);
 		} else if (what instanceof ErrorLocationIndicator) {
 			ErrorLocationIndicator errorLocationIndicator = (ErrorLocationIndicator) what;
-			reportErrorForCurrentToken("expected one of: " + STATE_INPUT_EXPECTATION[errorLocationIndicator.state]);
+			if (pendingErrorMessage == null) {
+				// we shouldn't get multiple syntax errors at the same location, but if we do, report the first one
+				pendingErrorMessage = "expected one of: " + STATE_INPUT_EXPECTATION[errorLocationIndicator.state];
+			}
 		} else if (what instanceof UnrecoverableSyntaxException) {
-			reportErrorForCurrentToken(((UnrecoverableSyntaxException) what).getMessage());
+			psiBuilder.error(((UnrecoverableSyntaxException) what).getMessage());
 			while (!isAtEof()) {
 				nextToken();
 			}
