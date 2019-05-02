@@ -115,7 +115,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			} else if (resultValueType == null) {
 				resultValueType = resultValueExpression.getDataType();
 			} else if (resultValueType instanceof ProcessedDataType.Integer) {
-				if ((resultValueExpression.getDataType() instanceof ProcessedDataType.Vector)) {
+				if ((resultValueExpression.getDataType() instanceof ProcessedDataType.Bit) || (resultValueExpression.getDataType() instanceof ProcessedDataType.Vector)) {
 					resultValueType = resultValueExpression.getDataType();
 				}
 			}
@@ -134,6 +134,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				errorInCases = true;
 			}
 			processedCases.add(new ProcessedSwitchExpression.Case(aCase.getSelectorValues(), converted));
+		}
+		if (processedDefaultCase != null) {
+			processedDefaultCase = convertImplicitly(processedDefaultCase, resultValueType);
+			if (processedDefaultCase instanceof UnknownExpression) {
+				errorInCases = true;
+			}
 		}
 
 		// check for missing selector values
@@ -578,9 +584,13 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 		// try to make the expression a bit-typed expression by modification; specifically, recognize 0 and 1 as bit literals
 		if (targetType instanceof ProcessedDataType.Bit) {
-			ProcessedExpression bitLiteral = sourceExpression.makeBitCompatible();
-			if (bitLiteral != null) {
-				return bitLiteral;
+			try {
+				ProcessedExpression bitLiteral = sourceExpression.makeBitCompatible();
+				if (bitLiteral != null) {
+					return bitLiteral;
+				}
+			} catch (TypeErrorException e) {
+				return error(sourceExpression, "internal error during type conversion");
 			}
 		}
 
