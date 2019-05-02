@@ -37,16 +37,14 @@ public abstract class ProcessedExpression {
 	}
 
 	/**
-	 * If this expression can be used as a bit literal, returns the corresponding expression that *is* a bit literal.
-	 * Otherwise returns null.
+	 * If this expression can be implicitly bit-typed by modification, not conversion, then this method will do so
+	 * and return the modified (explicitly bit-typed) expression that should be used instead.
 	 * <p>
-	 * The only expressions that can be used as a bit literal (except bit literals themselves) are the integer literals
-	 * 0 and 1. (Any computed integer that is 0 or 1, even if formally constant, cannot be used as a bit literal).
-	 * Before turning an integer literal into a bit literal, make sure you need a bit and not an integer!
+	 * The default implementation will just check if this expression is already bit-typed, and if so, returns this.
 	 */
 	@Nullable
-	public ProcessedExpression recognizeBitLiteral() {
-		return null;
+	public ProcessedExpression makeBitCompatible() throws TypeErrorException {
+		return (dataType.getFamily() == ProcessedDataType.Family.BIT ? this : null);
 	}
 
 	public final ConstantValue evaluateFormallyConstant(FormallyConstantEvaluationContext context) {

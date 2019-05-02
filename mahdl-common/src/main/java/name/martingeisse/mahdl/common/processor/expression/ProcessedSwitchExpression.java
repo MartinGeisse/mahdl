@@ -73,6 +73,29 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 	}
 
 	@Override
+	public @Nullable ProcessedExpression makeBitCompatible() throws TypeErrorException {
+		List<Case> bitCompatibleCases = new ArrayList<>();
+		for (Case aCase : cases) {
+			ProcessedExpression bitCompatibleCaseResult = aCase.getResultValue().makeBitCompatible();
+			if (bitCompatibleCaseResult == null) {
+				return null;
+			}
+			bitCompatibleCases.add(new Case(aCase.getSelectorValues(), bitCompatibleCaseResult));
+		}
+		ProcessedExpression bitCompatibleDefault;
+		if (defaultBranch == null) {
+			bitCompatibleDefault = null;
+		} else {
+			bitCompatibleDefault = defaultBranch.makeBitCompatible();
+			if (bitCompatibleDefault == null) {
+				return null;
+			}
+		}
+		return new ProcessedSwitchExpression(getErrorSource(), ProcessedDataType.Bit.INSTANCE, selector,
+			ImmutableList.copyOf(bitCompatibleCases), bitCompatibleDefault);
+	}
+
+	@Override
 	@NotNull
 	protected ConstantValue evaluateFormallyConstantInternal(@NotNull FormallyConstantEvaluationContext context) {
 		ConstantValue selectorValue = selector.evaluateFormallyConstant(context);

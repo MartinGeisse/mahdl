@@ -8,6 +8,7 @@ import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -49,6 +50,20 @@ public final class ProcessedConditional extends ProcessedExpression {
 	@NotNull
 	public ProcessedExpression getElseBranch() {
 		return elseBranch;
+	}
+
+	@Override
+	public @Nullable ProcessedExpression makeBitCompatible() throws TypeErrorException {
+		ProcessedExpression superResult = super.makeBitCompatible();
+		if (superResult != null) {
+			return superResult;
+		}
+		ProcessedExpression bitCompatibleThenBranch = thenBranch.makeBitCompatible();
+		ProcessedExpression bitCompatibleElseBranch = elseBranch.makeBitCompatible();
+		if (bitCompatibleThenBranch == null || bitCompatibleElseBranch == null) {
+			return null;
+		}
+		return new ProcessedConditional(getErrorSource(), condition, bitCompatibleThenBranch, bitCompatibleElseBranch);
 	}
 
 	@Override

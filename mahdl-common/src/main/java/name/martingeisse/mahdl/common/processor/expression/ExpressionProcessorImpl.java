@@ -365,13 +365,13 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		// Now, only logical operators can handle bit values, and only if both operands are bits. We must be able to
 		// recognize bit literals for this, though, and we try that if either operand is already a bit.
 		if ((leftOperand.getDataType() instanceof ProcessedDataType.Bit) != (rightOperand.getDataType() instanceof ProcessedDataType.Bit)) {
-			ProcessedExpression leftBitLiteral = leftOperand.recognizeBitLiteral();
-			if (leftBitLiteral != null) {
-				leftOperand = leftBitLiteral;
+			ProcessedExpression leftBit = leftOperand.makeBitCompatible();
+			if (leftBit != null) {
+				leftOperand = leftBit;
 			}
-			ProcessedExpression rightBitLiteral = rightOperand.recognizeBitLiteral();
-			if (rightBitLiteral != null) {
-				rightOperand = rightBitLiteral;
+			ProcessedExpression rightBit = rightOperand.makeBitCompatible();
+			if (rightBit != null) {
+				rightOperand = rightBit;
 			}
 			if ((leftOperand.getDataType() instanceof ProcessedDataType.Bit) != (rightOperand.getDataType() instanceof ProcessedDataType.Bit)) {
 				return error(expression, "this operator cannot be used for " + leftOperand.getDataType().getFamily() +
@@ -476,13 +476,13 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 			// recognize bit literals in either branch
 			if (thenBranch.getDataType() instanceof ProcessedDataType.Bit) {
-				ProcessedExpression elseBit = elseBranch.recognizeBitLiteral();
+				ProcessedExpression elseBit = elseBranch.makeBitCompatible();
 				if (elseBit != null) {
 					elseBranch = elseBit;
 					break branchTypeCheck;
 				}
 			} else if (elseBranch.getDataType() instanceof ProcessedDataType.Bit) {
-				ProcessedExpression thenBit = thenBranch.recognizeBitLiteral();
+				ProcessedExpression thenBit = thenBranch.makeBitCompatible();
 				if (thenBit != null) {
 					thenBranch = thenBit;
 					break branchTypeCheck;
@@ -576,9 +576,9 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			return sourceExpression;
 		}
 
-		// recognize 0 and 1 as bit literals
+		// try to make the expression a bit-typed expression by modification; specifically, recognize 0 and 1 as bit literals
 		if (targetType instanceof ProcessedDataType.Bit) {
-			ProcessedExpression bitLiteral = sourceExpression.recognizeBitLiteral();
+			ProcessedExpression bitLiteral = sourceExpression.makeBitCompatible();
 			if (bitLiteral != null) {
 				return bitLiteral;
 			}

@@ -7,6 +7,7 @@ package name.martingeisse.mahdl.common.processor.expression;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 
@@ -34,6 +35,19 @@ public final class ProcessedUnaryOperation extends ProcessedExpression {
 	@NotNull
 	public ProcessedUnaryOperator getOperator() {
 		return operator;
+	}
+
+	@Override
+	public @Nullable ProcessedExpression makeBitCompatible() throws TypeErrorException {
+		ProcessedExpression superResult = super.makeBitCompatible();
+		if (superResult != null) {
+			return superResult;
+		}
+		if (operator != ProcessedUnaryOperator.NOT) {
+			return null;
+		}
+		ProcessedExpression bitCompatibleOperand = operand.makeBitCompatible();
+		return (bitCompatibleOperand == null ? null : new ProcessedUnaryOperation(getErrorSource(), bitCompatibleOperand, operator));
 	}
 
 	@Override

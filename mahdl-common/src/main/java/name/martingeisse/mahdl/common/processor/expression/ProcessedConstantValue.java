@@ -36,7 +36,7 @@ public final class ProcessedConstantValue extends ProcessedExpression {
 
 	@Nullable
 	@Override
-	public ProcessedExpression recognizeBitLiteral() {
+	public ProcessedExpression makeBitCompatible() {
 		if (value instanceof ConstantValue.Bit) {
 			return this;
 		}
