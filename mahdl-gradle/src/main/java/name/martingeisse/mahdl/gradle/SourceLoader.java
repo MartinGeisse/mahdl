@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.input.FlexGeneratedMahdlLexer;
 import name.martingeisse.mahdl.input.MapagGeneratedMahdlParser;
+import name.martingeisse.mahdl.input.Symbols;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
@@ -110,7 +111,7 @@ public final class SourceLoader {
 			if (elementType == null) {
 				break;
 			}
-			if (elementType != IElementType.WHITE_SPACE) {
+			if (elementType != IElementType.WHITE_SPACE && elementType != Symbols.LINE_COMMENT && elementType != Symbols.BLOCK_COMMENT) {
 				tokens.add(new CmTokenImpl(lexer.yyline + 1, lexer.yycolumn + 1, lexer.yytext().toString(), elementType));
 			}
 		}

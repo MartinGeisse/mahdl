@@ -37,4 +37,12 @@ public class IntegerBitUtilTest {
 		return bitSet;
 	}
 
+	@Test
+	public void testConvertToSignedInteger() {
+		Assert.assertEquals(1, IntegerBitUtil.convertToSignedInteger(buildBitSet(true), 4).intValue());
+		Assert.assertEquals(2, IntegerBitUtil.convertToSignedInteger(buildBitSet(true, false), 4).intValue());
+		Assert.assertEquals(4, IntegerBitUtil.convertToSignedInteger(buildBitSet(true, false, false), 4).intValue());
+		Assert.assertEquals(-6, IntegerBitUtil.convertToSignedInteger(buildBitSet(true, false, true, false), 4).intValue());
+	}
+
 }

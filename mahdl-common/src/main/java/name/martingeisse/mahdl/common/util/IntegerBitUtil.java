@@ -42,9 +42,9 @@ public final class IntegerBitUtil {
 		while (index < size - 1) {
 			if (bits.get(index)) {
 				result = result.add(significance);
-				index++;
-				significance = significance.shiftLeft(1);
 			}
+			index++;
+			significance = significance.shiftLeft(1);
 		}
 		if (bits.get(size - 1)) {
 			// two's complement: the sign bit has negated significance
