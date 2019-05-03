@@ -38,7 +38,7 @@ public final class SignalLikeReference extends ProcessedExpression {
 	@Override
 	protected ProcessedExpression performFolding(@NotNull ErrorHandler errorHandler) {
 		ConstantValue constant = getConstant();
-		return constant == null ? this : new ProcessedConstantValue(getErrorSource(), constant);
+		return constant == null ? this : new ProcessedConstantExpression(getErrorSource(), constant);
 	}
 
 	@NotNull

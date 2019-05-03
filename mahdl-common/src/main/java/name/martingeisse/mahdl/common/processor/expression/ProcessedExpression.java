@@ -94,7 +94,7 @@ public abstract class ProcessedExpression implements CmLinked {
 		} catch (NotConstantException e) {
 			return performSubFolding(errorHandler);
 		}
-		return new ProcessedConstantValue(errorSource, value);
+		return new ProcessedConstantExpression(errorSource, value);
 	}
 
 	@NotNull

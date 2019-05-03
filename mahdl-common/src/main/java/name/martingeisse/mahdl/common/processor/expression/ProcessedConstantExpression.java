@@ -14,11 +14,11 @@ import java.math.BigInteger;
 /**
  *
  */
-public final class ProcessedConstantValue extends ProcessedExpression {
+public final class ProcessedConstantExpression extends ProcessedExpression {
 
 	private final ConstantValue value;
 
-	public ProcessedConstantValue(@NotNull CmNode errorSource, @NotNull ConstantValue value) {
+	public ProcessedConstantExpression(@NotNull CmNode errorSource, @NotNull ConstantValue value) {
 		super(errorSource, value.getDataType());
 		this.value = value;
 	}
@@ -43,9 +43,9 @@ public final class ProcessedConstantValue extends ProcessedExpression {
 		if (value instanceof ConstantValue.Integer) {
 			BigInteger integerValue = ((ConstantValue.Integer) value).getValue();
 			if (integerValue.equals(BigInteger.ZERO)) {
-				return new ProcessedConstantValue(getErrorSource(), new ConstantValue.Bit(false));
+				return new ProcessedConstantExpression(getErrorSource(), new ConstantValue.Bit(false));
 			} else if (integerValue.equals(BigInteger.ONE)) {
-				return new ProcessedConstantValue(getErrorSource(), new ConstantValue.Bit(true));
+				return new ProcessedConstantExpression(getErrorSource(), new ConstantValue.Bit(true));
 			}
 		}
 		return null;

@@ -74,7 +74,7 @@ public final class AssignmentValidator {
 		if (destination == null) {
 			throw new IllegalArgumentException("destination cannot be null");
 		}
-		if (destination instanceof ProcessedConstantValue) {
+		if (destination instanceof ProcessedConstantExpression) {
 
 			errorHandler.onError(destination.getErrorSource(), "cannot assign to a constant");
 

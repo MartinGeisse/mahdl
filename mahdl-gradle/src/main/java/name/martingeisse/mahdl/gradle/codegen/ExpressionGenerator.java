@@ -35,9 +35,9 @@ public class ExpressionGenerator {
 		// We rely on the MaHDL processor to have constant (sub-)expressions folded for us. So anything that cannot be
 		// compiled to runtime constructs should have been disappeared by now.
 
-		if (expression instanceof ProcessedConstantValue) {
+		if (expression instanceof ProcessedConstantExpression) {
 
-			String value = valueGenerator.buildValue(((ProcessedConstantValue) expression).getValue());
+			String value = valueGenerator.buildValue(((ProcessedConstantExpression) expression).getValue());
 			switch (expression.getDataType().getFamily()) {
 
 				case BIT:
@@ -160,8 +160,8 @@ public class ExpressionGenerator {
 
 			// handle LUTs specially since they don't use the .select() syntax
 			if (indexSelection.getContainer().getDataType().getFamily() == ProcessedDataType.Family.MATRIX &&
-				indexSelection.getContainer() instanceof ProcessedConstantValue) {
-				String matrix = valueGenerator.buildValue(((ProcessedConstantValue) indexSelection.getContainer()).getValue());
+				indexSelection.getContainer() instanceof ProcessedConstantExpression) {
+				String matrix = valueGenerator.buildValue(((ProcessedConstantExpression) indexSelection.getContainer()).getValue());
 				String index = buildExpression(indexSelection.getIndex());
 				return "new RtlLookupTable(realm, " + matrix + ", " + index + ")";
 			}

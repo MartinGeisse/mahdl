@@ -196,7 +196,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 	private ProcessedExpression process(Expression_Literal expression) {
 		try {
-			return new ProcessedConstantValue(expression, LiteralParser.parseLiteral(expression));
+			return new ProcessedConstantExpression(expression, LiteralParser.parseLiteral(expression));
 		} catch (LiteralParser.ParseException e) {
 			return error(expression, e.getMessage());
 		}
@@ -593,6 +593,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				return error(sourceExpression, "internal error during type conversion");
 			}
 		}
+
+		// for a constant, we want another constant with the converted value, not a run-time conversion of the
+		// original value (which may be impossible).
+//		if (sourceExpression instanceof ConstantValue) {
+//
+//		}
 
 		// the only other implicit conversions are integer-to-vector and vector-to-integer
 		try {
