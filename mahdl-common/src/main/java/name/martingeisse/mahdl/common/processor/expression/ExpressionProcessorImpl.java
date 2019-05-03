@@ -440,14 +440,10 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 		// handle bit / vector concatenation
 		boolean typeError = false;
-		if (leftOperand.getDataType() instanceof ProcessedDataType.Bit) {
-			leftOperand = new TypeConversion.BitToVector(leftOperand);
-		} else if (!(leftOperand.getDataType() instanceof ProcessedDataType.Vector)) {
+		if (!(leftOperand.getDataType() instanceof ProcessedDataType.Bit) && !(leftOperand.getDataType() instanceof ProcessedDataType.Vector)) {
 			typeError = true;
 		}
-		if (rightOperand.getDataType() instanceof ProcessedDataType.Bit) {
-			rightOperand = new TypeConversion.BitToVector(rightOperand);
-		} else if (!(rightOperand.getDataType() instanceof ProcessedDataType.Vector)) {
+		if (!(rightOperand.getDataType() instanceof ProcessedDataType.Bit) && !(rightOperand.getDataType() instanceof ProcessedDataType.Vector)) {
 			typeError = true;
 		}
 		if (typeError) {

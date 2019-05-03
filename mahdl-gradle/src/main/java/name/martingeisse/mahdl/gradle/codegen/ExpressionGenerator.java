@@ -216,12 +216,6 @@ public class ExpressionGenerator {
 				return "null";
 			}
 
-		} else if (expression instanceof TypeConversion.BitToVector) {
-
-			TypeConversion.BitToVector typeConversion = (TypeConversion.BitToVector) expression;
-			String operand = buildExpression(typeConversion.getOperand());
-			return "new RtlConcatenation(realm, " + operand + ")";
-
 		} else {
 
 			CompilationErrors.reportError(expression, "unsupported expression type: " + expression);

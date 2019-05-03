@@ -130,8 +130,6 @@ class AssignmentBranchCompletenessValidator {
 			} else {
 				return null;
 			}
-		} else if (expression instanceof TypeConversion) {
-			return assignsInternal(((TypeConversion) expression).getOperand(), targetMatcher);
 		} else {
 			return null;
 		}

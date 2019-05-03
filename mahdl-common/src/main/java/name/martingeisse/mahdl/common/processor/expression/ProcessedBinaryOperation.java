@@ -47,7 +47,8 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 	}
 
 	@Override
-	protected ConstantValue evaluateFormallyConstantInternal(FormallyConstantEvaluationContext context) {
+	@NotNull
+	protected ConstantValue evaluateFormallyConstantInternal(@NotNull FormallyConstantEvaluationContext context) {
 
 		// determine operand values
 		ConstantValue leftOperandValue = leftOperand.evaluateFormallyConstant(context);
@@ -66,8 +67,11 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 
 		// handle vector concatenation (for concat, bits have been converted to vectors of size 1 by now)
 		if (operator == ProcessedBinaryOperator.VECTOR_CONCAT) {
-			ConstantValue.Vector leftVector = (ConstantValue.Vector) leftOperandValue;
-			ConstantValue.Vector rightVector = (ConstantValue.Vector) rightOperandValue;
+			ConstantValue.Vector leftVector = prepareForVectorConcatenation(leftOperandValue, context);
+			ConstantValue.Vector rightVector = prepareForVectorConcatenation(rightOperandValue, context);
+			if (leftVector == null || rightVector == null) {
+				return ConstantValue.Unknown.INSTANCE;
+			}
 			BitSet resultBits = rightVector.getBits();
 			BitSet leftBits = leftVector.getBits();
 			for (int i = 0; i < leftVector.getSize(); i++) {
@@ -122,6 +126,17 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 			return context.evaluationInconsistency(this, "unexpected result type for IVO: " + getDataType());
 		}
 
+	}
+
+	private ConstantValue.Vector prepareForVectorConcatenation(ConstantValue value, FormallyConstantEvaluationContext context) {
+		if (value instanceof ConstantValue.Vector) {
+			return (ConstantValue.Vector) value;
+		} else if (value instanceof ConstantValue.Bit) {
+			return ((ConstantValue.Bit) value).isSet() ? ConstantValue.Vector.SINGLE_ONE : ConstantValue.Vector.SINGLE_ZERO;
+		} else {
+			context.evaluationInconsistency(this, "invalid value for vector concatenation: " + value);
+			return null;
+		}
 	}
 
 	@NotNull
