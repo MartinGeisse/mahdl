@@ -56,9 +56,13 @@ public final class SourceLoader {
 		}
 		for (File entry : entries) {
 			if (entry.isDirectory()) {
-				pushSegment(entry.getName());
-				loadSources(entry, segments);
-				popSegment();
+				if (entry.getName().contains(".")) {
+					CompilationErrors.reportError(entry.getPath(), 0, 0, "a package folder cannot have a dot in its name");
+				} else {
+					pushSegment(entry.getName());
+					loadSources(entry, segments);
+					popSegment();
+				}
 			} else if (entry.isFile()) {
 				String filename = entry.getName();
 				if (filename.endsWith(MAHDL_FILENAME_SUFFIX)) {

@@ -48,6 +48,7 @@ public final class CodeGenerator {
 		}
 
 		// imports
+		builder.append("import com.google.common.collect.ImmutableList;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.block.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.block.statement.*;\n");
@@ -67,14 +68,15 @@ public final class CodeGenerator {
 			if (constant.getProcessedDataType().getFamily() != ProcessedDataType.Family.MATRIX) {
 				builder.append("\n");
 				builder.append("	public static final ").append(valueTypeToString(constant.getProcessedDataType()))
-					.append(" = ").append(valueGenerator.buildValue(constant.getValue())).append(";\n");
+					.append(' ').append(constant.getName()).append(" = ")
+					.append(valueGenerator.buildValue(constant.getValue())).append(";\n");
 			}
 		}
 
 		// fields part: clocks
 		for (ModulePort clock : model.getClocks()) {
 			builder.append("\n");
-			builder.append("private final RtlClockNetwork ").append(clock.getName()).append(";\n");
+			builder.append("	private final RtlClockNetwork ").append(clock.getName()).append(";\n");
 		}
 
 		// fields part: signal connectors for data ports and local signals (not including registers)
@@ -182,10 +184,10 @@ public final class CodeGenerator {
 					}
 
 					case MATRIX: {
-						builder.append(".createMatrix(");
+						builder.append(".createMemory(");
 						if (register.getInitializerValue() == null) {
 							ProcessedDataType.Matrix matrixType = (ProcessedDataType.Matrix) register.getProcessedDataType();
-							builder.append(", ").append(matrixType.getFirstSize()).append(", ").append(matrixType.getSecondSize());
+							builder.append(matrixType.getFirstSize()).append(", ").append(matrixType.getSecondSize());
 						}
 					}
 

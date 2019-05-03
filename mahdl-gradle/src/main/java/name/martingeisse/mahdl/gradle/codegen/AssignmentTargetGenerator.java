@@ -52,10 +52,10 @@ public class AssignmentTargetGenerator {
 			switch (indexSelection.getContainer().getDataType().getFamily()) {
 
 				case VECTOR:
-					return "new RtlVectorTargetIndexSelection(realm, " + container + ", " + index + ");\n";
+					return "new RtlVectorTargetIndexSelection(realm, " + container + ", " + index + ")";
 
 				case MATRIX:
-					return "new RtlMemoryTargetIndexSelection(realm, " + container + ", " + index + ");\n";
+					return "new RtlMemoryTargetIndexSelection(realm, " + container + ", " + index + ")";
 
 			}
 
@@ -67,7 +67,7 @@ public class AssignmentTargetGenerator {
 			}
 			String container = ((SignalLikeReference) rangeSelection.getContainer()).getDefinition().getName();
 			return "new RtlVectorTargetRangeSelection(realm, " + container + ", " + rangeSelection.getFromIndex() +
-				", " + rangeSelection.getToIndex() + ");\n";
+				", " + rangeSelection.getToIndex() + ")";
 
 		}
 		return "null";

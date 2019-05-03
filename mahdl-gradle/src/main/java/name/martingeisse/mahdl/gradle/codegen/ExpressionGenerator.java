@@ -2,6 +2,7 @@ package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import org.apache.commons.lang3.StringUtils;
 
@@ -176,15 +177,26 @@ public class ExpressionGenerator {
 
 			ProcessedSwitchExpression switchExpression = (ProcessedSwitchExpression) expression;
 			String helperName = "___switchExpression" + model.newSyntheticConstruct();
-			builder.append("		").append("RtlSwitchSignal ").append(helperName)
-				.append(" = new RtlSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
-				.append(");\n");
+			if (expression.getDataType().getFamily() == ProcessedDataType.Family.BIT) {
+				builder.append("		RtlBitSwitchSignal ").append(helperName)
+					.append(" = new RtlBitSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
+					.append(");\n");
+
+			} else if (expression.getDataType().getFamily() == ProcessedDataType.Family.VECTOR) {
+				int width = ((ProcessedDataType.Vector)expression.getDataType()).getSize();
+				builder.append("		RtlVectorSwitchSignal ").append(helperName)
+					.append(" = new RtlVectorSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
+					.append(", ").append(width).append(");\n");
+			} else {
+				CompilationErrors.reportError(expression.getErrorSource(), "unsupported data type for switch expression");
+				return "null";
+			}
 			for (ProcessedSwitchExpression.Case aCase : switchExpression.getCases()) {
-				builder.append("			").append(helperName).append(".addCase(ImmutableList.of(")
+				builder.append("		").append(helperName).append(".addCase(ImmutableList.of(")
 					.append(valueGenerator.buildValues(aCase.getSelectorValues())).append("), ")
 					.append(buildExpression(aCase.getResultValue())).append(");\n");
 			}
-			builder.append("			").append(helperName).append(".setDefaultSignal(")
+			builder.append("		").append(helperName).append(".setDefaultSignal(")
 				.append(buildExpression(switchExpression.getDefaultBranch())).append(");\n");
 			return helperName;
 
