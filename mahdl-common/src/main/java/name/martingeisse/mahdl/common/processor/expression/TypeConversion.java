@@ -2,10 +2,8 @@ package name.martingeisse.mahdl.common.processor.expression;
 
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.common.util.IntegerBitUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigInteger;
 import java.util.BitSet;
 
 /**
@@ -93,74 +91,6 @@ public abstract class TypeConversion extends ProcessedExpression {
 		@Override
 		protected TypeConversion createEquivalentConversion(ProcessedExpression operand) throws TypeErrorException {
 			return new BitToVector(operand);
-		}
-
-	}
-
-	public static final class IntegerToVector extends TypeConversion {
-
-		public IntegerToVector(int targetSize, @NotNull ProcessedExpression operand) throws TypeErrorException {
-			super(new ProcessedDataType.Vector(targetSize), operand);
-			if (!(operand.getDataType() instanceof ProcessedDataType.Integer)) {
-				throw new TypeErrorException();
-			}
-		}
-
-		@NotNull
-		public ProcessedDataType.Vector getVectorDataType() {
-			return (ProcessedDataType.Vector) super.getDataType();
-		}
-
-		@Override
-		@NotNull
-		protected ConstantValue perform(@NotNull FormallyConstantEvaluationContext context, @NotNull ConstantValue operandValue) {
-			BigInteger integer = operandValue.convertToInteger();
-			if (integer == null) {
-				return context.evaluationInconsistency(this, "got wrong operand value: " + operandValue);
-			}
-			try {
-				return new ConstantValue.Vector(getVectorDataType().getSize(), integer, false);
-			} catch (ConstantValue.TruncateRequiredException e) {
-				return context.error(this, e.getMessage());
-			}
-		}
-
-		@Override
-		protected TypeConversion createEquivalentConversion(ProcessedExpression operand) throws TypeErrorException {
-			return new IntegerToVector(getVectorDataType().getSize(), operand);
-		}
-
-	}
-
-	// This class is used only in one place: When an initializer for an integer constant has vector type.
-	public static final class VectorToInteger extends TypeConversion {
-
-		public VectorToInteger(@NotNull ProcessedExpression operand) throws TypeErrorException {
-			super(new ProcessedDataType.Integer(), operand);
-			if (!(operand.getDataType() instanceof ProcessedDataType.Vector)) {
-				throw new TypeErrorException();
-			}
-		}
-
-		@NotNull
-		public ProcessedDataType.Integer getIntegerDataType() {
-			return (ProcessedDataType.Integer) super.getDataType();
-		}
-
-		@Override
-		@NotNull
-		protected ConstantValue perform(@NotNull FormallyConstantEvaluationContext context, @NotNull ConstantValue operandValue) {
-			if (operandValue instanceof ConstantValue.Vector) {
-				ConstantValue.Vector operandVector = (ConstantValue.Vector) operandValue;
-				return new ConstantValue.Integer(IntegerBitUtil.convertToUnsignedInteger(operandVector.getBits()));
-			} else {
-				return context.evaluationInconsistency(this, "got wrong operand value: " + operandValue);
-			}
-		}
-
-		@Override
-		protected TypeConversion createEquivalentConversion(ProcessedExpression operand) throws TypeErrorException {
-			return new VectorToInteger(operand);
 		}
 
 	}

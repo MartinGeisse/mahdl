@@ -417,12 +417,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 						leftSize + " and " + rightSize);
 				}
 			} else {
-				rightOperand = new TypeConversion.IntegerToVector(leftSize, rightOperand);
+				rightOperand = convertImplicitly(rightOperand, new ProcessedDataType.Vector(leftSize));
 			}
 		} else {
 			if (rightOperand.getDataType() instanceof ProcessedDataType.Vector) {
 				int rightSize = ((ProcessedDataType.Vector) rightOperand.getDataType()).getSize();
-				leftOperand = new TypeConversion.IntegerToVector(rightSize, leftOperand);
+				leftOperand = convertImplicitly(leftOperand, new ProcessedDataType.Vector(rightSize));
 			}
 		}
 		return new ProcessedBinaryOperation(expression, leftOperand, rightOperand, operator);
@@ -498,10 +498,10 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			// no bit literals -- recognize integer/vector combinations
 			if ((thenBranch.getDataType() instanceof ProcessedDataType.Vector) && (elseBranch.getDataType() instanceof ProcessedDataType.Integer)) {
 				int size = ((ProcessedDataType.Vector) thenBranch.getDataType()).getSize();
-				elseBranch = new TypeConversion.IntegerToVector(size, elseBranch);
+				elseBranch = convertImplicitly(elseBranch, new ProcessedDataType.Vector(size));
 			} else if ((thenBranch.getDataType() instanceof ProcessedDataType.Integer) && (elseBranch.getDataType() instanceof ProcessedDataType.Vector)) {
 				int size = ((ProcessedDataType.Vector) elseBranch.getDataType()).getSize();
-				thenBranch = new TypeConversion.IntegerToVector(size, thenBranch);
+				thenBranch = convertImplicitly(thenBranch, new ProcessedDataType.Vector(size));
 			} else {
 				error(elseBranch, "incompatible types in then/else branches: " + thenBranch.getDataType() + " vs. " + elseBranch.getDataType());
 				error = true;
@@ -582,7 +582,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			return sourceExpression;
 		}
 
-		// try to make the expression a bit-typed expression by modification; specifically, recognize 0 and 1 as bit literals
+		// Try to make the expression a bit-typed expression by transformation; specifically, recognize 0 and 1 as bit literals
 		if (targetType instanceof ProcessedDataType.Bit) {
 			try {
 				ProcessedExpression bitLiteral = sourceExpression.makeBitCompatible();
@@ -595,25 +595,18 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		}
 
 		// for a constant, we want another constant with the converted value, not a run-time conversion of the
-		// original value (which may be impossible).
-//		if (sourceExpression instanceof ConstantValue) {
-//
-//		}
-
-		// the only other implicit conversions are integer-to-vector and vector-to-integer
-		try {
-			if (sourceType instanceof ProcessedDataType.Integer) {
-				if (targetType instanceof ProcessedDataType.Vector) {
-					int targetSize = ((ProcessedDataType.Vector) targetType).getSize();
-					return new TypeConversion.IntegerToVector(targetSize, sourceExpression);
+		// original value (which may be impossible). Specifcally, a conversion may be requested after folding,
+		// so we have to "re-fold" the conversion.
+		if (sourceExpression instanceof ProcessedConstantExpression) {
+			ProcessedConstantExpression constantExpression = (ProcessedConstantExpression)sourceExpression;
+			try {
+				ConstantValue convertedValue = constantExpression.getValue().convertTo(targetType);
+				if (convertedValue != null) {
+					return new ProcessedConstantExpression(sourceExpression.getErrorSource(), convertedValue);
 				}
-			} else if (sourceType instanceof ProcessedDataType.Vector) {
-				if (targetType instanceof ProcessedDataType.Integer) {
-					return new TypeConversion.VectorToInteger(sourceExpression);
-				}
+			} catch (ConstantValue.TruncateRequiredException e) {
+				return error(sourceExpression, "constant expression is too large for type " + targetType);
 			}
-		} catch (TypeErrorException e) {
-			return error(sourceExpression, "internal error during type conversion");
 		}
 
 		return error(sourceExpression, "cannot convert expression of type " + sourceType + " to type " + targetType);
