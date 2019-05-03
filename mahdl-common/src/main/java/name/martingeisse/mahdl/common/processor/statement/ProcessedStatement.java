@@ -4,12 +4,13 @@
  */
 package name.martingeisse.mahdl.common.processor.statement;
 
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
 
 /**
  *
  */
-public abstract class ProcessedStatement {
+public abstract class ProcessedStatement implements CmLinked {
 
 	private final CmNode errorSource;
 

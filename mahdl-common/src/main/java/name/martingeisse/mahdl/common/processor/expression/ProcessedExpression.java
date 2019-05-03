@@ -6,6 +6,7 @@ package name.martingeisse.mahdl.common.processor.expression;
 
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  *
  */
-public abstract class ProcessedExpression {
+public abstract class ProcessedExpression implements CmLinked {
 
 	@NotNull
 	private final CmNode errorSource;

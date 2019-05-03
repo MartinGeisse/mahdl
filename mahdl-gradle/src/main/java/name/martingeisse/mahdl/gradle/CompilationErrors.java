@@ -4,6 +4,7 @@
  */
 package name.martingeisse.mahdl.gradle;
 
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
@@ -18,6 +19,14 @@ public class CompilationErrors {
 
 	public static boolean isHasErrors() {
 		return hasErrors.get() != null;
+	}
+
+	public static void reportError(CmLinked source, String message) {
+		if (source == null) {
+			reportError("unknown file", 0, 0, message);
+		} else {
+			reportError(source.getErrorSource(), message);
+		}
 	}
 
 	public static void reportError(CmNode node, String message) {

@@ -105,7 +105,7 @@ public final class ContinuousDoBlockInfo extends DoBlockInfo {
 			if (leftHandSide instanceof InstancePortReference) {
 				InstancePortReference portReference = (InstancePortReference) leftHandSide;
 				if (portReference.isSameAs(target)) {
-					CompilationErrors.reportError(statement.getErrorSource(), "unsupported clock source");
+					CompilationErrors.reportError(statement, "unsupported clock source");
 				}
 			}
 

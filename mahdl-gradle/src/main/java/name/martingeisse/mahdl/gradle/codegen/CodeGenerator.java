@@ -157,7 +157,7 @@ public final class CodeGenerator {
 		for (ClockedDoBlockInfo doBlockInfo : model.getClockedDoBlockInfos()) {
 			ProcessedExpression clock = doBlockInfo.getDoBlock().getClock();
 			if (!(clock instanceof SignalLikeReference)) {
-				CompilationErrors.reportError(clock.getErrorSource(), "this compiler currently only supports clocks that are input ports");
+				CompilationErrors.reportError(clock, "this compiler currently only supports clocks that are input ports");
 				continue;
 			}
 			String clockName = ((SignalLikeReference) clock).getDefinition().getName();
@@ -215,7 +215,7 @@ public final class CodeGenerator {
 			for (SignalLike target : doBlockInfo.getSignalLikes()) {
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
 					if (!(expression instanceof SignalLikeReference)) {
-						CompilationErrors.reportError(expression.getErrorSource(),
+						CompilationErrors.reportError(expression,
 							"only assignment to whole registers are currently supported");
 						return false;
 					}

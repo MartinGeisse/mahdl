@@ -188,7 +188,7 @@ public class ExpressionGenerator {
 					.append(" = new RtlVectorSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
 					.append(", ").append(width).append(");\n");
 			} else {
-				CompilationErrors.reportError(expression.getErrorSource(), "unsupported data type for switch expression");
+				CompilationErrors.reportError(expression, "unsupported data type for switch expression");
 				return "null";
 			}
 			for (ProcessedSwitchExpression.Case aCase : switchExpression.getCases()) {
