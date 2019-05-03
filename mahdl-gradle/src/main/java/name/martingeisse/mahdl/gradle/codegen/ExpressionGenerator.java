@@ -1,5 +1,7 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
+import name.martingeisse.mahdl.common.functions.BuiltinFunction;
+import name.martingeisse.mahdl.common.functions.RepeatFunction;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
@@ -31,9 +33,7 @@ public class ExpressionGenerator {
 	public String buildExpression(ProcessedExpression expression) {
 
 		// We rely on the MaHDL processor to have constant (sub-)expressions folded for us. So anything that cannot be
-		// compiled to runtime constructs should have been disappeared by now. If not, errors should have been reported
-		// already, and we only have to fail gracefully, not generate sensible code. We do that by returning a "null"
-		// expression.
+		// compiled to runtime constructs should have been disappeared by now.
 
 		if (expression instanceof ProcessedConstantValue) {
 
@@ -47,6 +47,7 @@ public class ExpressionGenerator {
 					return "new RtlVectorConstant(realm, " + value + ")";
 
 				default:
+					CompilationErrors.reportError(expression, "unsupported constant type: " + expression.getDataType());
 					return "null";
 
 			}
@@ -76,6 +77,7 @@ public class ExpressionGenerator {
 					return operand + ".not()";
 
 				default:
+					CompilationErrors.reportError(expression, "unsupported unary operator: " + operation.getOperator());
 					return "null";
 
 			}
@@ -108,6 +110,7 @@ public class ExpressionGenerator {
 				// these are only allowed in constant sub-expressions and so should have been folded
 				case DIVIDED_BY:
 				case REMAINDER:
+					CompilationErrors.reportError(expression, "run-time division / remainder are not supported");
 					return "null";
 
 				case VECTOR_CONCAT:
@@ -138,6 +141,7 @@ public class ExpressionGenerator {
 					return left + ".compareUnsignedGreaterThanOrEqual(" + right + ")";
 
 				default:
+					CompilationErrors.reportError(expression, "unsupported binary operator: " + operation.getOperator());
 					return "null";
 
 			}
@@ -202,8 +206,15 @@ public class ExpressionGenerator {
 
 		} else if (expression instanceof ProcessedFunctionCall) {
 
-			// there are currently no run-time functions
-			return "null";
+			ProcessedFunctionCall call = (ProcessedFunctionCall)expression;
+			BuiltinFunction function = call.getFunction();
+			if (function instanceof RepeatFunction) {
+				// TODO
+				return "repeat()";
+			} else {
+				CompilationErrors.reportError(expression, "unsupported run-time function call: " + ((ProcessedFunctionCall) expression).getFunction());
+				return "null";
+			}
 
 		} else if (expression instanceof TypeConversion.BitToVector) {
 
@@ -213,6 +224,7 @@ public class ExpressionGenerator {
 
 		} else {
 
+			CompilationErrors.reportError(expression, "unsupported expression type: " + expression);
 			return "null";
 
 		}

@@ -1,8 +1,8 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -70,6 +70,7 @@ public class AssignmentTargetGenerator {
 				", " + rangeSelection.getToIndex() + ")";
 
 		}
+		CompilationErrors.reportError(expression, "unsupported assignment target: " + expression);
 		return "null";
 	}
 

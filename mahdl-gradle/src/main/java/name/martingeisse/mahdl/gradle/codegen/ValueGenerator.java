@@ -1,7 +1,9 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 
 /**
  *
@@ -68,6 +70,7 @@ public class ValueGenerator {
 		} else if (value instanceof ConstantValue.Text) {
 			return "\"" + ((ConstantValue.Text) value).getValue().replace("\\", "\\\\").replace("\"", "\\\"");
 		} else {
+			CompilationErrors.reportError((CmLinked) null, "unsupported constant value: " + value);
 			return "null";
 		}
 	}
