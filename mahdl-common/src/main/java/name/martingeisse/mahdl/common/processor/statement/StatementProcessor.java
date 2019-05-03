@@ -14,6 +14,7 @@ import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -187,7 +188,7 @@ public final class StatementProcessor {
 		try {
 			return new ProcessedSwitchStatement(switchStatement, selector, ImmutableList.copyOf(processedCases), processedDefaultCase);
 		} catch (TypeErrorException e) {
-			return error(switchStatement, "internal error during type-check");
+			return error(switchStatement, "internal error during type-check", e);
 		}
 
 	}
@@ -202,7 +203,15 @@ public final class StatementProcessor {
 	 */
 	@NotNull
 	private UnknownStatement error(@NotNull CmNode errorSource, @NotNull String message) {
-		errorHandler.onError(errorSource, message);
+		return error(errorSource, message, null);
+	}
+
+	/**
+	 * Same as the above, but with an exception.
+	 */
+	@NotNull
+	private UnknownStatement error(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable exception) {
+		errorHandler.onError(errorSource, message, exception);
 		return new UnknownStatement(errorSource);
 	}
 

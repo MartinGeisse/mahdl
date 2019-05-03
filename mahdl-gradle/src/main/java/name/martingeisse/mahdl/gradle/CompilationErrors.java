@@ -30,15 +30,24 @@ public class CompilationErrors {
 	}
 
 	public static void reportError(CmNode node, String message) {
+		reportError(node, message, null);
+	}
+
+	public static void reportError(CmNode node, String message, Throwable exception) {
 		CmNodeImpl nodeImpl = (CmNodeImpl) node;
 		ModuleWrapper moduleWrapper = ModuleWrapper.get(node);
 		String path = (moduleWrapper != null && moduleWrapper.getFile() != null) ? moduleWrapper.getFile().getPath() : "???";
-		CompilationErrors.reportError(path, nodeImpl.getRow(), nodeImpl.getColumn(), message);
+		CompilationErrors.reportError(path, nodeImpl.getRow(), nodeImpl.getColumn(), message, exception);
 	}
 
 	public static void reportError(String path, int row, int column, String message) {
+		reportError(path, row, column, message, null);
+	}
+
+	public static void reportError(String path, int row, int column, String message, Throwable exception) {
 		hasErrors.set(dummy);
 		System.err.println(path + ':' + row + ": error: " + message);
+		exception.printStackTrace(System.err);
 	}
 
 	public static void failOnErrors() {

@@ -29,7 +29,7 @@ public class MahdlAnnotator implements Annotator {
 	}
 
 	private void annotate(@NotNull ModuleImpl module, @NotNull AnnotationHolder annotationHolder) {
-		new ModuleProcessor(module, (errorSource, message) -> {
+		new ModuleProcessor(module, (errorSource, message, exception) -> {
 			annotationHolder.createErrorAnnotation(InternalPsiUtil.getPsiFromCm(errorSource), message);
 		}).process();
 	}

@@ -6,6 +6,7 @@ package name.martingeisse.mahdl.common.processor;
 
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This interface is called when an error was detected. It might, for example, add an error annotation, throw an
@@ -13,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ErrorHandler {
 
-	/**
-	 * This method is called by the helper object when an error was detected.
-	 */
-	void onError(@NotNull CmNode errorSource, @NotNull String message);
+	default void onError(@NotNull CmNode errorSource, @NotNull String message) {
+		onError(errorSource, message, null);
+	}
+
+	void onError(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t);
 
 }

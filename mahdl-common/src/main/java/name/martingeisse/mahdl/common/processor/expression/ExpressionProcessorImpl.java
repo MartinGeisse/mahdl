@@ -16,6 +16,7 @@ import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.LiteralParser;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				return error(expression, "unknown expression type");
 			}
 		} catch (TypeErrorException e) {
-			return error(expression, "internal error during type-check");
+			return error(expression, "internal error during type-check", e);
 		}
 	}
 
@@ -190,7 +191,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				return error(expression, "unknown expression type");
 			}
 		} catch (TypeErrorException e) {
-			return error(expression, "internal error during type-check");
+			return error(expression, "internal error during type-check", e);
 		}
 	}
 
@@ -586,7 +587,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 					return bitLiteral;
 				}
 			} catch (TypeErrorException e) {
-				return error(sourceExpression, "internal error during type conversion");
+				return error(sourceExpression, "internal error during type conversion", e);
 			}
 		}
 
@@ -621,7 +622,15 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	 */
 	@NotNull
 	private ProcessedExpression error(@NotNull CmNode errorSource, @NotNull String message) {
-		errorHandler.onError(errorSource, message);
+		return error(errorSource, message, null);
+	}
+
+	/**
+	 * Like the above, but with an exception that may be output (e.g. to the Gradle log).
+	 */
+	@NotNull
+	private ProcessedExpression error(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable exception) {
+		errorHandler.onError(errorSource, message, exception);
 		return new UnknownExpression(errorSource);
 	}
 
@@ -631,6 +640,14 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	@NotNull
 	private ProcessedExpression error(@NotNull ProcessedExpression processedExpression, @NotNull String message) {
 		return error(processedExpression.getErrorSource(), message);
+	}
+
+	/**
+	 * the same note as for the other error method above applies to this one
+	 */
+	@NotNull
+	private ProcessedExpression error(@NotNull ProcessedExpression processedExpression, @NotNull String message, @Nullable Throwable exception) {
+		return error(processedExpression.getErrorSource(), message, exception);
 	}
 
 	public ErrorHandler getErrorHandler() {
