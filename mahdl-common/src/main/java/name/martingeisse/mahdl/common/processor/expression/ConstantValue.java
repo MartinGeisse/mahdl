@@ -216,6 +216,15 @@ public abstract class ConstantValue {
 	// note: the Java BitSet uses the same index values as the MaHDL vector, just the from/to notation is reversed.
 	public static final class Vector extends ConstantValue {
 
+		public static final Vector EMPTY = new Vector(0, new BitSet());
+		public static final Vector SINGLE_ZERO = new Vector(1, new BitSet());
+		public static final Vector SINGLE_ONE;
+		static {
+			BitSet bits = new BitSet();
+			bits.set(0);
+			SINGLE_ONE = new Vector(1, bits);
+		}
+
 		private final int size;
 		private final BitSet bits;
 
