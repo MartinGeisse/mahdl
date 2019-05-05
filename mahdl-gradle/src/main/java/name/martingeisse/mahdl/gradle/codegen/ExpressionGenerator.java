@@ -216,6 +216,11 @@ public class ExpressionGenerator {
 				return "null";
 			}
 
+		} else if (expression instanceof UnknownExpression) {
+
+			// errors have been reported already
+			return "null";
+
 		} else {
 
 			CompilationErrors.reportError(expression, "unsupported expression type: " + expression);

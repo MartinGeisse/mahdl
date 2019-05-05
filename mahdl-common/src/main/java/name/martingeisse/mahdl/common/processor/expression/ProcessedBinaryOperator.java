@@ -159,9 +159,25 @@ public enum ProcessedBinaryOperator {
 
 		} else if (this == VECTOR_CONCAT) {
 
-			if (leftType instanceof ProcessedDataType.Vector && rightType instanceof ProcessedDataType.Vector) {
-				int leftSize = ((ProcessedDataType.Vector) leftType).getSize();
-				int rightSize = ((ProcessedDataType.Vector) rightType).getSize();
+			int leftSize;
+			if (leftType instanceof ProcessedDataType.Bit) {
+				leftSize = 1;
+			} else if (leftType instanceof ProcessedDataType.Vector) {
+				leftSize = ((ProcessedDataType.Vector) leftType).getSize();
+			} else {
+				leftSize = -1;
+			}
+
+			int rightSize;
+			if (rightType instanceof ProcessedDataType.Bit) {
+				rightSize = 1;
+			} else if (rightType instanceof ProcessedDataType.Vector) {
+				rightSize = ((ProcessedDataType.Vector) rightType).getSize();
+			} else {
+				rightSize = -1;
+			}
+
+			if (leftSize >= 0 && rightSize >= 0) {
 				return new ProcessedDataType.Vector(leftSize + rightSize);
 			}
 
