@@ -48,7 +48,7 @@ public enum ProcessedUnaryOperator {
 			return operandType;
 		}
 		if (!ArrayUtils.contains(acceptedOperandFamilies, operandType.getFamily())) {
-			throw new TypeErrorException();
+			throw new TypeErrorException("invalid operand type " + operandType + " for unary operator " + this);
 		}
 		return operandType;
 	}

@@ -47,7 +47,9 @@ public class CompilationErrors {
 	public static void reportError(String path, int row, int column, String message, Throwable exception) {
 		hasErrors.set(dummy);
 		System.err.println(path + ':' + row + ": error: " + message);
-		exception.printStackTrace(System.err);
+		if (exception != null) {
+			exception.printStackTrace(System.err);
+		}
 	}
 
 	public static void failOnErrors() {

@@ -34,7 +34,8 @@ public final class ProcessedSwitchStatement extends ProcessedStatement {
 		for (Case aCase : cases) {
 			for (ConstantValue caseSelectorValue : aCase.getSelectorValues()) {
 				if (!caseSelectorValue.getDataType().equals(selector.getDataType())) {
-					throw new TypeErrorException();
+					throw new TypeErrorException("case selector value has type " + caseSelectorValue.getDataType() +
+						" but selector expression has type " + selector.getDataType());
 				}
 			}
 		}

@@ -20,6 +20,7 @@ class MahdlGradlePlugin implements Plugin<Project> {
 		task.outputDirectory = new File(project.getBuildDir(), "mahdl-java");
 		project.tasks.compileJava.dependsOn(task);
 		project.extensions.sourceSets.main.java.srcDirs += task.outputDirectory;
+		project.extensions.sourceSets.test.java.srcDirs += task.outputDirectory;
 	}
 
 }

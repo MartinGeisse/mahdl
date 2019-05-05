@@ -22,7 +22,7 @@ public final class ProcessedAssignment extends ProcessedStatement {
 		if (!(leftHandSide.getDataType() instanceof ProcessedDataType.Unknown)) {
 			if (!(rightHandSide.getDataType() instanceof ProcessedDataType.Unknown)) {
 				if (!leftHandSide.getDataType().equals(rightHandSide.getDataType())) {
-					throw new TypeErrorException();
+					throw new TypeErrorException("invalid types for assignment: " + leftHandSide.getDataType() + " and " + rightHandSide.getDataType());
 				}
 			}
 		}

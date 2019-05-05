@@ -25,10 +25,11 @@ public final class ProcessedRangeSelection extends ProcessedExpression {
 								   int toIndex) throws TypeErrorException {
 		super(errorSource, dataType);
 		if (!(container.getDataType() instanceof ProcessedDataType.Vector)) {
-			throw new TypeErrorException();
+			throw new TypeErrorException("container has type " + container.getDataType());
 		}
-		if (toIndex < 0 || fromIndex < toIndex || fromIndex >= ((ProcessedDataType.Vector) container.getDataType()).getSize()) {
-			throw new TypeErrorException();
+		int containerSize = ((ProcessedDataType.Vector) container.getDataType()).getSize();
+		if (toIndex < 0 || fromIndex < toIndex || fromIndex >= containerSize) {
+			throw new TypeErrorException("invalid range: " + fromIndex + ":" + toIndex + " for container size " + containerSize);
 		}
 		this.container = container;
 		this.fromIndex = fromIndex;

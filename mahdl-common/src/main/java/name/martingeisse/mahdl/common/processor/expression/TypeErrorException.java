@@ -12,4 +12,8 @@ public class TypeErrorException extends Exception {
 	public TypeErrorException() {
 	}
 
+	public TypeErrorException(String message) {
+		super(message);
+	}
+
 }

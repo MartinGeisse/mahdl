@@ -179,7 +179,7 @@ public enum ProcessedBinaryOperator {
 				if (leftType.equals(rightType)) {
 					return ProcessedDataType.Bit.INSTANCE;
 				} else {
-					throw new TypeErrorException();
+					throw new TypeErrorException("invalid typed for comparison operator: " + leftType + ", " + rightType);
 				}
 			}
 
@@ -194,7 +194,7 @@ public enum ProcessedBinaryOperator {
 			}
 
 		}
-		throw new TypeErrorException();
+		throw new TypeErrorException("operator " + this + " cannot handle types " + leftType + " and " + rightType);
 	}
 
 	public boolean evaluateLogicalOperator(boolean leftOperand, boolean rightOperand) throws OperatorInconsistencyException {

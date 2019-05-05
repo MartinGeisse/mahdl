@@ -26,10 +26,10 @@ public final class ProcessedConditional extends ProcessedExpression {
 		super(errorSource, thenBranch.getDataType());
 
 		if (!(condition.getDataType() instanceof ProcessedDataType.Bit)) {
-			throw new TypeErrorException();
+			throw new TypeErrorException("condition has type " + condition.getDataType());
 		}
 		if (!thenBranch.getDataType().equals(elseBranch.getDataType())) {
-			throw new TypeErrorException();
+			throw new TypeErrorException("then/else branches have different types " + thenBranch.getDataType() + " and " + elseBranch.getDataType());
 		}
 
 		this.condition = condition;

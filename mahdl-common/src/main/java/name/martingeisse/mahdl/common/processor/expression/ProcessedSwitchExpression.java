@@ -41,15 +41,16 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 		for (Case aCase : cases) {
 			for (ConstantValue caseSelectorValue : aCase.getSelectorValues()) {
 				if (!caseSelectorValue.getDataType().equals(selector.getDataType())) {
-					throw new TypeErrorException();
+					throw new TypeErrorException("case selector value has type " + caseSelectorValue.getDataType() +
+						" but selector expression has type " + selector.getDataType());
 				}
 			}
 			if (!aCase.getResultValue().getDataType().equals(dataType)) {
-				throw new TypeErrorException();
+				throw new TypeErrorException("case has result type " + aCase.getResultValue().getDataType() + " but expression has result type " + dataType);
 			}
 		}
 		if (defaultBranch != null && !defaultBranch.getDataType().equals(dataType)) {
-			throw new TypeErrorException();
+			throw new TypeErrorException("default case has result type " + defaultBranch.getDataType() + " but expression has result type " + dataType);
 		}
 
 		this.selector = selector;
