@@ -18,6 +18,7 @@ public final class BuiltinFunctions {
 
 	static {
 		List<BuiltinFunction> functions = new ArrayList<>();
+		functions.add(new BitFunction());
 		functions.add(new AsciiFunction());
 		functions.add(new AsciizFunction());
 		functions.add(new LoadMahdlMatrixFileFunction());
