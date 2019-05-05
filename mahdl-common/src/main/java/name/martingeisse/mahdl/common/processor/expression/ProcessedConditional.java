@@ -53,20 +53,6 @@ public final class ProcessedConditional extends ProcessedExpression {
 	}
 
 	@Override
-	public @Nullable ProcessedExpression makeBitCompatible() throws TypeErrorException {
-		ProcessedExpression superResult = super.makeBitCompatible();
-		if (superResult != null) {
-			return superResult;
-		}
-		ProcessedExpression bitCompatibleThenBranch = thenBranch.makeBitCompatible();
-		ProcessedExpression bitCompatibleElseBranch = elseBranch.makeBitCompatible();
-		if (bitCompatibleThenBranch == null || bitCompatibleElseBranch == null) {
-			return null;
-		}
-		return new ProcessedConditional(getErrorSource(), condition, bitCompatibleThenBranch, bitCompatibleElseBranch);
-	}
-
-	@Override
 	protected ConstantValue evaluateFormallyConstantInternal(FormallyConstantEvaluationContext context) {
 		// evaluate both branches to detect errors even in the not-taken branch
 		Boolean conditionBoolean = condition.evaluateFormallyConstant(context).convertToBoolean();

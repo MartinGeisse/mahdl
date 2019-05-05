@@ -34,23 +34,6 @@ public final class ProcessedConstantExpression extends ProcessedExpression {
 		return value;
 	}
 
-	@Nullable
-	@Override
-	public ProcessedExpression makeBitCompatible() {
-		if (value instanceof ConstantValue.Bit) {
-			return this;
-		}
-		if (value instanceof ConstantValue.Integer) {
-			BigInteger integerValue = ((ConstantValue.Integer) value).getValue();
-			if (integerValue.equals(BigInteger.ZERO)) {
-				return new ProcessedConstantExpression(getErrorSource(), new ConstantValue.Bit(false));
-			} else if (integerValue.equals(BigInteger.ONE)) {
-				return new ProcessedConstantExpression(getErrorSource(), new ConstantValue.Bit(true));
-			}
-		}
-		return null;
-	}
-
 	@NotNull
 	@Override
 	protected ProcessedExpression performFolding(@NotNull ErrorHandler errorHandler) {

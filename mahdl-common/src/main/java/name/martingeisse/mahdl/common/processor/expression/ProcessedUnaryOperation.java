@@ -38,19 +38,6 @@ public final class ProcessedUnaryOperation extends ProcessedExpression {
 	}
 
 	@Override
-	public @Nullable ProcessedExpression makeBitCompatible() throws TypeErrorException {
-		ProcessedExpression superResult = super.makeBitCompatible();
-		if (superResult != null) {
-			return superResult;
-		}
-		if (operator != ProcessedUnaryOperator.NOT) {
-			return null;
-		}
-		ProcessedExpression bitCompatibleOperand = operand.makeBitCompatible();
-		return (bitCompatibleOperand == null ? null : new ProcessedUnaryOperation(getErrorSource(), bitCompatibleOperand, operator));
-	}
-
-	@Override
 	@NotNull
 	public ConstantValue evaluateFormallyConstantInternal(@NotNull FormallyConstantEvaluationContext context) {
 

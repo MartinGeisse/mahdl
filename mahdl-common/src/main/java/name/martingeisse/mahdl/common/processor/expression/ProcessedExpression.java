@@ -9,7 +9,6 @@ import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -63,17 +62,6 @@ public abstract class ProcessedExpression implements CmLinked {
 		}
 		errorHandler.onError(errorSource, "expected type " + type + ", found " + dataType);
 		return new UnknownExpression(errorSource);
-	}
-
-	/**
-	 * If this expression can be implicitly bit-typed by modification, not conversion, then this method will do so
-	 * and return the modified (explicitly bit-typed) expression that should be used instead.
-	 * <p>
-	 * The default implementation will just check if this expression is already bit-typed, and if so, returns this.
-	 */
-	@Nullable
-	public ProcessedExpression makeBitCompatible() throws TypeErrorException {
-		return (dataType.getFamily() == ProcessedDataType.Family.BIT ? this : null);
 	}
 
 	public final ConstantValue evaluateFormallyConstant(FormallyConstantEvaluationContext context) {
