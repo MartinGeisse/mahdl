@@ -28,50 +28,6 @@ public abstract class ConstantValue {
 	public abstract ProcessedDataType getDataType();
 
 	/**
-	 * Returns null if this value cannot be converted. The same restrictions for the other convert() methods apply.
- 	 */
-	@Nullable
-	public ConstantValue convertTo(@NotNull ProcessedDataType targetType) {
-		if (targetType == getDataType()) {
-			return this;
-		}
-		switch (targetType.getFamily()) {
-
-			case BIT:
-				return null;
-
-			case VECTOR:
-				// do not just convertToInteger(), otherwise we would allow conversion between different vector types.
-				if (this instanceof Integer) {
-					int size = ((ProcessedDataType.Vector)targetType).getSize();
-					BigInteger value = convertToInteger();
-					return new Vector(size, value, false);
-				} else {
-					return null;
-				}
-
-			case MATRIX:
-				return null;
-
-			case CLOCK:
-				return null;
-
-			case INTEGER: {
-				BigInteger value = convertToInteger();
-				return (value == null ? null : new Integer(value));
-			}
-
-			case TEXT:
-				return new Text(convertToString());
-
-			case UNKNOWN:
-			default:
-				return null;
-
-		}
-	}
-
-	/**
 	 * This method will NOT convert 0 and 1 to boolean. Usage of 0 and 1 as boolean *literals* is handled as an
 	 * expression transformation instead. We do not want arbitrary calculations which may yield these numbers to be
 	 * compatible with boolean, and the transformation has to handle certain cases of non-constant expressions

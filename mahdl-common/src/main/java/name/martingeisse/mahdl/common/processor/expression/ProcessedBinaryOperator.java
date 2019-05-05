@@ -23,6 +23,8 @@ import java.util.function.BinaryOperator;
  */
 public enum ProcessedBinaryOperator {
 
+	TODO BELOW
+
 	// logical operators
 	AND((x, y) -> x & y, BigInteger::and, null, false),
 	OR((x, y) -> x | y, BigInteger::or, null, false),

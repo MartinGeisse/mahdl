@@ -94,6 +94,8 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 			}
 		}
 
+		TODO BELOW
+
 		// all other operands are IVOs
 		if (!(leftOperandValue instanceof ConstantValue.Vector) && !(leftOperandValue instanceof ConstantValue.Integer)) {
 			return context.evaluationInconsistency(this, "wrong left operand for IVO: " + leftOperandValue);
