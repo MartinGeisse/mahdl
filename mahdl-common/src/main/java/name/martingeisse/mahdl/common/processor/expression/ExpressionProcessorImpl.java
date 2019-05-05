@@ -456,16 +456,10 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	}
 
 	private ProcessedExpression process(Expression_Conditional expression) throws TypeErrorException {
-		ProcessedExpression condition = process(expression.getCondition());
+		ProcessedExpression condition = process(expression.getCondition()).expectType(ProcessedDataType.Family.BIT, errorHandler);
 		ProcessedExpression thenBranch = process(expression.getThenBranch());
 		ProcessedExpression elseBranch = process(expression.getElseBranch());
-		boolean error = false;
-
-		// handle condition
-		condition = convertImplicitly(condition, ProcessedDataType.Bit.INSTANCE);
-		if (!(condition.getDataType() instanceof ProcessedDataType.Bit)) {
-			error = true;
-		}
+		boolean error = !condition.isUnknownType();
 
 		// handle branches
 		branchTypeCheck:
@@ -563,50 +557,6 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			errorHandler.onError(expression.getErrorSource(), "value too large");
 			return null;
 		}
-	}
-
-	@Override
-	public ProcessedExpression convertImplicitly(ProcessedExpression sourceExpression, ProcessedDataType targetType) {
-		ProcessedDataType sourceType = sourceExpression.getDataType();
-
-		// don't add follow-up errors
-		if ((sourceType instanceof ProcessedDataType.Unknown) || (targetType instanceof ProcessedDataType.Unknown)) {
-			return sourceExpression;
-		}
-
-		// check if conversion is needed at all
-		if (sourceType.equals(targetType)) {
-			return sourceExpression;
-		}
-
-		// Try to make the expression a bit-typed expression by transformation; specifically, recognize 0 and 1 as bit literals
-		if (targetType instanceof ProcessedDataType.Bit) {
-			try {
-				ProcessedExpression bitLiteral = sourceExpression.makeBitCompatible();
-				if (bitLiteral != null) {
-					return bitLiteral;
-				}
-			} catch (TypeErrorException e) {
-				return error(sourceExpression, "internal error during type conversion", e);
-			}
-		}
-
-		// for a constant, we want another constant with the converted value, not a run-time conversion of the
-		// original value (which may be impossible). Specifcally, a conversion may be requested after folding,
-		// so we have to "re-fold" the conversion.
-		if (sourceExpression instanceof ProcessedConstantExpression) {
-			ProcessedConstantExpression constantExpression = (ProcessedConstantExpression)sourceExpression;
-			try {
-				ConstantValue convertedValue = constantExpression.getValue().convertTo(targetType);
-				if (convertedValue != null) {
-					return new ProcessedConstantExpression(sourceExpression.getErrorSource(), convertedValue);
-				}
-			} catch (ConstantValue.TruncateRequiredException e) {
-				return error(sourceExpression, "constant expression is too large for type " + targetType);
-			}
-		}
-
-		return error(sourceExpression, "cannot convert expression of type " + sourceType + " to type " + targetType);
 	}
 
 	/**

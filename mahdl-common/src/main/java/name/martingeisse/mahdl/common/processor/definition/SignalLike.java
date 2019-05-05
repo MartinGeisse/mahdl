@@ -4,6 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.definition;
 
+import name.martingeisse.mahdl.common.processor.AssignmentConversionUtil;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -58,7 +59,9 @@ public abstract class SignalLike extends Named {
 	@Override
 	public void processExpressions(@NotNull ExpressionProcessor expressionProcessor) {
 		if (initializer != null) {
-			processedInitializer = expressionProcessor.process(initializer, processedDataType);
+			processedInitializer = AssignmentConversionUtil.convertOnAssignment(
+				expressionProcessor.process(initializer),
+				processedDataType, expressionProcessor.getErrorHandler());
 		}
 	}
 

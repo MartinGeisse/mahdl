@@ -5,12 +5,10 @@
 package name.martingeisse.mahdl.common.processor.statement;
 
 import com.google.common.collect.ImmutableList;
+import name.martingeisse.mahdl.common.processor.AssignmentConversionUtil;
 import name.martingeisse.mahdl.common.processor.AssignmentValidator;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
-import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
-import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
-import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
-import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
+import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +45,7 @@ public final class StatementProcessor {
 		} else if (trigger instanceof DoBlockTrigger_Clocked) {
 			triggerKind = AssignmentValidator.TriggerKind.CLOCKED;
 			Expression clockExpression = ((DoBlockTrigger_Clocked) trigger).getClockExpression();
-			clock = expressionProcessor.process(clockExpression, ProcessedDataType.Clock.INSTANCE);
+			clock = expressionProcessor.process(clockExpression).expectType(ProcessedDataType.Family.CLOCK, errorHandler);
 		} else {
 			error(trigger, "unknown trigger type");
 			return null;
@@ -70,7 +68,9 @@ public final class StatementProcessor {
 
 			Statement_Assignment assignment = (Statement_Assignment) statement;
 			ProcessedExpression leftHandSide = expressionProcessor.process(assignment.getLeftSide());
-			ProcessedExpression rightHandSide = expressionProcessor.process(assignment.getRightSide(), leftHandSide.getDataType());
+			ProcessedExpression rightHandSide = AssignmentConversionUtil.convertOnAssignment(
+				expressionProcessor.process(assignment.getRightSide()),
+				leftHandSide.getDataType(), errorHandler);
 			assignmentValidator.validateAssignmentTo(leftHandSide, triggerKind);
 			if (leftHandSide.getDataType().getFamily() == ProcessedDataType.Family.MATRIX) {
 				return error(statement, "cannot assign the whole matrix at once");
@@ -110,7 +110,12 @@ public final class StatementProcessor {
 	}
 
 	private ProcessedIf processIfStatement(CmNode errorSource, Expression condition, Statement thenBranch, Statement elseBranch, AssignmentValidator.TriggerKind triggerKind) {
-		ProcessedExpression processedCondition = expressionProcessor.process(condition, ProcessedDataType.Bit.INSTANCE);
+
+		// condition
+		ProcessedExpression processedCondition = expressionProcessor.process(condition)
+			.expectType(ProcessedDataType.Family.BIT, errorHandler);
+
+		// branches
 		ProcessedStatement processedThenBranch = process(thenBranch, triggerKind);
 		ProcessedStatement processedElseBranch;
 		if (elseBranch == null) {
@@ -118,15 +123,14 @@ public final class StatementProcessor {
 		} else {
 			processedElseBranch = process(elseBranch, triggerKind);
 		}
+
 		return new ProcessedIf(errorSource, processedCondition, processedThenBranch, processedElseBranch);
 	}
 
 	private ProcessedStatement process(Statement_Switch switchStatement, AssignmentValidator.TriggerKind triggerKind) {
-		ProcessedExpression selector = expressionProcessor.process(switchStatement.getSelector());
-		boolean selectorOkay = (selector.getDataType() instanceof ProcessedDataType.Vector);
-		if (!selectorOkay) {
-			error(switchStatement.getSelector(), "selector must be of vector type, found " + selector.getDataType());
-		}
+		ProcessedExpression selector = expressionProcessor.process(switchStatement.getSelector())
+			.expectType(ProcessedDataType.Family.VECTOR, errorHandler);
+		boolean selectorOkay = !selector.isUnknownType();
 
 		if (switchStatement.getItems().getAll().isEmpty()) {
 			return error(switchStatement, "switch statement has no cases");
@@ -179,7 +183,7 @@ public final class StatementProcessor {
 			}
 		}
 
-		// in case of errors, don't return a swtch expression
+		// in case of errors, don't return a switch expression
 		if (!selectorOkay || errorInCases) {
 			return new UnknownStatement(switchStatement);
 		}

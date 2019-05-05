@@ -37,6 +37,34 @@ public abstract class ProcessedExpression implements CmLinked {
 		return dataType;
 	}
 
+	public final boolean isUnknownType() {
+		return isType(ProcessedDataType.Family.UNKNOWN);
+	}
+
+	public final boolean isType(ProcessedDataType.Family family) {
+		return dataType.getFamily() == family;
+	}
+
+	public final ProcessedExpression expectType(ProcessedDataType.Family family, ErrorHandler errorHandler) {
+		if (isType(family) || isType(ProcessedDataType.Family.UNKNOWN)) {
+			return this;
+		}
+		errorHandler.onError(errorSource, "expected type " + family + ", found " + dataType);
+		return new UnknownExpression(errorSource);
+	}
+
+	public final boolean isType(ProcessedDataType type) {
+		return dataType.equals(type);
+	}
+
+	public final ProcessedExpression expectType(ProcessedDataType type, ErrorHandler errorHandler) {
+		if (isType(type) || isType(ProcessedDataType.Family.UNKNOWN)) {
+			return this;
+		}
+		errorHandler.onError(errorSource, "expected type " + type + ", found " + dataType);
+		return new UnknownExpression(errorSource);
+	}
+
 	/**
 	 * If this expression can be implicitly bit-typed by modification, not conversion, then this method will do so
 	 * and return the modified (explicitly bit-typed) expression that should be used instead.

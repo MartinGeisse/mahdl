@@ -18,16 +18,6 @@ public interface ExpressionProcessor {
 
 	ProcessedExpression process(Expression expression);
 
-	ProcessedExpression convertImplicitly(ProcessedExpression sourceExpression, ProcessedDataType targetType);
-
-	default ProcessedExpression process(ExtendedExpression expression, ProcessedDataType targetType) {
-		return convertImplicitly(process(expression), targetType);
-	}
-
-	default ProcessedExpression process(Expression expression, ProcessedDataType targetType) {
-		return convertImplicitly(process(expression), targetType);
-	}
-
 	ErrorHandler getErrorHandler();
 
 	// returns null on failure
