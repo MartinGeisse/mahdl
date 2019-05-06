@@ -110,6 +110,8 @@ public class Symbols {
 	public static final MahdlElementType expression_UnaryPlus = new MahdlElementType("expression_UnaryPlus");
 	public static final MahdlElementType extendedExpression_Normal = new MahdlElementType("extendedExpression_Normal");
 	public static final MahdlElementType extendedExpression_Switch = new MahdlElementType("extendedExpression_Switch");
+	public static final MahdlElementType functionName_Bit = new MahdlElementType("functionName_Bit");
+	public static final MahdlElementType functionName_Identifier = new MahdlElementType("functionName_Identifier");
 	public static final MahdlElementType implementationItem_DoBlock = new MahdlElementType("implementationItem_DoBlock");
 	public static final MahdlElementType implementationItem_Error = new MahdlElementType("implementationItem_Error");
 	public static final MahdlElementType implementationItem_ModuleInstanceDefinitionGroup = new MahdlElementType("implementationItem_ModuleInstanceDefinitionGroup");

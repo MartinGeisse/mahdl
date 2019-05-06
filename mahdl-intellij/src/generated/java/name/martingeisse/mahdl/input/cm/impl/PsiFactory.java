@@ -197,6 +197,12 @@ public class PsiFactory {
 		if (type == Symbols.doBlockTrigger_Error) {
 			return new DoBlockTrigger_ErrorImpl(node);
 		}
+		if (type == Symbols.functionName_Identifier) {
+			return new FunctionName_IdentifierImpl(node);
+		}
+		if (type == Symbols.functionName_Bit) {
+			return new FunctionName_BitImpl(node);
+		}
 		if (type == Symbols.module) {
 			return new ModuleImpl(node);
 		}

@@ -1,11 +1,10 @@
 package name.martingeisse.mahdl.input.cm.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import name.martingeisse.mahdl.input.cm.CmList;
-import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.Expression;
 import name.martingeisse.mahdl.input.cm.Expression_FunctionCall;
+import name.martingeisse.mahdl.input.cm.FunctionName;
 import org.jetbrains.annotations.NotNull;
 
 public final class Expression_FunctionCallImpl extends ExpressionImpl implements Expression_FunctionCall, PsiCm {
@@ -14,12 +13,12 @@ public final class Expression_FunctionCallImpl extends ExpressionImpl implements
 		super(node);
 	}
 
-	public CmToken getFunctionName() {
-		return (CmToken) InternalPsiUtil.getCmFromPsi(InternalPsiUtil.getChild(this, 0));
+	public FunctionName getFunctionName() {
+		return (FunctionName) InternalPsiUtil.getCmFromPsi(InternalPsiUtil.getChild(this, 0));
 	}
 
-	public LeafPsiElement getFunctionNamePsi() {
-		return (LeafPsiElement) InternalPsiUtil.getChild(this, 0);
+	public FunctionNameImpl getFunctionNamePsi() {
+		return (FunctionNameImpl) InternalPsiUtil.getChild(this, 0);
 	}
 
 	public CmList<Expression> getArguments() {
