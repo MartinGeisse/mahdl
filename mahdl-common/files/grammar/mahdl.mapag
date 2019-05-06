@@ -174,7 +174,7 @@ expression ::= {
 	indexSelection ::= expression:container OPENING_SQUARE_BRACKET expression:index CLOSING_SQUARE_BRACKET;
 	rangeSelection ::= expression:container OPENING_SQUARE_BRACKET expression:from COLON expression:to CLOSING_SQUARE_BRACKET;
 	parenthesized ::= OPENING_PARENTHESIS expression:expression CLOSING_PARENTHESIS;
-	functionCall ::= IDENTIFIER:functionName OPENING_PARENTHESIS (expression, COMMA)+:arguments CLOSING_PARENTHESIS;
+	functionCall ::= functionName:functionName OPENING_PARENTHESIS (expression, COMMA)+:arguments CLOSING_PARENTHESIS;
 
 	unaryNot ::= OP_NOT expression:operand %precedence OP_NOT;
 	unaryPlus ::= OP_PLUS expression:operand %precedence OP_NOT;
@@ -203,6 +203,11 @@ expression ::= {
 
 	conditional ::= expression:condition OP_CONDITIONAL expression:thenBranch COLON expression:elseBranch %precedence OP_CONDITIONAL;
 
+}
+
+functionName ::= {
+    identifier ::= IDENTIFIER:value;
+    bit ::= KW_BIT;
 }
 
 literal ::= {

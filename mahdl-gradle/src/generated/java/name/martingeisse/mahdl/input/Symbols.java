@@ -112,6 +112,8 @@ public class Symbols {
 	public static final MahdlElementType expression_UnaryPlus = new MahdlElementType("expression_UnaryPlus", Expression_UnaryPlusImpl::new);
 	public static final MahdlElementType extendedExpression_Normal = new MahdlElementType("extendedExpression_Normal", ExtendedExpression_NormalImpl::new);
 	public static final MahdlElementType extendedExpression_Switch = new MahdlElementType("extendedExpression_Switch", ExtendedExpression_SwitchImpl::new);
+	public static final MahdlElementType functionName_Bit = new MahdlElementType("functionName_Bit", FunctionName_BitImpl::new);
+	public static final MahdlElementType functionName_Identifier = new MahdlElementType("functionName_Identifier", FunctionName_IdentifierImpl::new);
 	public static final MahdlElementType implementationItem_DoBlock = new MahdlElementType("implementationItem_DoBlock", ImplementationItem_DoBlockImpl::new);
 	public static final MahdlElementType implementationItem_Error = new MahdlElementType("implementationItem_Error", ImplementationItem_ErrorImpl::new);
 	public static final MahdlElementType implementationItem_ModuleInstanceDefinitionGroup = new MahdlElementType("implementationItem_ModuleInstanceDefinitionGroup", ImplementationItem_ModuleInstanceDefinitionGroupImpl::new);
