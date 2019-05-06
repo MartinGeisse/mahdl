@@ -1,8 +1,12 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
+
+import java.math.BigInteger;
 
 /**
  *
@@ -13,12 +17,16 @@ public class AssignmentTargetGenerator {
 	private final StringBuilder builder;
 	private final ValueGenerator valueGenerator;
 	private final ExpressionGenerator expressionGenerator;
+	private final ProcessingSidekick sidekick;
+	private final ProcessedExpression.FormallyConstantEvaluationContext evaluationContext;
 
-	public AssignmentTargetGenerator(GenerationModel model, StringBuilder builder, ValueGenerator valueGenerator, ExpressionGenerator expressionGenerator) {
+	public AssignmentTargetGenerator(GenerationModel model, StringBuilder builder, ValueGenerator valueGenerator, ExpressionGenerator expressionGenerator, ProcessingSidekick sidekick) {
 		this.model = model;
 		this.builder = builder;
 		this.valueGenerator = valueGenerator;
 		this.expressionGenerator = expressionGenerator;
+		this.sidekick = sidekick;
+		this.evaluationContext = new ProcessedExpression.FormallyConstantEvaluationContext(sidekick);
 	}
 
 	/**
@@ -44,20 +52,28 @@ public class AssignmentTargetGenerator {
 		} else if (expression instanceof ProcessedIndexSelection) {
 
 			ProcessedIndexSelection indexSelection = (ProcessedIndexSelection) expression;
+
+			// handle container
 			if (!(indexSelection.getContainer() instanceof SignalLikeReference)) {
 				throw new UnsupportedOperationException("unsupported assignment target for code generation");
 			}
 			String container = ((SignalLikeReference) indexSelection.getContainer()).getDefinition().getName();
-			String index = expressionGenerator.buildExpression(indexSelection.getIndex());
-			switch (indexSelection.getContainer().getDataType().getFamily()) {
 
-				case VECTOR:
-					return "new RtlVectorTargetIndexSelection(realm, " + container + ", " + index + ")";
-
-				case MATRIX:
-					return "new RtlMemoryTargetIndexSelection(realm, " + container + ", " + index + ")";
-
+			// Handle selection by (constant) integer specially. It uses a different ESDK class that allows indexing
+			// the "upper" indices of a non-PO2 container.
+			if (indexSelection.getIndex().getDataType().getFamily() == ProcessedDataType.Family.INTEGER) {
+				BigInteger index = indexSelection.getIndex().evaluateFormallyConstant(evaluationContext).convertToInteger();
+				if (index == null) {
+					// errors have been reported already
+					return "null";
+				} else {
+					return container + ".selectTarget(" + index + ")";
+				}
 			}
+
+			// select bit from vector or vector from procedural memory
+			String index = expressionGenerator.buildExpression(indexSelection.getIndex());
+			return container + ".selectTarget(" + index + ")";
 
 		} else if (expression instanceof ProcessedRangeSelection) {
 

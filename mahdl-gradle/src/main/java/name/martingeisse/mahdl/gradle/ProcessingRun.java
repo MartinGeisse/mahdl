@@ -76,7 +76,7 @@ public class ProcessingRun {
 				String packageName = StringUtils.join(qualifiedName.subList(0, qualifiedName.size() - 1), '.');
 				String localName = qualifiedName.get(qualifiedName.size() - 1);
 				GenerationModel model = new GenerationModel(moduleDefinition, packageName, localName);
-				CodeGenerator codeGenerator = new CodeGenerator(model);
+				CodeGenerator codeGenerator = new CodeGenerator(model, errorHandler);
 				codeGenerator.run();
 				generatedCode.put(qualifiedName, codeGenerator.getCode());
 			} finally {

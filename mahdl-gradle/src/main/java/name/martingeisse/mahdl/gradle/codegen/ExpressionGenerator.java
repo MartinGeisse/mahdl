@@ -2,11 +2,14 @@ package name.martingeisse.mahdl.gradle.codegen;
 
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.functions.RepeatFunction;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.gradle.CompilationErrors;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigInteger;
 
 /**
  *
@@ -16,11 +19,15 @@ public class ExpressionGenerator {
 	private final GenerationModel model;
 	private final StringBuilder builder;
 	private final ValueGenerator valueGenerator;
+	private final ProcessingSidekick sidekick;
+	private final ProcessedExpression.FormallyConstantEvaluationContext evaluationContext;
 
-	public ExpressionGenerator(GenerationModel model, StringBuilder builder, ValueGenerator valueGenerator) {
+	public ExpressionGenerator(GenerationModel model, StringBuilder builder, ValueGenerator valueGenerator, ProcessingSidekick sidekick) {
 		this.model = model;
 		this.builder = builder;
 		this.valueGenerator = valueGenerator;
+		this.sidekick = sidekick;
+		this.evaluationContext = new ProcessedExpression.FormallyConstantEvaluationContext(sidekick);
 	}
 
 	/**
@@ -166,8 +173,22 @@ public class ExpressionGenerator {
 				return "new RtlLookupTable(realm, " + matrix + ", " + index + ")";
 			}
 
-			// select bit from vector or vector from procedural memory
+			// otherwise, the container is a normal run-time expression
 			String container = buildExpression(indexSelection.getContainer());
+
+			// Handle selection by (constant) integer specially. It uses a different ESDK class that allows indexing
+			// the "upper" indices of a non-PO2 container.
+			if (indexSelection.getIndex().getDataType().getFamily() == ProcessedDataType.Family.INTEGER) {
+				BigInteger index = indexSelection.getIndex().evaluateFormallyConstant(evaluationContext).convertToInteger();
+				if (index == null) {
+					// errors have been reported already
+					return "null";
+				} else {
+					return container + ".select(" + index + ")";
+				}
+			}
+
+			// select bit from vector or vector from procedural memory
 			String index = buildExpression(indexSelection.getIndex());
 			return container + ".select(" + index + ")";
 

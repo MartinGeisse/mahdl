@@ -1,5 +1,6 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.statement.*;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 
@@ -17,12 +18,13 @@ public class ClockedStatementGenerator {
 	public ClockedStatementGenerator(GenerationModel model,
 									 StringBuilder builder,
 									 ValueGenerator valueGenerator,
-									 ExpressionGenerator expressionGenerator) {
+									 ExpressionGenerator expressionGenerator,
+									 ProcessingSidekick sidekick) {
 		this.model = model;
 		this.builder = builder;
 		this.valueGenerator = valueGenerator;
 		this.expressionGenerator = expressionGenerator;
-		this.assignmentTargetGenerator = new AssignmentTargetGenerator(model, builder, valueGenerator, expressionGenerator);
+		this.assignmentTargetGenerator = new AssignmentTargetGenerator(model, builder, valueGenerator, expressionGenerator, sidekick);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package name.martingeisse.mahdl.gradle.codegen;
 
+import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.InstancePortReference;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
@@ -24,19 +26,21 @@ import static name.martingeisse.mahdl.gradle.codegen.Util.valueTypeToString;
 public final class CodeGenerator {
 
 	private final GenerationModel model;
+	private final ProcessingSidekick sidekick;
 	private final StringBuilder builder;
 	private final ValueGenerator valueGenerator;
 	private final ExpressionGenerator expressionGenerator;
 	private final ContinuousStatementExpressionGenerator continuousStatementExpressionGenerator;
 	private final ClockedStatementGenerator clockedStatementGenerator;
 
-	public CodeGenerator(GenerationModel model) {
+	public CodeGenerator(GenerationModel model, ErrorHandler errorHandler) {
 		this.model = model;
+		this.sidekick = new ProcessingSidekick(errorHandler);
 		this.builder = new StringBuilder();
 		this.valueGenerator = new ValueGenerator(model, builder);
-		this.expressionGenerator = new ExpressionGenerator(model, builder, valueGenerator);
+		this.expressionGenerator = new ExpressionGenerator(model, builder, valueGenerator, sidekick);
 		this.continuousStatementExpressionGenerator = new ContinuousStatementExpressionGenerator(model, builder);
-		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, valueGenerator, expressionGenerator);
+		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, valueGenerator, expressionGenerator, sidekick);
 	}
 
 	public void run() {
