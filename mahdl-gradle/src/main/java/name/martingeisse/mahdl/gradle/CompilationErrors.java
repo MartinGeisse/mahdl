@@ -13,7 +13,7 @@ import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
  */
 public class CompilationErrors {
 
-	private static final boolean ENABLE_DIAGNOSTICS = true;
+	private static final boolean ENABLE_DIAGNOSTICS = false;
 
 	private static final Object dummy = new Object();
 	private static final ThreadLocal<Object> hasErrors = new ThreadLocal<>();
@@ -22,8 +22,13 @@ public class CompilationErrors {
 		return hasErrors.get() != null;
 	}
 
+	private static void printDiagnosticPrefix() {
+		System.err.println("DIAGNOSTIC:");
+	}
+
 	public static void reportDiagnostic(CmLinked errorSource, String message) {
 		if (ENABLE_DIAGNOSTICS) {
+			printDiagnosticPrefix();
 			reportError(errorSource, message);
 		}
 	}
@@ -34,6 +39,7 @@ public class CompilationErrors {
 
 	public static void reportDiagnostic(CmLinked errorSource, String message, Throwable exception) {
 		if (ENABLE_DIAGNOSTICS) {
+			printDiagnosticPrefix();
 			reportError(errorSource, message, exception);
 		}
 	}
@@ -55,6 +61,7 @@ public class CompilationErrors {
 
 	public static void reportDiagnostic(String path, int row, int column, String message) {
 		if (ENABLE_DIAGNOSTICS) {
+			printDiagnosticPrefix();
 			reportError(path, row, column, message);
 		}
 	}
@@ -65,6 +72,7 @@ public class CompilationErrors {
 
 	public static void reportDiagnostic(String path, int row, int column, String message, Throwable exception) {
 		if (ENABLE_DIAGNOSTICS) {
+			printDiagnosticPrefix();
 			reportError(path, row, column, message, exception);
 		}
 	}

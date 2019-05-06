@@ -70,7 +70,7 @@ public class ValueGenerator {
 		} else if (value instanceof ConstantValue.Text) {
 			return "\"" + ((ConstantValue.Text) value).getValue().replace("\\", "\\\\").replace("\"", "\\\"");
 		} else {
-			CompilationErrors.reportError((CmLinked) null, "unsupported constant value: " + value);
+			CompilationErrors.reportError(null, "unsupported run-time value: " + value);
 			return "null";
 		}
 	}

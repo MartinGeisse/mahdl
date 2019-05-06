@@ -47,7 +47,7 @@ public class ExpressionGenerator {
 					return "new RtlVectorConstant(realm, " + value + ")";
 
 				default:
-					CompilationErrors.reportError(expression, "unsupported constant type: " + expression.getDataType());
+					CompilationErrors.reportError(expression, "unsupported run-time value: " + expression.getDataType());
 					return "null";
 
 			}
