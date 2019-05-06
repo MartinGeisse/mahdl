@@ -10,6 +10,7 @@ import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.BitSet;
 import java.util.function.BinaryOperator;
 
 /**
@@ -222,6 +223,95 @@ public enum ProcessedBinaryOperator {
 			throw new OperatorInconsistencyException("evaluateLogicalOperator() not supported for this operator");
 		}
 		return logicalOperation.evaluate(leftOperand, rightOperand);
+	}
+
+	@NotNull
+	ConstantValue evaluateFormallyConstantInternal(@NotNull ConstantValue left,
+												   @NotNull ConstantValue right,
+												   @NotNull ProcessedExpression.FormallyConstantEvaluationContext context,
+												   @NotNull CmNode errorSource) {
+
+		// handle string concatenation
+		if (this == ProcessedBinaryOperator.TEXT_CONCAT) {
+			return new ConstantValue.Text(left.convertToString() + right.convertToString());
+		}
+
+		// handle vector concatenation (for concat, bits have been converted to vectors of size 1 by now)
+		if (this == ProcessedBinaryOperator.VECTOR_CONCAT) {
+			ConstantValue.Vector leftVector = prepareForVectorConcatenation(left, context, errorSource);
+			ConstantValue.Vector rightVector = prepareForVectorConcatenation(right, context, errorSource);
+			if (leftVector == null || rightVector == null) {
+				return ConstantValue.Unknown.INSTANCE;
+			}
+			BitSet resultBits = rightVector.getBits();
+			BitSet leftBits = leftVector.getBits();
+			for (int i = 0; i < leftVector.getSize(); i++) {
+				resultBits.set(rightVector.getSize() + i, leftBits.get(i));
+			}
+			return new ConstantValue.Vector(leftVector.getSize() + rightVector.getSize(), resultBits);
+		}
+
+		// with concatenation handled, only logical operators can handle bit values, and only if both operands are bits
+		if ((left instanceof ConstantValue.Bit) != (right instanceof ConstantValue.Bit)) {
+			return context.evaluationInconsistency(errorSource, "only one operand has bit type");
+		}
+		if (left instanceof ConstantValue.Bit) {
+			boolean leftBoolean = ((ConstantValue.Bit) left).isSet();
+			boolean rightBoolean = ((ConstantValue.Bit) right).isSet();
+			try {
+				return new ConstantValue.Bit(evaluateLogicalOperator(leftBoolean, rightBoolean));
+			} catch (ProcessedBinaryOperator.OperatorInconsistencyException e) {
+				return context.evaluationInconsistency(errorSource, e.getMessage());
+			}
+		}
+
+		// all other operands are IVOs, so perform the corresponding integer operation first...
+		BigInteger leftInteger = left.convertToInteger();
+		BigInteger rightInteger = right.convertToInteger();
+		if (leftInteger == null || rightInteger == null) {
+			return context.evaluationInconsistency(errorSource,
+				"missing integer results for operands (" + left + " / " + right + ")");
+
+		}
+		ConstantValue integerResultValue;
+		BigInteger resultInteger;
+		try {
+			integerResultValue = evaluateIntegerVectorOperator(leftInteger, rightInteger);
+			resultInteger = integerResultValue.convertToInteger();
+			if (resultInteger == null) {
+				return context.evaluationInconsistency(errorSource,
+					"got result value of wrong type for binary operator: " + integerResultValue.getDataTypeFamily());
+			}
+		} catch (ProcessedBinaryOperator.OperatorInconsistencyException e) {
+			return context.evaluationInconsistency(errorSource, e.getMessage());
+		} catch (ProcessedBinaryOperator.OperandValueException e) {
+			return context.error(errorSource, e.getMessage());
+		}
+
+		// ... then convert the result to the type of the expression
+		ProcessedDataType resultType = left.getDataType();
+		if (resultType instanceof ProcessedDataType.Integer) {
+			return integerResultValue;
+		} else if (resultType instanceof ProcessedDataType.Vector) {
+			int size = ((ProcessedDataType.Vector) resultType).getSize();
+			return new ConstantValue.Vector(size, resultInteger, true);
+		} else {
+			return context.evaluationInconsistency(errorSource, "unexpected result type for IVO: " + resultType);
+		}
+
+	}
+
+	private ConstantValue.Vector prepareForVectorConcatenation(ConstantValue value,
+															   ProcessedExpression.FormallyConstantEvaluationContext context,
+															   CmNode errorSource) {
+		if (value instanceof ConstantValue.Vector) {
+			return (ConstantValue.Vector) value;
+		} else if (value instanceof ConstantValue.Bit) {
+			return ((ConstantValue.Bit) value).isSet() ? ConstantValue.Vector.SINGLE_ONE : ConstantValue.Vector.SINGLE_ZERO;
+		} else {
+			context.evaluationInconsistency(errorSource, "invalid value for vector concatenation: " + value);
+			return null;
+		}
 	}
 
 	@NotNull
