@@ -8,11 +8,14 @@ import name.martingeisse.mahdl.common.processor.ModuleProcessor;
 import name.martingeisse.mahdl.common.processor.definition.ModuleDefinition;
 import name.martingeisse.mahdl.gradle.codegen.CodeGenerator;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
+import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.CmToken;
 import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -56,7 +59,19 @@ public class ProcessingRun {
 			try {
 				moduleWrapper.setProcessingRun(this);
 				Module moduleCm = moduleWrapper.getModule();
-				ErrorHandler errorHandler = CompilationErrors::reportError;
+				ErrorHandler errorHandler = new ErrorHandler() {
+
+					@Override
+					public void onError(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t) {
+						CompilationErrors.reportError(errorSource, message, t);
+					}
+
+					@Override
+					public void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t) {
+						CompilationErrors.reportDiagnostic(errorSource, message, t);
+					}
+
+				};
 				ModuleDefinition moduleDefinition = new ModuleProcessor(moduleCm, errorHandler).process();
 				if (moduleDefinition.isNative()) {
 					continue;

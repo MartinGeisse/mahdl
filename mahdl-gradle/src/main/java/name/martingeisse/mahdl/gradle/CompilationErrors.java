@@ -14,6 +14,8 @@ import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
  */
 public class CompilationErrors {
 
+	private static final boolean ENABLE_DIAGNOSTICS = true;
+
 	private static final Object dummy = new Object();
 	private static final ThreadLocal<Object> hasErrors = new ThreadLocal<>();
 
@@ -29,8 +31,20 @@ public class CompilationErrors {
 		}
 	}
 
+	public static void reportDiagnostic(CmNode node, String message) {
+		if (ENABLE_DIAGNOSTICS) {
+			reportError(node, message);
+		}
+	}
+
 	public static void reportError(CmNode node, String message) {
 		reportError(node, message, null);
+	}
+
+	public static void reportDiagnostic(CmNode node, String message, Throwable exception) {
+		if (ENABLE_DIAGNOSTICS) {
+			reportError(node, message, exception);
+		}
 	}
 
 	public static void reportError(CmNode node, String message, Throwable exception) {
@@ -40,8 +54,20 @@ public class CompilationErrors {
 		CompilationErrors.reportError(path, nodeImpl.getRow(), nodeImpl.getColumn(), message, exception);
 	}
 
+	public static void reportDiagnostic(String path, int row, int column, String message) {
+		if (ENABLE_DIAGNOSTICS) {
+			reportError(path, row, column, message);
+		}
+	}
+
 	public static void reportError(String path, int row, int column, String message) {
 		reportError(path, row, column, message, null);
+	}
+
+	public static void reportDiagnostic(String path, int row, int column, String message, Throwable exception) {
+		if (ENABLE_DIAGNOSTICS) {
+			reportError(path, row, column, message, exception);
+		}
 	}
 
 	public static void reportError(String path, int row, int column, String message, Throwable exception) {

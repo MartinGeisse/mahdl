@@ -20,4 +20,10 @@ public interface ErrorHandler {
 
 	void onError(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t);
 
+	default void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message) {
+		onDiagnostic(errorSource, message, null);
+	}
+
+	void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t);
+
 }
