@@ -42,31 +42,7 @@ public abstract class ProcessedExpression implements CmLinked {
 	}
 
 	public final boolean isUnknownType() {
-		return isType(ProcessedDataType.Family.UNKNOWN);
-	}
-
-	public final boolean isType(ProcessedDataType.Family family) {
-		return dataType.getFamily() == family;
-	}
-
-	public final ProcessedExpression expectType(ProcessedDataType.Family family, ProcessingSidekick sidekick) {
-		if (isType(family) || isType(ProcessedDataType.Family.UNKNOWN)) {
-			return this;
-		}
-		sidekick.onError(errorSource, "expected type " + family + ", found " + dataType);
-		return new UnknownExpression(errorSource);
-	}
-
-	public final boolean isType(ProcessedDataType type) {
-		return dataType.equals(type);
-	}
-
-	public final ProcessedExpression expectType(ProcessedDataType type, ProcessingSidekick sidekick) {
-		if (isType(type) || isType(ProcessedDataType.Family.UNKNOWN)) {
-			return this;
-		}
-		sidekick.onError(errorSource, "expected type " + type + ", found " + dataType);
-		return new UnknownExpression(errorSource);
+		return dataType.getFamily() == ProcessedDataType.Family.UNKNOWN;
 	}
 
 	public final ConstantValue evaluateFormallyConstant(FormallyConstantEvaluationContext context) {

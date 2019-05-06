@@ -430,7 +430,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	private ProcessedExpression process(Expression_Conditional expression) throws TypeErrorException {
 
 		// process sub-expressions
-		ProcessedExpression condition = process(expression.getCondition()).expectType(ProcessedDataType.Family.BIT, sidekick);
+		ProcessedExpression condition = sidekick.expectType(process(expression.getCondition()), ProcessedDataType.Family.BIT);
 		ProcessedExpression thenBranch = process(expression.getThenBranch());
 		ProcessedExpression elseBranch = process(expression.getElseBranch());
 		boolean error = !condition.isUnknownType();

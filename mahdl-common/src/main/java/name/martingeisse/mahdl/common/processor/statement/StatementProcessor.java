@@ -48,7 +48,7 @@ public final class StatementProcessor {
 		} else if (trigger instanceof DoBlockTrigger_Clocked) {
 			triggerKind = AssignmentValidator.TriggerKind.CLOCKED;
 			Expression clockExpression = ((DoBlockTrigger_Clocked) trigger).getClockExpression();
-			clock = expressionProcessor.process(clockExpression).expectType(ProcessedDataType.Family.CLOCK, sidekick);
+			clock = sidekick.expectType(expressionProcessor.process(clockExpression), ProcessedDataType.Family.CLOCK);
 		} else {
 			error(trigger, "unknown trigger type");
 			return null;
@@ -115,8 +115,8 @@ public final class StatementProcessor {
 	private ProcessedIf processIfStatement(CmNode errorSource, Expression condition, Statement thenBranch, Statement elseBranch, AssignmentValidator.TriggerKind triggerKind) {
 
 		// condition
-		ProcessedExpression processedCondition = expressionProcessor.process(condition)
-			.expectType(ProcessedDataType.Family.BIT, sidekick);
+		ProcessedExpression processedCondition = sidekick.expectType(expressionProcessor.process(condition),
+			ProcessedDataType.Family.BIT);
 
 		// branches
 		ProcessedStatement processedThenBranch = process(thenBranch, triggerKind);
@@ -131,8 +131,8 @@ public final class StatementProcessor {
 	}
 
 	private ProcessedStatement process(Statement_Switch switchStatement, AssignmentValidator.TriggerKind triggerKind) {
-		ProcessedExpression selector = expressionProcessor.process(switchStatement.getSelector())
-			.expectType(ProcessedDataType.Family.VECTOR, sidekick);
+		ProcessedExpression selector = sidekick.expectType(expressionProcessor.process(switchStatement.getSelector()),
+			ProcessedDataType.Family.VECTOR);
 		boolean selectorOkay = !selector.isUnknownType();
 
 		if (switchStatement.getItems().getAll().isEmpty()) {
