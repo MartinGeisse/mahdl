@@ -1,6 +1,10 @@
 package name.martingeisse.mahdl.input.cm;
 
-public interface CmNode {
+public interface CmNode extends CmLinked {
+
+	default CmNode getCmNode() {
+		return this;
+	}
 
 	CmNode getCmParent();
 

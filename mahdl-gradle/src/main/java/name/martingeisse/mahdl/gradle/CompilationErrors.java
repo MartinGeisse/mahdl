@@ -5,7 +5,6 @@
 package name.martingeisse.mahdl.gradle;
 
 import name.martingeisse.mahdl.input.cm.CmLinked;
-import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 
@@ -23,35 +22,35 @@ public class CompilationErrors {
 		return hasErrors.get() != null;
 	}
 
-	public static void reportError(CmLinked source, String message) {
-		if (source == null) {
-			reportError("unknown file", 0, 0, message);
-		} else {
-			reportError(source.getErrorSource(), message);
-		}
-	}
-
-	public static void reportDiagnostic(CmNode node, String message) {
+	public static void reportDiagnostic(CmLinked errorSource, String message) {
 		if (ENABLE_DIAGNOSTICS) {
-			reportError(node, message);
+			reportError(errorSource, message);
 		}
 	}
 
-	public static void reportError(CmNode node, String message) {
-		reportError(node, message, null);
+	public static void reportError(CmLinked errorSource, String message) {
+		reportError(errorSource, message, null);
 	}
 
-	public static void reportDiagnostic(CmNode node, String message, Throwable exception) {
+	public static void reportDiagnostic(CmLinked errorSource, String message, Throwable exception) {
 		if (ENABLE_DIAGNOSTICS) {
-			reportError(node, message, exception);
+			reportError(errorSource, message, exception);
 		}
 	}
 
-	public static void reportError(CmNode node, String message, Throwable exception) {
-		CmNodeImpl nodeImpl = (CmNodeImpl) node;
-		ModuleWrapper moduleWrapper = ModuleWrapper.get(node);
-		String path = (moduleWrapper != null && moduleWrapper.getFile() != null) ? moduleWrapper.getFile().getPath() : "???";
-		CompilationErrors.reportError(path, nodeImpl.getRow(), nodeImpl.getColumn(), message, exception);
+	public static void reportError(CmLinked errorSource, String message, Throwable exception) {
+		String path = "unknown file";
+		int row = 0, column = 0;
+		if (errorSource != null) {
+			CmNodeImpl nodeImpl = (CmNodeImpl) errorSource.getCmNode();
+			row = nodeImpl.getRow();
+			column = nodeImpl.getColumn();
+			ModuleWrapper moduleWrapper = ModuleWrapper.get(nodeImpl);
+			if (moduleWrapper != null && moduleWrapper.getFile() != null) {
+				path = moduleWrapper.getFile().getPath();
+			}
+		}
+		CompilationErrors.reportError(path, row, column, message, exception);
 	}
 
 	public static void reportDiagnostic(String path, int row, int column, String message) {

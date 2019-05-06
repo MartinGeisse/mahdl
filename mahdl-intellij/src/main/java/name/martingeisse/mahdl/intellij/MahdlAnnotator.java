@@ -9,6 +9,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.ModuleProcessor;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.impl.InternalPsiUtil;
 import name.martingeisse.mahdl.input.cm.impl.ModuleImpl;
@@ -35,12 +36,16 @@ public class MahdlAnnotator implements Annotator {
 		ErrorHandler errorHandler = new ErrorHandler() {
 
 			@Override
-			public void onError(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t) {
-				annotationHolder.createErrorAnnotation(InternalPsiUtil.getPsiFromCm(errorSource), message);
+			public void onError(@NotNull CmLinked errorSource, @NotNull String message, @Nullable Throwable t) {
+				CmNode node = errorSource.getCmNode();
+				if (node == null) {
+					node = module;
+				}
+				annotationHolder.createErrorAnnotation(InternalPsiUtil.getPsiFromCm(node), message);
 			}
 
 			@Override
-			public void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t) {
+			public void onDiagnostic(@NotNull CmLinked errorSource, @NotNull String message, @Nullable Throwable t) {
 				// ignore
 			}
 

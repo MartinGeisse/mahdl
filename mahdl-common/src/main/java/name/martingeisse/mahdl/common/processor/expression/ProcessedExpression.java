@@ -26,6 +26,11 @@ public abstract class ProcessedExpression implements CmLinked {
 		this.dataType = dataType;
 	}
 
+	@Override
+	public CmNode getCmNode() {
+		return errorSource;
+	}
+
 	@NotNull
 	public final CmNode getErrorSource() {
 		return errorSource;

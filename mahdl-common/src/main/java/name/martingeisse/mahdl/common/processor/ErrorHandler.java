@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor;
 
-import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,16 +14,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ErrorHandler {
 
-	default void onError(@NotNull CmNode errorSource, @NotNull String message) {
+	default void onError(@NotNull CmLinked errorSource, @NotNull String message) {
 		onError(errorSource, message, null);
 	}
 
-	void onError(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t);
+	void onError(@NotNull CmLinked errorSource, @NotNull String message, @Nullable Throwable t);
 
-	default void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message) {
+	default void onDiagnostic(@NotNull CmLinked errorSource, @NotNull String message) {
 		onDiagnostic(errorSource, message, null);
 	}
 
-	void onDiagnostic(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable t);
+	void onDiagnostic(@NotNull CmLinked errorSource, @NotNull String message, @Nullable Throwable t);
 
 }

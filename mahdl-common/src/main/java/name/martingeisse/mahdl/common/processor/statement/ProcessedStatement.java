@@ -18,6 +18,11 @@ public abstract class ProcessedStatement implements CmLinked {
 		this.errorSource = errorSource;
 	}
 
+	@Override
+	public CmNode getCmNode() {
+		return errorSource;
+	}
+
 	public CmNode getErrorSource() {
 		return errorSource;
 	}
