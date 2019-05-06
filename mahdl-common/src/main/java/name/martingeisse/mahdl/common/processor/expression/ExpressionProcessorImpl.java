@@ -433,17 +433,21 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		ProcessedExpression condition = sidekick.expectType(process(expression.getCondition()), ProcessedDataType.Family.BIT);
 		ProcessedExpression thenBranch = process(expression.getThenBranch());
 		ProcessedExpression elseBranch = process(expression.getElseBranch());
-		boolean error = !condition.isUnknownType();
+		boolean error = condition.isUnknownType();
 
 		// handle branch types
 		if (thenBranch.getDataType() instanceof ProcessedDataType.Clock) {
 			error(thenBranch, "cannot use a signal of clock type in a conditional expression");
 			error = true;
-		} else if (elseBranch.getDataType() instanceof ProcessedDataType.Clock) {
+		}
+		if (elseBranch.getDataType() instanceof ProcessedDataType.Clock) {
 			error(elseBranch, "cannot use a signal of clock type in a conditional expression");
 			error = true;
-		} else if (!thenBranch.getDataType().equals(elseBranch.getDataType())) {
-			error(elseBranch, "type mismatch in then/else branches: " + thenBranch.getDataType() + " vs. " + elseBranch.getDataType());
+		}
+		if (!thenBranch.getDataType().equals(elseBranch.getDataType())) {
+			if (!thenBranch.isUnknownType() && !elseBranch.isUnknownType()) {
+				error(elseBranch, "type mismatch in then/else branches: " + thenBranch.getDataType() + " vs. " + elseBranch.getDataType());
+			}
 			error = true;
 		}
 
