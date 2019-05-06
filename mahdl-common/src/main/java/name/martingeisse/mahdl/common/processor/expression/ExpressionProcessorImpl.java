@@ -459,7 +459,16 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	private ProcessedExpression process(Expression_FunctionCall expression) {
 		boolean error = false;
 
-		String functionName = expression.getFunctionName().getText();
+		FunctionName functionNameNode = expression.getFunctionName();
+		String functionName;
+		if (functionNameNode instanceof FunctionName_Identifier) {
+			functionName = ((FunctionName_Identifier) functionNameNode).getValue().getText();
+		} else if (functionNameNode instanceof FunctionName_Bit) {
+			functionName = "bit";
+		} else {
+			return error(expression.getFunctionName(), "unknown function name node type: " + functionNameNode);
+		}
+
 		BuiltinFunction builtinFunction = BuiltinFunctions.FUNCTIONS.get(functionName);
 		if (builtinFunction == null) {
 			error(expression.getFunctionName(), "unknown function: " + functionName);
