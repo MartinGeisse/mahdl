@@ -21,6 +21,10 @@ public class AssignmentConversionUtil {
 		if (expression.getDataType().equals(targetType)) {
 			return expression;
 		}
+		if (expression.isUnknownType()) {
+			sidekick.onDiagnostic(expression, "could not convert unknown expression on assignment");
+			return expression;
+		}
 		if (expression.getDataType() instanceof ProcessedDataType.Integer && expression instanceof ProcessedConstantExpression) {
 			BigInteger value = ((ProcessedConstantExpression) expression).getValue().convertToInteger();
 			if (targetType instanceof ProcessedDataType.Bit) {
