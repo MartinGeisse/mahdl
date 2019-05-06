@@ -208,7 +208,7 @@ public class ExpressionGenerator {
 					.append(");\n");
 
 			} else if (expression.getDataType().getFamily() == ProcessedDataType.Family.VECTOR) {
-				int width = ((ProcessedDataType.Vector)expression.getDataType()).getSize();
+				int width = ((ProcessedDataType.Vector) expression.getDataType()).getSize();
 				builder.append("		RtlVectorSwitchSignal ").append(helperName)
 					.append(" = new RtlVectorSwitchSignal(realm, ").append(buildExpression(switchExpression.getSelector()))
 					.append(", ").append(width).append(");\n");
@@ -221,17 +221,18 @@ public class ExpressionGenerator {
 					.append(valueGenerator.buildValues(aCase.getSelectorValues())).append("), ")
 					.append(buildExpression(aCase.getResultValue())).append(");\n");
 			}
-			builder.append("		").append(helperName).append(".setDefaultSignal(")
-				.append(buildExpression(switchExpression.getDefaultBranch())).append(");\n");
+			if (switchExpression.getDefaultBranch() != null) {
+				builder.append("		").append(helperName).append(".setDefaultSignal(")
+					.append(buildExpression(switchExpression.getDefaultBranch())).append(");\n");
+			}
 			return helperName;
 
 		} else if (expression instanceof ProcessedFunctionCall) {
 
-			ProcessedFunctionCall call = (ProcessedFunctionCall)expression;
+			ProcessedFunctionCall call = (ProcessedFunctionCall) expression;
 			BuiltinFunction function = call.getFunction();
 			if (function instanceof RepeatFunction) {
-				// TODO
-				return "repeat()";
+				return buildRepeatCall(call);
 			} else {
 				CompilationErrors.reportError(expression, "unsupported run-time function call: " + ((ProcessedFunctionCall) expression).getFunction());
 				return "null";
@@ -244,10 +245,18 @@ public class ExpressionGenerator {
 
 		} else {
 
-			CompilationErrors.reportError(expression, "unsupported expression type: " + expression);
-			return "null";
+			throw new IllegalArgumentException("unsupported expression type: " + expression);
 
 		}
+	}
+
+	private String buildRepeatCall(ProcessedFunctionCall call) {
+		if (call.getArguments().size() != 2) {
+			return "null";
+		}
+		BigInteger repetitionCount = call.getArguments().get(0).evaluateFormallyConstant(evaluationContext).convertToInteger();
+		String source = buildExpression(call.getArguments().get(1));
+		return source + ".repeat(" + repetitionCount + ")";
 	}
 
 }

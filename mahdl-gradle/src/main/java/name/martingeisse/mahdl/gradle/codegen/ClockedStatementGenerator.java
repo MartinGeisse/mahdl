@@ -49,7 +49,7 @@ public class ClockedStatementGenerator {
 
 			ProcessedIf processedIf = (ProcessedIf) statement;
 			String helperName = "___when" + model.newSyntheticConstruct();
-			builder.append("		RtlWhenStatement ").append(helperName).append(" ").append(sequence)
+			builder.append("		RtlWhenStatement ").append(helperName).append(" = ").append(sequence)
 				.append(".when(").append(expressionGenerator.buildExpression(processedIf.getCondition())).append(");\n");
 			generateStatements(helperName + ".getThenBranch()", processedIf.getThenBranch());
 			generateStatements(helperName + ".getElseBranch()", processedIf.getElseBranch());
@@ -58,7 +58,7 @@ public class ClockedStatementGenerator {
 
 			ProcessedSwitchStatement processedSwitchStatement = (ProcessedSwitchStatement) statement;
 			String helperName = "___switch" + model.newSyntheticConstruct();
-			builder.append("		RtlSwitchStatement ").append(helperName).append(" ").append(sequence).append(".switchOn(")
+			builder.append("		RtlSwitchStatement ").append(helperName).append(" = ").append(sequence).append(".switchOn(")
 				.append(expressionGenerator.buildExpression(processedSwitchStatement.getSelector())).append(");\n");
 			for (ProcessedSwitchStatement.Case aCase : processedSwitchStatement.getCases()) {
 				String caseName = "___case" + model.newSyntheticConstruct();
