@@ -94,14 +94,12 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 			}
 		}
 
-		TODO BELOW
-
 		// all other operands are IVOs
 		if (!(leftOperandValue instanceof ConstantValue.Vector) && !(leftOperandValue instanceof ConstantValue.Integer)) {
-			return context.evaluationInconsistency(this, "wrong left operand for IVO: " + leftOperandValue);
+			return context.evaluationInconsistency(this, "wrong left operand for operator " + operator + ": " + leftOperandValue);
 		}
 		if (!(rightOperandValue instanceof ConstantValue.Vector) && !(rightOperandValue instanceof ConstantValue.Integer)) {
-			return context.evaluationInconsistency(this, "wrong right operand for IVO: " + rightOperandValue);
+			return context.evaluationInconsistency(this, "wrong right operand for operator " + operator + ": " + rightOperandValue);
 		}
 
 		// perform the corresponding integer operation and convert the result to the type of the expression

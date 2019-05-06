@@ -23,8 +23,6 @@ import java.util.function.BinaryOperator;
  */
 public enum ProcessedBinaryOperator {
 
-	TODO BELOW
-
 	// logical operators
 	AND((x, y) -> x & y, BigInteger::and, null, false),
 	OR((x, y) -> x | y, BigInteger::or, null, false),
@@ -43,6 +41,7 @@ public enum ProcessedBinaryOperator {
 
 	// shift operators
 	SHIFT_LEFT(null, null, null, false) {
+		@NotNull
 		@Override
 		public ConstantValue evaluateIntegerVectorOperator(BigInteger leftOperand, BigInteger rightOperand) throws OperandValueException {
 			int rightInt;
@@ -55,6 +54,7 @@ public enum ProcessedBinaryOperator {
 		}
 	},
 	SHIFT_RIGHT(null, null, null, false) {
+		@NotNull
 		@Override
 		public ConstantValue evaluateIntegerVectorOperator(BigInteger leftOperand, BigInteger rightOperand) throws OperandValueException {
 			int rightInt;
@@ -69,12 +69,14 @@ public enum ProcessedBinaryOperator {
 
 	// equality and comparison operators
 	EQUAL((x, y) -> x == y, null, null, false) {
+		@NotNull
 		@Override
 		public ConstantValue evaluateIntegerVectorOperator(BigInteger leftOperand, BigInteger rightOperand) {
 			return new ConstantValue.Bit(leftOperand.equals(rightOperand));
 		}
 	},
 	NOT_EQUAL((x, y) -> x != y, null, null, false) {
+		@NotNull
 		@Override
 		public ConstantValue evaluateIntegerVectorOperator(BigInteger leftOperand, BigInteger rightOperand) {
 			return new ConstantValue.Bit(!leftOperand.equals(rightOperand));
@@ -147,9 +149,9 @@ public enum ProcessedBinaryOperator {
 
 		} else if (this == SHIFT_LEFT || this == SHIFT_RIGHT) {
 
-			// the result type is the left type. The possible const-ness requirement for the right operand is not checked here.
-			if ((leftType instanceof ProcessedDataType.Integer || leftType instanceof ProcessedDataType.Vector) &&
-				(rightType instanceof ProcessedDataType.Integer || rightType instanceof ProcessedDataType.Vector)) {
+			if ((leftType instanceof ProcessedDataType.Integer && rightType instanceof ProcessedDataType.Integer) ||
+				(leftType instanceof ProcessedDataType.Vector && rightType instanceof ProcessedDataType.Integer) ||
+				(leftType instanceof ProcessedDataType.Vector && rightType instanceof ProcessedDataType.Vector)) {
 				return leftType;
 			}
 
@@ -197,7 +199,7 @@ public enum ProcessedBinaryOperator {
 				if (leftType.equals(rightType)) {
 					return ProcessedDataType.Bit.INSTANCE;
 				} else {
-					throw new TypeErrorException("invalid typed for comparison operator: " + leftType + ", " + rightType);
+					throw new TypeErrorException("invalid types for comparison operator: " + leftType + ", " + rightType);
 				}
 			}
 

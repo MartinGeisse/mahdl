@@ -115,10 +115,6 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				error(caseItem, "result of a select expression cannot have clock type");
 			} else if (resultValueType == null) {
 				resultValueType = resultValueExpression.getDataType();
-			} else if (resultValueType instanceof ProcessedDataType.Integer) {
-				if ((resultValueExpression.getDataType() instanceof ProcessedDataType.Bit) || (resultValueExpression.getDataType() instanceof ProcessedDataType.Vector)) {
-					resultValueType = resultValueExpression.getDataType();
-				}
 			}
 
 		}
@@ -127,24 +123,27 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		if (resultValueType == null) {
 			return error(expression, "internal error: could not determine result type of switch expression");
 		}
-		ImmutableList<ProcessedSwitchExpression.Case> unconvertedCases = ImmutableList.copyOf(processedCases);
-		processedCases.clear();
-		for (ProcessedSwitchExpression.Case aCase : unconvertedCases) {
-			ProcessedExpression converted = convertImplicitly(aCase.getResultValue(), resultValueType);
-			if (converted instanceof UnknownExpression) {
+		for (ProcessedSwitchExpression.Case aCase : processedCases) {
+			if (!aCase.getResultValue().getDataType().equals(resultValueType)) {
+				if (!aCase.getResultValue().isUnknownType() && !resultValueType.isUnknown()) {
+					errorHandler.onError(aCase.getResultValue().getErrorSource(), "conflicting result types: " +
+						aCase.getResultValue().getDataType() + " vs. " + resultValueType);
+				}
 				errorInCases = true;
 			}
-			processedCases.add(new ProcessedSwitchExpression.Case(aCase.getSelectorValues(), converted));
 		}
 		if (processedDefaultCase != null) {
-			processedDefaultCase = convertImplicitly(processedDefaultCase, resultValueType);
-			if (processedDefaultCase instanceof UnknownExpression) {
+			if (!processedDefaultCase.getDataType().equals(resultValueType)) {
+				if (!processedDefaultCase.isUnknownType() && !resultValueType.isUnknown()) {
+					errorHandler.onError(processedDefaultCase.getErrorSource(), "conflicting result types: " +
+						processedDefaultCase.getDataType() + " vs. " + resultValueType);
+				}
 				errorInCases = true;
 			}
 		}
 
 		// check for missing selector values
-		if (processedDefaultCase == null) {
+		if (processedDefaultCase == null && selector.getDataType() instanceof ProcessedDataType.Vector) {
 			int selectorSize = ((ProcessedDataType.Vector) selector.getDataType()).getSize();
 			if (foundSelectorValues.size() != (1 << selectorSize)) {
 				return error(expression, "incomplete switch expression");
@@ -317,10 +316,14 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 	private ProcessedExpression handleIndex(@NotNull ProcessedExpression index, int containerSizeIfKnown) {
 		if (index.getDataType() instanceof ProcessedDataType.Integer) {
-			// For an integer, the actual value is relevant, so non-PO2-sized containers can be indexed with a
-			// constant index without getting errors. There won't be an error based on the type alone nor a type
-			// conversion.
-			return index;
+			Integer indexValue = evaluateLocalSmallIntegerExpressionThatMustBeFormallyConstant(index);
+			if (indexValue == null || containerSizeIfKnown < 0) {
+				return new UnknownExpression(index.getErrorSource());
+			} else if (indexValue < 0 || indexValue >= containerSizeIfKnown) {
+				return error(index, "invalid index for container size " + containerSizeIfKnown + ": " + indexValue);
+			} else {
+				return index;
+			}
 		} else if (index.getDataType() instanceof ProcessedDataType.Vector) {
 			if (containerSizeIfKnown < 0) {
 				return new UnknownExpression(index.getErrorSource());
@@ -369,21 +372,10 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		}
 		ProcessedBinaryOperator operator = ProcessedBinaryOperator.from(expression);
 
-		// Now, only logical operators can handle bit values, and only if both operands are bits. We must be able to
-		// recognize bit literals for this, though, and we try that if either operand is already a bit.
+		// Now, only logical operators can handle bit values, and only if both operands are bits.
 		if ((leftOperand.getDataType() instanceof ProcessedDataType.Bit) != (rightOperand.getDataType() instanceof ProcessedDataType.Bit)) {
-			ProcessedExpression leftBit = leftOperand.makeBitCompatible();
-			if (leftBit != null) {
-				leftOperand = leftBit;
-			}
-			ProcessedExpression rightBit = rightOperand.makeBitCompatible();
-			if (rightBit != null) {
-				rightOperand = rightBit;
-			}
-			if ((leftOperand.getDataType() instanceof ProcessedDataType.Bit) != (rightOperand.getDataType() instanceof ProcessedDataType.Bit)) {
-				return error(expression, "this operator cannot be used for " + leftOperand.getDataType().getFamily() +
-					" and " + rightOperand.getDataType().getFamily() + " operands");
-			}
+			return error(expression, "this operator cannot be used for " + leftOperand.getDataType().getFamily() +
+				" and " + rightOperand.getDataType().getFamily() + " operands");
 		}
 		if (leftOperand.getDataType() instanceof ProcessedDataType.Bit) {
 			return new ProcessedBinaryOperation(expression, leftOperand, rightOperand, operator);
@@ -405,26 +397,15 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 		// handle TAIVOs (shift operators) specially (no conversion; result type is that of the left operand)
 		if (expression instanceof Expression_BinaryShiftLeft || expression instanceof Expression_BinaryShiftRight) {
+			if (leftOperand.getDataType() instanceof ProcessedDataType.Integer && rightOperand.getDataType() instanceof ProcessedDataType.Vector) {
+				return error(expression, "a shift operator with an integer left operand must have an integer right operand too");
+			}
 			return new ProcessedBinaryOperation(expression, leftOperand, rightOperand, operator);
 		}
 
 		// handle TSIVOs
-		if (leftOperand.getDataType() instanceof ProcessedDataType.Vector) {
-			int leftSize = ((ProcessedDataType.Vector) leftOperand.getDataType()).getSize();
-			if (rightOperand.getDataType() instanceof ProcessedDataType.Vector) {
-				int rightSize = ((ProcessedDataType.Vector) rightOperand.getDataType()).getSize();
-				if (leftSize != rightSize) {
-					return error(expression, "cannot apply operator " + operator + " to vectors of different sizes " +
-						leftSize + " and " + rightSize);
-				}
-			} else {
-				rightOperand = convertImplicitly(rightOperand, new ProcessedDataType.Vector(leftSize));
-			}
-		} else {
-			if (rightOperand.getDataType() instanceof ProcessedDataType.Vector) {
-				int rightSize = ((ProcessedDataType.Vector) rightOperand.getDataType()).getSize();
-				leftOperand = convertImplicitly(leftOperand, new ProcessedDataType.Vector(rightSize));
-			}
+		if (!rightOperand.getDataType().equals(leftOperand.getDataType())) {
+			return error(expression, "cannot apply operator " + operator + " to operands of type " + leftOperand.getDataType() + " and " + rightOperand.getDataType());
 		}
 		return new ProcessedBinaryOperation(expression, leftOperand, rightOperand, operator);
 
@@ -456,13 +437,14 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	}
 
 	private ProcessedExpression process(Expression_Conditional expression) throws TypeErrorException {
+
+		// process sub-expressions
 		ProcessedExpression condition = process(expression.getCondition()).expectType(ProcessedDataType.Family.BIT, errorHandler);
 		ProcessedExpression thenBranch = process(expression.getThenBranch());
 		ProcessedExpression elseBranch = process(expression.getElseBranch());
 		boolean error = !condition.isUnknownType();
 
-		// handle branches
-		branchTypeCheck:
+		// handle branch types
 		if (thenBranch.getDataType() instanceof ProcessedDataType.Clock) {
 			error(thenBranch, "cannot use a signal of clock type in a conditional expression");
 			error = true;
@@ -470,34 +452,8 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			error(elseBranch, "cannot use a signal of clock type in a conditional expression");
 			error = true;
 		} else if (!thenBranch.getDataType().equals(elseBranch.getDataType())) {
-
-			// recognize bit literals in either branch
-			if (thenBranch.getDataType() instanceof ProcessedDataType.Bit) {
-				ProcessedExpression elseBit = elseBranch.makeBitCompatible();
-				if (elseBit != null) {
-					elseBranch = elseBit;
-					break branchTypeCheck;
-				}
-			} else if (elseBranch.getDataType() instanceof ProcessedDataType.Bit) {
-				ProcessedExpression thenBit = thenBranch.makeBitCompatible();
-				if (thenBit != null) {
-					thenBranch = thenBit;
-					break branchTypeCheck;
-				}
-			}
-
-			// no bit literals -- recognize integer/vector combinations
-			if ((thenBranch.getDataType() instanceof ProcessedDataType.Vector) && (elseBranch.getDataType() instanceof ProcessedDataType.Integer)) {
-				int size = ((ProcessedDataType.Vector) thenBranch.getDataType()).getSize();
-				elseBranch = convertImplicitly(elseBranch, new ProcessedDataType.Vector(size));
-			} else if ((thenBranch.getDataType() instanceof ProcessedDataType.Integer) && (elseBranch.getDataType() instanceof ProcessedDataType.Vector)) {
-				int size = ((ProcessedDataType.Vector) elseBranch.getDataType()).getSize();
-				thenBranch = convertImplicitly(thenBranch, new ProcessedDataType.Vector(size));
-			} else {
-				error(elseBranch, "incompatible types in then/else branches: " + thenBranch.getDataType() + " vs. " + elseBranch.getDataType());
-				error = true;
-			}
-
+			error(elseBranch, "type mismatch in then/else branches: " + thenBranch.getDataType() + " vs. " + elseBranch.getDataType());
+			error = true;
 		}
 
 		// check for errors
@@ -607,13 +563,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	@Override
 	public ConstantValue.Vector processCaseSelectorValue(Expression expression, ProcessedDataType selectorDataType) {
 		ProcessedExpression processedSelectorValueExpression = process(expression);
-		processedSelectorValueExpression = convertImplicitly(processedSelectorValueExpression, selectorDataType);
 		ConstantValue selectorValue = evaluateLocalExpressionThatMustBeFormallyConstant(processedSelectorValueExpression);
 		if (selectorValue instanceof ConstantValue.Unknown) {
 			return null;
 		}
 		if (!(selectorValue instanceof ConstantValue.Vector)) {
-			error(expression, "internal error: selector is not a vector in spite of type conversion");
+			error(expression, "selector value must be a vector, found " + selectorValue.getDataType());
 			return null;
 		}
 		return (ConstantValue.Vector) selectorValue;

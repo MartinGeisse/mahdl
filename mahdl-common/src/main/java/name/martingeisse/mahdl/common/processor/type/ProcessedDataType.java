@@ -15,6 +15,10 @@ public abstract class ProcessedDataType {
 	@NotNull
 	public abstract Family getFamily();
 
+	public boolean isUnknown() {
+		return getFamily() == Family.UNKNOWN;
+	}
+
 	public enum Family {
 
 		BIT, VECTOR, MATRIX, INTEGER, TEXT, CLOCK, UNKNOWN;
