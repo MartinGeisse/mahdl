@@ -55,11 +55,15 @@ public final class ProcessedConditional extends ProcessedExpression {
 	@Override
 	protected ConstantValue evaluateFormallyConstantInternal(FormallyConstantEvaluationContext context) {
 		// evaluate both branches to detect errors even in the not-taken branch
-		Boolean conditionBoolean = condition.evaluateFormallyConstant(context).convertToBoolean();
+		ConstantValue conditionValue = condition.evaluateFormallyConstant(context);
 		ConstantValue thenValue = thenBranch.evaluateFormallyConstant(context);
 		ConstantValue elseValue = elseBranch.evaluateFormallyConstant(context);
+		if (conditionValue.isUnknown()) {
+			return conditionValue;
+		}
+		Boolean conditionBoolean = conditionValue.convertToBoolean();
 		if (conditionBoolean == null) {
-			return context.evaluationInconsistency(this, "cannot convert condition to boolean");
+			return context.evaluationInconsistency(this, "cannot get boolean value form condition");
 		} else if (conditionBoolean) {
 			return thenValue;
 		} else {

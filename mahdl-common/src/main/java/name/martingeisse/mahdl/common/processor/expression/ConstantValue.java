@@ -27,6 +27,10 @@ public abstract class ConstantValue {
 	@NotNull
 	public abstract ProcessedDataType getDataType();
 
+	public final boolean isUnknown() {
+		return (this instanceof Unknown);
+	}
+
 	/**
 	 * This method will NOT convert 0 and 1 to boolean. Usage of 0 and 1 as boolean *literals* is handled as an
 	 * expression transformation instead. We do not want arbitrary calculations which may yield these numbers to be

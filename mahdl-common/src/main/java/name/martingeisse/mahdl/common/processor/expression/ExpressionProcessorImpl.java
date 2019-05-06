@@ -277,16 +277,10 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 		// evaluate from-index
 		ProcessedExpression fromIndex = process(expression.getFrom());
-		if (!(fromIndex.getDataType() instanceof ProcessedDataType.Integer)) {
-			fromIndex = error(expression.getFrom(), "from-index must be of type integer, found " + fromIndex.getDataType());
-		}
 		Integer fromIndexInteger = evaluateLocalSmallIntegerExpressionThatMustBeFormallyConstant(fromIndex);
 
 		// evaluate to-index
 		ProcessedExpression toIndex = process(expression.getTo());
-		if (!(toIndex.getDataType() instanceof ProcessedDataType.Integer)) {
-			toIndex = error(expression.getTo(), "to-index must be of type integer, found " + toIndex.getDataType());
-		}
 		Integer toIndexInteger = evaluateLocalSmallIntegerExpressionThatMustBeFormallyConstant(toIndex);
 
 		// stop here if any of them failed
@@ -502,15 +496,23 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	}
 
 	private Integer evaluateLocalSmallIntegerExpressionThatMustBeFormallyConstant(ProcessedExpression expression) {
-		BigInteger integerValue = evaluateLocalExpressionThatMustBeFormallyConstant(expression).convertToInteger();
+		if (expression.getDataType().getFamily() != ProcessedDataType.Family.INTEGER) {
+			errorHandler.onError(expression.getErrorSource(), "expected integer type, found " + expression.getDataType());
+			return null;
+		}
+		ConstantValue value = evaluateLocalExpressionThatMustBeFormallyConstant(expression);
+		if (value.isUnknown()) {
+			return null;
+		}
+		BigInteger integerValue = value.convertToInteger();
 		if (integerValue == null) {
-			errorHandler.onError(expression.getErrorSource(), "cannot convert value to integer");
+			errorHandler.onError(expression.getErrorSource(), "could not get integer value of " + value);
 			return null;
 		}
 		try {
 			return integerValue.intValueExact();
 		} catch (ArithmeticException e) {
-			errorHandler.onError(expression.getErrorSource(), "value too large");
+			errorHandler.onError(expression.getErrorSource(), "value too large: " + integerValue);
 			return null;
 		}
 	}
