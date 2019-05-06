@@ -35,7 +35,7 @@ public final class Register extends SignalLike {
 		if (getProcessedInitializer() != null) {
 			// if there is an initializer then it must be formally constant
 			initializerValue = getProcessedInitializer().evaluateFormallyConstant(
-				new ProcessedExpression.FormallyConstantEvaluationContext(expressionProcessor.getErrorHandler()));
+				new ProcessedExpression.FormallyConstantEvaluationContext(expressionProcessor.getSidekick()));
 		}
 	}
 

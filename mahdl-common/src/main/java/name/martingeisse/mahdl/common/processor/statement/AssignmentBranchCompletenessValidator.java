@@ -1,6 +1,6 @@
 package name.martingeisse.mahdl.common.processor.statement;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
 import name.martingeisse.mahdl.common.processor.expression.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
@@ -17,13 +17,13 @@ import java.util.function.Predicate;
  */
 class AssignmentBranchCompletenessValidator {
 
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 	private final ProcessedDoBlock doBlock;
 	private final Set<SignalLike> signalLikes = new HashSet<>();
 	private final Set<InstancePortReference> instancePortReferences = new HashSet<>();
 
-	AssignmentBranchCompletenessValidator(ErrorHandler errorHandler, ProcessedDoBlock doBlock) {
-		this.errorHandler = errorHandler;
+	AssignmentBranchCompletenessValidator(ProcessingSidekick sidekick, ProcessedDoBlock doBlock) {
+		this.sidekick = sidekick;
 		this.doBlock = doBlock;
 	}
 
@@ -65,31 +65,31 @@ class AssignmentBranchCompletenessValidator {
 			boolean assigns = new BranchVisitor<>(false, (x, y) -> x | y, (x, y) -> x & y,
 				assignment -> assignsBit(assignment.getLeftHandSide(), targetMatcher)).visit(doBlock.getBody());
 			if (!assigns) {
-				errorHandler.onError(doBlock.getBody().getErrorSource(), name + " is not assigned in all branches");
+				sidekick.onError(doBlock.getBody().getErrorSource(), name + " is not assigned in all branches");
 			}
 		} else if (type.getFamily() == ProcessedDataType.Family.VECTOR) {
 			int width = ((ProcessedDataType.Vector) type).getSize();
 			BitSet bits = new BranchVisitor<>(new BitSet(), this::bitOr, this::bitAnd,
 				assignment -> assignsVector(assignment.getLeftHandSide(), targetMatcher)).visit(doBlock.getBody());
 			if (bits.isEmpty()) {
-				errorHandler.onError(doBlock.getBody().getErrorSource(), name + " is not assigned in all branches");
+				sidekick.onError(doBlock.getBody().getErrorSource(), name + " is not assigned in all branches");
 			} else {
 				bits.flip(0, width);
 				if (!bits.isEmpty()) {
-					errorHandler.onError(doBlock.getBody().getErrorSource(), "not all bits of " + name + " are assigned in all branches");
+					sidekick.onError(doBlock.getBody().getErrorSource(), "not all bits of " + name + " are assigned in all branches");
 				}
 			}
 		}
 	}
 
 	private BitSet bitAnd(BitSet x, BitSet y) {
-		BitSet result = (BitSet)x.clone();
+		BitSet result = (BitSet) x.clone();
 		result.and(y);
 		return result;
 	}
 
 	private BitSet bitOr(BitSet x, BitSet y) {
-		BitSet result = (BitSet)x.clone();
+		BitSet result = (BitSet) x.clone();
 		result.or(y);
 		return result;
 	}

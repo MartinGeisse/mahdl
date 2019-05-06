@@ -5,12 +5,9 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.input.cm.BinaryOperation;
-import name.martingeisse.mahdl.input.cm.CmUtil;
-import name.martingeisse.mahdl.input.cm.UnaryOperation;
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
 import name.martingeisse.mahdl.common.functions.BuiltinFunctions;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.LiteralParser;
@@ -29,11 +26,11 @@ import java.util.Set;
  */
 public class ExpressionProcessorImpl implements ExpressionProcessor {
 
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 	private final LocalDefinitionResolver localDefinitionResolver;
 
-	public ExpressionProcessorImpl(ErrorHandler errorHandler, LocalDefinitionResolver localDefinitionResolver) {
-		this.errorHandler = errorHandler;
+	public ExpressionProcessorImpl(ProcessingSidekick sidekick, LocalDefinitionResolver localDefinitionResolver) {
+		this.sidekick = sidekick;
 		this.localDefinitionResolver = localDefinitionResolver;
 	}
 
@@ -42,7 +39,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			if (expression instanceof ExtendedExpression_Normal) {
 				return process(((ExtendedExpression_Normal) expression).getExpression());
 			} else if (expression instanceof ExtendedExpression_Switch) {
-				return process((ExtendedExpression_Switch) expression).performFolding(errorHandler);
+				return process((ExtendedExpression_Switch) expression).performFolding(sidekick);
 			} else {
 				return error(expression, "unknown expression type");
 			}
@@ -126,7 +123,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		for (ProcessedSwitchExpression.Case aCase : processedCases) {
 			if (!aCase.getResultValue().getDataType().equals(resultValueType)) {
 				if (!aCase.getResultValue().isUnknownType() && !resultValueType.isUnknown()) {
-					errorHandler.onError(aCase.getResultValue().getErrorSource(), "conflicting result types: " +
+					sidekick.onError(aCase.getResultValue().getErrorSource(), "conflicting result types: " +
 						aCase.getResultValue().getDataType() + " vs. " + resultValueType);
 				}
 				errorInCases = true;
@@ -135,7 +132,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		if (processedDefaultCase != null) {
 			if (!processedDefaultCase.getDataType().equals(resultValueType)) {
 				if (!processedDefaultCase.isUnknownType() && !resultValueType.isUnknown()) {
-					errorHandler.onError(processedDefaultCase.getErrorSource(), "conflicting result types: " +
+					sidekick.onError(processedDefaultCase.getErrorSource(), "conflicting result types: " +
 						processedDefaultCase.getDataType() + " vs. " + resultValueType);
 				}
 				errorInCases = true;
@@ -161,7 +158,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	}
 
 	public ProcessedExpression process(Expression expression) {
-		return processWithoutFolding(expression).performFolding(errorHandler);
+		return processWithoutFolding(expression).performFolding(sidekick);
 	}
 
 	private ProcessedExpression processWithoutFolding(Expression expression) {
@@ -433,7 +430,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	private ProcessedExpression process(Expression_Conditional expression) throws TypeErrorException {
 
 		// process sub-expressions
-		ProcessedExpression condition = process(expression.getCondition()).expectType(ProcessedDataType.Family.BIT, errorHandler);
+		ProcessedExpression condition = process(expression.getCondition()).expectType(ProcessedDataType.Family.BIT, sidekick);
 		ProcessedExpression thenBranch = process(expression.getThenBranch());
 		ProcessedExpression elseBranch = process(expression.getElseBranch());
 		boolean error = !condition.isUnknownType();
@@ -482,7 +479,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			return new UnknownExpression(expression);
 		}
 
-		ProcessedDataType returnType = builtinFunction.checkType(expression, arguments, errorHandler);
+		ProcessedDataType returnType = builtinFunction.checkType(expression, arguments, sidekick);
 		if (returnType instanceof ProcessedDataType.Unknown) {
 			return new UnknownExpression(expression);
 		}
@@ -492,12 +489,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 
 	private ConstantValue evaluateLocalExpressionThatMustBeFormallyConstant(ProcessedExpression expression) {
 		return expression.evaluateFormallyConstant(
-			new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler));
+			new ProcessedExpression.FormallyConstantEvaluationContext(sidekick));
 	}
 
 	private Integer evaluateLocalSmallIntegerExpressionThatMustBeFormallyConstant(ProcessedExpression expression) {
 		if (expression.getDataType().getFamily() != ProcessedDataType.Family.INTEGER) {
-			errorHandler.onError(expression.getErrorSource(), "expected integer type, found " + expression.getDataType());
+			sidekick.onError(expression.getErrorSource(), "expected integer type, found " + expression.getDataType());
 			return null;
 		}
 		ConstantValue value = evaluateLocalExpressionThatMustBeFormallyConstant(expression);
@@ -506,13 +503,13 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		}
 		BigInteger integerValue = value.convertToInteger();
 		if (integerValue == null) {
-			errorHandler.onError(expression.getErrorSource(), "could not get integer value of " + value);
+			sidekick.onError(expression.getErrorSource(), "could not get integer value of " + value);
 			return null;
 		}
 		try {
 			return integerValue.intValueExact();
 		} catch (ArithmeticException e) {
-			errorHandler.onError(expression.getErrorSource(), "value too large: " + integerValue);
+			sidekick.onError(expression.getErrorSource(), "value too large: " + integerValue);
 			return null;
 		}
 	}
@@ -538,7 +535,7 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 	 */
 	@NotNull
 	private ProcessedExpression error(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable exception) {
-		errorHandler.onError(errorSource, message, exception);
+		sidekick.onError(errorSource, message, exception);
 		return new UnknownExpression(errorSource);
 	}
 
@@ -558,8 +555,8 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 		return error(processedExpression.getErrorSource(), message, exception);
 	}
 
-	public ErrorHandler getErrorHandler() {
-		return errorHandler;
+	public ProcessingSidekick getSidekick() {
+		return sidekick;
 	}
 
 	@Override

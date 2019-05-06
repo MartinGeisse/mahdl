@@ -4,12 +4,9 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.math.BigInteger;
 
 /**
  *
@@ -36,13 +33,13 @@ public final class ProcessedConstantExpression extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performFolding(@NotNull ErrorHandler errorHandler) {
+	protected ProcessedExpression performFolding(@NotNull ProcessingSidekick sidekick) {
 		return this;
 	}
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
 		return this;
 	}
 

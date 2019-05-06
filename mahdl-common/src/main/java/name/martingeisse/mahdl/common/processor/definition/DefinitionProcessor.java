@@ -7,7 +7,7 @@ package name.martingeisse.mahdl.common.processor.definition;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
@@ -24,7 +24,7 @@ import java.util.Map;
 public final class DefinitionProcessor {
 
 	@NotNull
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 
 	@NotNull
 	private final DataTypeProcessor dataTypeProcessor;
@@ -35,10 +35,10 @@ public final class DefinitionProcessor {
 	@NotNull
 	private final Map<String, Named> definitions;
 
-	public DefinitionProcessor(@NotNull ErrorHandler errorHandler,
+	public DefinitionProcessor(@NotNull ProcessingSidekick sidekick,
 							   @NotNull DataTypeProcessor dataTypeProcessor,
 							   @NotNull ExpressionProcessor expressionProcessor) {
-		this.errorHandler = errorHandler;
+		this.sidekick = sidekick;
 		this.dataTypeProcessor = dataTypeProcessor;
 		this.expressionProcessor = expressionProcessor;
 		this.definitions = new HashMap<>();
@@ -58,7 +58,7 @@ public final class DefinitionProcessor {
 					ProcessedDataType processedDataType = dataTypeProcessor.processDataType(dataType);
 					ProcessedDataType.Family family = processedDataType.getFamily();
 					if (family != ProcessedDataType.Family.UNKNOWN && family != ProcessedDataType.Family.BIT && family != ProcessedDataType.Family.VECTOR && family != ProcessedDataType.Family.CLOCK) {
-						errorHandler.onError(dataType, family.getDisplayString() + " type not allowed for ports");
+						sidekick.onError(dataType, family.getDisplayString() + " type not allowed for ports");
 						processedDataType = ProcessedDataType.Unknown.INSTANCE;
 					}
 					add(new ModulePort(portDefinition.getIdentifier(), portDefinitionGroup.getDirection(), dataType, processedDataType));
@@ -104,7 +104,7 @@ public final class DefinitionProcessor {
 					nameElement = typedDeclaredSignalLike.getIdentifier();
 					initializer = typedDeclaredSignalLike.getInitializer();
 				} else {
-					errorHandler.onError(signalLikeDefinition, "unknown CM node");
+					sidekick.onError(signalLikeDefinition, "unknown CM node");
 					continue;
 				}
 
@@ -112,31 +112,31 @@ public final class DefinitionProcessor {
 				if (kind instanceof SignalLikeKind_Constant) {
 					Constant constant = new Constant(nameElement, dataType, processedDataType, initializer);
 					if (dataTypeFamily == ProcessedDataType.Family.CLOCK) {
-						errorHandler.onError(signalLikeDefinition, "clock type is not allowed for constants");
+						sidekick.onError(signalLikeDefinition, "clock type is not allowed for constants");
 					} else if (initializer == null) {
-						errorHandler.onError(signalLikeDefinition, "constant must have an initializer");
+						sidekick.onError(signalLikeDefinition, "constant must have an initializer");
 					} else {
 						constant.processExpressions(expressionProcessor);
-						constant.evaluate(new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler));
+						constant.evaluate(new ProcessedExpression.FormallyConstantEvaluationContext(sidekick));
 					}
 					add(constant);
 				} else if (kind instanceof SignalLikeKind_Signal || kind instanceof SignalLikeKind_Register) {
 					String kindString = (kind instanceof SignalLikeKind_Signal ? "signal" : "register");
 					if (dataTypeFamily == ProcessedDataType.Family.MATRIX) {
 						if (kind instanceof SignalLikeKind_Signal) {
-							errorHandler.onError(dataType, "matrix type not allowed for signal");
+							sidekick.onError(dataType, "matrix type not allowed for signal");
 							processedDataType = ProcessedDataType.Unknown.INSTANCE;
 						}
 					} else if (dataTypeFamily == ProcessedDataType.Family.CLOCK) {
 						if (kind instanceof SignalLikeKind_Register) {
-							errorHandler.onError(dataType, "clock type not allowed for register");
+							sidekick.onError(dataType, "clock type not allowed for register");
 							processedDataType = ProcessedDataType.Unknown.INSTANCE;
 						}
 					} else if (dataTypeFamily != ProcessedDataType.Family.UNKNOWN &&
 						dataTypeFamily != ProcessedDataType.Family.BIT &&
 						dataTypeFamily != ProcessedDataType.Family.VECTOR) {
 
-						errorHandler.onError(dataType, dataTypeFamily.getDisplayString() + " type not allowed for " + kindString);
+						sidekick.onError(dataType, dataTypeFamily.getDisplayString() + " type not allowed for " + kindString);
 						processedDataType = ProcessedDataType.Unknown.INSTANCE;
 					}
 					if (kind instanceof SignalLikeKind_Signal) {
@@ -155,7 +155,7 @@ public final class DefinitionProcessor {
 			try {
 				resolvedModule = Environment.Holder.INSTANCE.resolveModuleReference(moduleInstanceDefinitionGroupElement.getModuleName());
 			} catch (ReferenceResolutionException e) {
-				errorHandler.onError(moduleInstanceDefinitionGroupElement.getModuleName(), e.getMessage());
+				sidekick.onError(moduleInstanceDefinitionGroupElement.getModuleName(), e.getMessage());
 				for (ModuleInstanceDefinition definition : moduleInstanceDefinitionGroupElement.getDefinitions().getAll()) {
 					add(new ModuleInstanceWithMissingDefinition(moduleInstanceDefinitionGroupElement.getModuleName(), definition));
 				}
@@ -176,7 +176,7 @@ public final class DefinitionProcessor {
 							} else if (portDefinitionGroup.getDirection() instanceof PortDirection_Out) {
 								direction = name.martingeisse.mahdl.common.processor.definition.PortDirection.OUT;
 							} else {
-								errorHandler.onError(portDefinitionGroup.getDirection(), "unknown direction");
+								sidekick.onError(portDefinitionGroup.getDirection(), "unknown direction");
 								continue;
 							}
 							// do not report errors in foreign modules
@@ -197,7 +197,7 @@ public final class DefinitionProcessor {
 
 	private void add(@NotNull Named element) {
 		if (definitions.put(element.getName(), element) != null) {
-			errorHandler.onError(element.getNameElement(), "redefinition of '" + element.getName() + "'");
+			sidekick.onError(element.getNameElement(), "redefinition of '" + element.getName() + "'");
 		}
 	}
 

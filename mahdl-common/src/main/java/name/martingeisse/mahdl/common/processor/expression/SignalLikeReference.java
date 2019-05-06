@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.definition.Constant;
 import name.martingeisse.mahdl.common.processor.definition.SignalLike;
 import name.martingeisse.mahdl.input.cm.CmNode;
@@ -36,14 +36,14 @@ public final class SignalLikeReference extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performFolding(@NotNull ErrorHandler errorHandler) {
+	protected ProcessedExpression performFolding(@NotNull ProcessingSidekick sidekick) {
 		ConstantValue constant = getConstant();
 		return constant == null ? this : new ProcessedConstantExpression(getErrorSource(), constant);
 	}
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
 		throw new UnsupportedOperationException("should never call this method implementation");
 	}
 

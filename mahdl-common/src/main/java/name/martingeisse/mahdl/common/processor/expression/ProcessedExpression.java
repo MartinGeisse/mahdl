@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmLinked;
 import name.martingeisse.mahdl.input.cm.CmNode;
@@ -49,11 +49,11 @@ public abstract class ProcessedExpression implements CmLinked {
 		return dataType.getFamily() == family;
 	}
 
-	public final ProcessedExpression expectType(ProcessedDataType.Family family, ErrorHandler errorHandler) {
+	public final ProcessedExpression expectType(ProcessedDataType.Family family, ProcessingSidekick sidekick) {
 		if (isType(family) || isType(ProcessedDataType.Family.UNKNOWN)) {
 			return this;
 		}
-		errorHandler.onError(errorSource, "expected type " + family + ", found " + dataType);
+		sidekick.onError(errorSource, "expected type " + family + ", found " + dataType);
 		return new UnknownExpression(errorSource);
 	}
 
@@ -61,11 +61,11 @@ public abstract class ProcessedExpression implements CmLinked {
 		return dataType.equals(type);
 	}
 
-	public final ProcessedExpression expectType(ProcessedDataType type, ErrorHandler errorHandler) {
+	public final ProcessedExpression expectType(ProcessedDataType type, ProcessingSidekick sidekick) {
 		if (isType(type) || isType(ProcessedDataType.Family.UNKNOWN)) {
 			return this;
 		}
-		errorHandler.onError(errorSource, "expected type " + type + ", found " + dataType);
+		sidekick.onError(errorSource, "expected type " + type + ", found " + dataType);
 		return new UnknownExpression(errorSource);
 	}
 
@@ -93,12 +93,12 @@ public abstract class ProcessedExpression implements CmLinked {
 	 * report the location of that error as exact as possible.
 	 */
 	@NotNull
-	protected ProcessedExpression performFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression.FormallyConstantEvaluationContext context = new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler) {
+	protected ProcessedExpression performFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression.FormallyConstantEvaluationContext context = new ProcessedExpression.FormallyConstantEvaluationContext(sidekick) {
 
 			@Override
 			@NotNull
-			public ConstantValue.Unknown notConstant(@NotNull CmNode errorSource) {
+			public ConstantValue.Unknown notConstant(@NotNull CmLinked errorSource) {
 				throw new NotConstantException();
 			}
 
@@ -113,33 +113,33 @@ public abstract class ProcessedExpression implements CmLinked {
 		try {
 			value = evaluateFormallyConstant(context);
 		} catch (NotConstantException e) {
-			return performSubFolding(errorHandler);
+			return performSubFolding(sidekick);
 		}
 		return new ProcessedConstantExpression(errorSource, value);
 	}
 
 	@NotNull
-	protected abstract ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler);
+	protected abstract ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick);
 
 	private static class NotConstantException extends RuntimeException {
 	}
 
 	public static class FormallyConstantEvaluationContext {
 
-		private final ErrorHandler errorHandler;
+		private final ProcessingSidekick sidekick;
 
-		public FormallyConstantEvaluationContext(@NotNull ErrorHandler errorHandler) {
-			this.errorHandler = errorHandler;
+		public FormallyConstantEvaluationContext(@NotNull ProcessingSidekick sidekick) {
+			this.sidekick = sidekick;
 		}
 
 		@NotNull
-		public ErrorHandler getErrorHandler() {
-			return errorHandler;
+		public ProcessingSidekick getSidekick() {
+			return sidekick;
 		}
 
 		@NotNull
-		public ConstantValue.Unknown error(@NotNull CmNode errorSource, @NotNull String message) {
-			errorHandler.onError(errorSource, message);
+		public ConstantValue.Unknown error(@NotNull CmLinked errorSource, @NotNull String message) {
+			sidekick.onError(errorSource, message);
 			return ConstantValue.Unknown.INSTANCE;
 		}
 
@@ -149,7 +149,7 @@ public abstract class ProcessedExpression implements CmLinked {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown notConstant(@NotNull CmNode errorSource) {
+		public ConstantValue.Unknown notConstant(@NotNull CmLinked errorSource) {
 			return error(errorSource, "expected a formally constant expression");
 		}
 
@@ -159,7 +159,7 @@ public abstract class ProcessedExpression implements CmLinked {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmNode errorSource, @NotNull String message) {
+		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmLinked errorSource, @NotNull String message) {
 			return error(errorSource, "internal error: detected an inconsistency between static type check and constant evaluation" +
 				(message == null ? "" : (": " + message)));
 		}
@@ -170,7 +170,7 @@ public abstract class ProcessedExpression implements CmLinked {
 		}
 
 		@NotNull
-		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmNode errorSource) {
+		public ConstantValue.Unknown evaluationInconsistency(@NotNull CmLinked errorSource) {
 			return evaluationInconsistency(errorSource, null);
 		}
 

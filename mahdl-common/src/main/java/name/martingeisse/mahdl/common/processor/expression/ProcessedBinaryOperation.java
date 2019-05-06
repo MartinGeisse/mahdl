@@ -4,13 +4,9 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
-import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
-
-import java.math.BigInteger;
-import java.util.BitSet;
 
 /**
  *
@@ -62,14 +58,14 @@ public final class ProcessedBinaryOperation extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression leftOperand = this.leftOperand.performFolding(errorHandler);
-		ProcessedExpression rightOperand = this.rightOperand.performFolding(errorHandler);
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression leftOperand = this.leftOperand.performFolding(sidekick);
+		ProcessedExpression rightOperand = this.rightOperand.performFolding(sidekick);
 		if (leftOperand != this.leftOperand || rightOperand != this.rightOperand) {
 			try {
 				return new ProcessedBinaryOperation(getErrorSource(), leftOperand, rightOperand, operator);
 			} catch (TypeErrorException e) {
-				errorHandler.onError(getErrorSource(), "internal type error during folding of binary operation");
+				sidekick.onError(getErrorSource(), "internal type error during folding of binary operation");
 				return this;
 			}
 		} else {

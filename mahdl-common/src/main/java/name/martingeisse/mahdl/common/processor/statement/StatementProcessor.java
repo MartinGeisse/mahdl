@@ -7,8 +7,11 @@ package name.martingeisse.mahdl.common.processor.statement;
 import com.google.common.collect.ImmutableList;
 import name.martingeisse.mahdl.common.processor.AssignmentConversionUtil;
 import name.martingeisse.mahdl.common.processor.AssignmentValidator;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
-import name.martingeisse.mahdl.common.processor.expression.*;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
+import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
+import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
+import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
+import name.martingeisse.mahdl.common.processor.expression.TypeErrorException;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +28,12 @@ import java.util.Set;
  */
 public final class StatementProcessor {
 
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 	private final ExpressionProcessor expressionProcessor;
 	private final AssignmentValidator assignmentValidator;
 
-	public StatementProcessor(ErrorHandler errorHandler, ExpressionProcessor expressionProcessor, AssignmentValidator assignmentValidator) {
-		this.errorHandler = errorHandler;
+	public StatementProcessor(ProcessingSidekick sidekick, ExpressionProcessor expressionProcessor, AssignmentValidator assignmentValidator) {
+		this.sidekick = sidekick;
 		this.expressionProcessor = expressionProcessor;
 		this.assignmentValidator = assignmentValidator;
 	}
@@ -45,7 +48,7 @@ public final class StatementProcessor {
 		} else if (trigger instanceof DoBlockTrigger_Clocked) {
 			triggerKind = AssignmentValidator.TriggerKind.CLOCKED;
 			Expression clockExpression = ((DoBlockTrigger_Clocked) trigger).getClockExpression();
-			clock = expressionProcessor.process(clockExpression).expectType(ProcessedDataType.Family.CLOCK, errorHandler);
+			clock = expressionProcessor.process(clockExpression).expectType(ProcessedDataType.Family.CLOCK, sidekick);
 		} else {
 			error(trigger, "unknown trigger type");
 			return null;
@@ -53,7 +56,7 @@ public final class StatementProcessor {
 		ProcessedStatement body = process(doBlock.getStatement(), triggerKind);
 		ProcessedDoBlock result = new ProcessedDoBlock(clock, body);
 		if (triggerKind == AssignmentValidator.TriggerKind.CONTINUOUS) {
-			new AssignmentBranchCompletenessValidator(errorHandler, result).run();
+			new AssignmentBranchCompletenessValidator(sidekick, result).run();
 		}
 		return result;
 	}
@@ -70,7 +73,7 @@ public final class StatementProcessor {
 			ProcessedExpression leftHandSide = expressionProcessor.process(assignment.getLeftSide());
 			ProcessedExpression rightHandSide = AssignmentConversionUtil.convertOnAssignment(
 				expressionProcessor.process(assignment.getRightSide()),
-				leftHandSide.getDataType(), errorHandler);
+				leftHandSide.getDataType(), sidekick);
 			assignmentValidator.validateAssignmentTo(leftHandSide, triggerKind);
 			if (leftHandSide.getDataType().getFamily() == ProcessedDataType.Family.MATRIX) {
 				return error(statement, "cannot assign the whole matrix at once");
@@ -113,7 +116,7 @@ public final class StatementProcessor {
 
 		// condition
 		ProcessedExpression processedCondition = expressionProcessor.process(condition)
-			.expectType(ProcessedDataType.Family.BIT, errorHandler);
+			.expectType(ProcessedDataType.Family.BIT, sidekick);
 
 		// branches
 		ProcessedStatement processedThenBranch = process(thenBranch, triggerKind);
@@ -129,7 +132,7 @@ public final class StatementProcessor {
 
 	private ProcessedStatement process(Statement_Switch switchStatement, AssignmentValidator.TriggerKind triggerKind) {
 		ProcessedExpression selector = expressionProcessor.process(switchStatement.getSelector())
-			.expectType(ProcessedDataType.Family.VECTOR, errorHandler);
+			.expectType(ProcessedDataType.Family.VECTOR, sidekick);
 		boolean selectorOkay = !selector.isUnknownType();
 
 		if (switchStatement.getItems().getAll().isEmpty()) {
@@ -215,7 +218,7 @@ public final class StatementProcessor {
 	 */
 	@NotNull
 	private UnknownStatement error(@NotNull CmNode errorSource, @NotNull String message, @Nullable Throwable exception) {
-		errorHandler.onError(errorSource, message, exception);
+		sidekick.onError(errorSource, message, exception);
 		return new UnknownStatement(errorSource);
 	}
 

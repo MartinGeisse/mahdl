@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.type;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
@@ -20,12 +20,12 @@ public final class DataTypeProcessorImpl implements DataTypeProcessor {
 
 	private static final BigInteger MAX_SIZE_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
 
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 	private final ExpressionProcessor expressionProcessor;
 
-	public DataTypeProcessorImpl(@NotNull ErrorHandler errorHandler,
+	public DataTypeProcessorImpl(@NotNull ProcessingSidekick sidekick,
 								 @NotNull ExpressionProcessor expressionProcessor) {
-		this.errorHandler = errorHandler;
+		this.sidekick = sidekick;
 		this.expressionProcessor = expressionProcessor;
 	}
 
@@ -50,7 +50,7 @@ public final class DataTypeProcessorImpl implements DataTypeProcessor {
 			return ProcessedDataType.Clock.INSTANCE;
 		} else {
 			if (reportErrors) {
-				errorHandler.onError(dataType, "unknown data type");
+				sidekick.onError(dataType, "unknown data type");
 			}
 			return ProcessedDataType.Unknown.INSTANCE;
 		}
@@ -58,27 +58,27 @@ public final class DataTypeProcessorImpl implements DataTypeProcessor {
 
 	private int processConstantSizeExpression(@NotNull Expression expression, boolean reportErrors) {
 		ConstantValue value = expressionProcessor.process(expression).evaluateFormallyConstant(
-			new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler));
+			new ProcessedExpression.FormallyConstantEvaluationContext(sidekick));
 		if (value.getDataTypeFamily() == ProcessedDataType.Family.UNKNOWN) {
 			return -1;
 		}
 		BigInteger integerValue = value.convertToInteger();
 		if (integerValue == null) {
 			if (reportErrors) {
-				errorHandler.onError(expression, "cannot convert " + value + " to integer");
+				sidekick.onError(expression, "cannot convert " + value + " to integer");
 			}
 			return -1;
 		}
 		if (integerValue.compareTo(MAX_SIZE_VALUE) > 0) {
 			if (reportErrors) {
-				errorHandler.onError(expression, "size too large: " + integerValue);
+				sidekick.onError(expression, "size too large: " + integerValue);
 			}
 			return -1;
 		}
 		int intValue = integerValue.intValue();
 		if (intValue < 0) {
 			if (reportErrors) {
-				errorHandler.onError(expression, "size cannot be negative: " + integerValue);
+				sidekick.onError(expression, "size cannot be negative: " + integerValue);
 			}
 			return -1;
 		}

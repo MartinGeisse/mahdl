@@ -4,11 +4,10 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -73,15 +72,15 @@ public final class ProcessedConditional extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression condition = this.condition.performFolding(errorHandler);
-		ProcessedExpression thenBranch = this.thenBranch.performFolding(errorHandler);
-		ProcessedExpression elseBranch = this.elseBranch.performFolding(errorHandler);
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression condition = this.condition.performFolding(sidekick);
+		ProcessedExpression thenBranch = this.thenBranch.performFolding(sidekick);
+		ProcessedExpression elseBranch = this.elseBranch.performFolding(sidekick);
 		if (condition != this.condition || thenBranch != this.thenBranch || elseBranch != this.elseBranch) {
 			try {
 				return new ProcessedConditional(getErrorSource(), condition, thenBranch, elseBranch);
 			} catch (TypeErrorException e) {
-				errorHandler.onError(getErrorSource(), "internal type error during folding of conditional expression");
+				sidekick.onError(getErrorSource(), "internal type error during folding of conditional expression");
 				return this;
 			}
 		} else {

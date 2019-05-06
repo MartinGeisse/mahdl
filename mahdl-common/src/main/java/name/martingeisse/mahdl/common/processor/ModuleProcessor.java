@@ -7,7 +7,6 @@ package name.martingeisse.mahdl.common.processor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import name.martingeisse.mahdl.common.Environment;
-import name.martingeisse.mahdl.input.cm.CmUtil;
 import name.martingeisse.mahdl.common.processor.definition.*;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessor;
 import name.martingeisse.mahdl.common.processor.expression.ExpressionProcessorImpl;
@@ -42,7 +41,7 @@ public final class ModuleProcessor {
 
 	private final Module module;
 	private final String canonicalModuleName;
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 
 	private DataTypeProcessor dataTypeProcessor;
 	private ExpressionProcessor expressionProcessor;
@@ -53,9 +52,13 @@ public final class ModuleProcessor {
 	private List<ProcessedDoBlock> processedDoBlocks;
 
 	public ModuleProcessor(@NotNull Module module, @NotNull ErrorHandler errorHandler) {
+		this(module, new ProcessingSidekick(errorHandler));
+	}
+
+	public ModuleProcessor(@NotNull Module module, @NotNull ProcessingSidekick sidekick) {
 		this.module = module;
 		this.canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
-		this.errorHandler = errorHandler;
+		this.sidekick = sidekick;
 	}
 
 	@NotNull
@@ -69,7 +72,7 @@ public final class ModuleProcessor {
 		try {
 			Environment.Holder.INSTANCE.validateModuleNameAgainstFilePath(module, module.getModuleName());
 		} catch (IOException e) {
-			errorHandler.onError(module.getModuleName(), "module name does not match file path -- " + e.getMessage());
+			sidekick.onError(module.getModuleName(), "module name does not match file path -- " + e.getMessage());
 		}
 
 		// validate nativeness (but still continue even if violated, since the keyword may be misplaced)
@@ -77,7 +80,7 @@ public final class ModuleProcessor {
 		if (isNative) {
 			List<ImplementationItem> implementationItems = module.getImplementationItems().getAll();
 			if (!implementationItems.isEmpty()) {
-				errorHandler.onError(implementationItems.get(0), "native module cannot contain implementation items");
+				sidekick.onError(implementationItems.get(0), "native module cannot contain implementation items");
 			}
 		}
 
@@ -85,9 +88,9 @@ public final class ModuleProcessor {
 		// a mutual dependency between the type system, constant evaluation and expression processing. Note the
 		// LocalDefinitionResolver parameter to the ExpressionProcessorImpl calling getDefinitions() on the fly,
 		// not in advance, to break the dependency cycle.
-		expressionProcessor = new ExpressionProcessorImpl(errorHandler, name -> getDefinitions().get(name));
-		dataTypeProcessor = new DataTypeProcessorImpl(errorHandler, expressionProcessor);
-		definitionProcessor = new DefinitionProcessor(errorHandler, dataTypeProcessor, expressionProcessor);
+		expressionProcessor = new ExpressionProcessorImpl(sidekick, name -> getDefinitions().get(name));
+		dataTypeProcessor = new DataTypeProcessorImpl(sidekick, expressionProcessor);
+		definitionProcessor = new DefinitionProcessor(sidekick, dataTypeProcessor, expressionProcessor);
 
 		// process module definitions
 		definitionProcessor.processPorts(module.getPortDefinitionGroups());
@@ -109,7 +112,7 @@ public final class ModuleProcessor {
 
 		// Process do-blocks and check for missing / duplicate assignments. Do so in the original file's order so when
 		// an error message could in principle appear in one of multiple places, it appears in the topmost place.
-		assignmentValidator = new AssignmentValidator(errorHandler);
+		assignmentValidator = new AssignmentValidator(sidekick);
 		List<Pair<Runnable, CmNode>> runnables = new ArrayList<>();
 		for (Named item : getDefinitions().values()) {
 			// Inconsistencies regarding signal-likes in the initializer vs. other assignments:
@@ -129,7 +132,7 @@ public final class ModuleProcessor {
 			}
 		}
 		processedDoBlocks = new ArrayList<>();
-		statementProcessor = new StatementProcessor(errorHandler, expressionProcessor, assignmentValidator);
+		statementProcessor = new StatementProcessor(sidekick, expressionProcessor, assignmentValidator);
 		for (ImplementationItem implementationItem : module.getImplementationItems().getAll()) {
 			runnables.add(Pair.of(() -> {
 				// We collect all newly assigned signals in a separate set and add them at the end of the current do-block

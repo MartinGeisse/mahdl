@@ -6,13 +6,13 @@ package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
 import name.martingeisse.mahdl.common.Environment;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.common.util.HeadBodyReader;
 import name.martingeisse.mahdl.common.util.LiteralParser;
-import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +47,8 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 
 	@NotNull
 	@Override
-	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ErrorHandler errorHandler) {
-		ProcessedExpression.FormallyConstantEvaluationContext context = new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler);
+	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ProcessingSidekick sidekick) {
+		ProcessedExpression.FormallyConstantEvaluationContext context = new ProcessedExpression.FormallyConstantEvaluationContext(sidekick);
 		int firstSize = arguments.get(1).evaluateFormallyConstant(context).convertToInteger().intValueExact();
 		int secondSize = arguments.get(1).evaluateFormallyConstant(context).convertToInteger().intValueExact();
 		return new ProcessedDataType.Matrix(firstSize, secondSize);
@@ -56,14 +56,14 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 
 	@NotNull
 	@Override
-	public ConstantValue applyToConstantValues(@NotNull CmNode errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
+	public ConstantValue applyToConstantValues(@NotNull CmLinked errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
 		String filename = arguments.get(0).convertToString();
 		int rows = arguments.get(1).convertToInteger().intValueExact();
 		int columns = arguments.get(2).convertToInteger().intValueExact();
 
 		// read the file
 		MutableObject<BitSet> resultBitSetHolder = new MutableObject<>();
-		try (InputStream inputStream = Environment.Holder.INSTANCE.openDataFile(errorSource, filename)) {
+		try (InputStream inputStream = Environment.Holder.INSTANCE.openDataFile(errorSource.getCmNode(), filename)) {
 			try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 				new HeadBodyReader() {
 

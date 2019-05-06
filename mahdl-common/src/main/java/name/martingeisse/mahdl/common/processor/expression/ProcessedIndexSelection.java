@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
@@ -96,14 +96,14 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression container = this.container.performFolding(errorHandler);
-		ProcessedExpression index = this.index.performFolding(errorHandler);
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression container = this.container.performFolding(sidekick);
+		ProcessedExpression index = this.index.performFolding(sidekick);
 		if (container != this.container || index != this.index) {
 			try {
 				return createEquivalentIndexSelection(getErrorSource(), container, index);
 			} catch (TypeErrorException e) {
-				errorHandler.onError(getErrorSource(), "internal type error during folding of index selection");
+				sidekick.onError(getErrorSource(), "internal type error during folding of index selection");
 				return this;
 			}
 		} else {

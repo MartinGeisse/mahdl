@@ -17,7 +17,7 @@ import java.math.BigInteger;
  */
 public class AssignmentConversionUtil {
 
-	public static ProcessedExpression convertOnAssignment(ProcessedExpression expression, ProcessedDataType targetType, ErrorHandler errorHandler) {
+	public static ProcessedExpression convertOnAssignment(ProcessedExpression expression, ProcessedDataType targetType, ProcessingSidekick sidekick) {
 		if (expression.getDataType().equals(targetType)) {
 			return expression;
 		}
@@ -29,7 +29,7 @@ public class AssignmentConversionUtil {
 				} else if (value.equals(BigInteger.ONE)) {
 					return new ProcessedConstantExpression(expression.getErrorSource(), new ConstantValue.Bit(false));
 				} else {
-					errorHandler.onError(expression.getErrorSource(), "cannot convert value " + value + " to bit");
+					sidekick.onError(expression.getErrorSource(), "cannot convert value " + value + " to bit");
 					return new UnknownExpression(expression.getErrorSource());
 				}
 			} else if (targetType instanceof ProcessedDataType.Vector) {
@@ -37,12 +37,12 @@ public class AssignmentConversionUtil {
 				try {
 					return new ProcessedConstantExpression(expression.getErrorSource(), new ConstantValue.Vector(targetSize, value, false));
 				} catch (ConstantValue.TruncateRequiredException e) {
-					errorHandler.onError(expression.getErrorSource(), e.getMessage());
+					sidekick.onError(expression.getErrorSource(), e.getMessage());
 					return new UnknownExpression(expression.getErrorSource());
 				}
 			}
 		}
-		errorHandler.onError(expression.getErrorSource(), "cannot convert " + expression.getDataType() + " to type " + targetType);
+		sidekick.onError(expression.getErrorSource(), "cannot convert " + expression.getDataType() + " to type " + targetType);
 		return new UnknownExpression(expression.getErrorSource());
 	}
 

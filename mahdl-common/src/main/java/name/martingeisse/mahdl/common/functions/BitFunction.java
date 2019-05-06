@@ -5,11 +5,11 @@
 package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.ConstantValue;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -33,8 +33,8 @@ public final class BitFunction extends FixedSignatureFunction {
 
 	@NotNull
 	@Override
-	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ErrorHandler errorHandler) {
-		ConstantValue value = arguments.get(0).evaluateFormallyConstant(new ProcessedExpression.FormallyConstantEvaluationContext(errorHandler));
+	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ProcessingSidekick sidekick) {
+		ConstantValue value = arguments.get(0).evaluateFormallyConstant(new ProcessedExpression.FormallyConstantEvaluationContext(sidekick));
 		BigInteger integerValue = value.convertToInteger();
 		if (integerValue == null) {
 			return ProcessedDataType.Unknown.INSTANCE;
@@ -42,14 +42,14 @@ public final class BitFunction extends FixedSignatureFunction {
 		if (integerValue.equals(BigInteger.ZERO) || integerValue.equals(BigInteger.ONE)) {
 			return ProcessedDataType.Bit.INSTANCE;
 		} else {
-			errorHandler.onError(arguments.get(0).getErrorSource(), "bit value must be 0 or 1 but is " + integerValue);
+			sidekick.onError(arguments.get(0), "bit value must be 0 or 1 but is " + integerValue);
 			return ProcessedDataType.Unknown.INSTANCE;
 		}
 	}
 
 	@NotNull
 	@Override
-	public ConstantValue applyToConstantValues(@NotNull CmNode errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
+	public ConstantValue applyToConstantValues(@NotNull CmLinked errorSource, @NotNull List<ConstantValue> arguments, @NotNull ProcessedExpression.FormallyConstantEvaluationContext context) {
 		BigInteger integerValue = arguments.get(0).convertToInteger();
 		if (integerValue == null) {
 			return ConstantValue.Unknown.INSTANCE;

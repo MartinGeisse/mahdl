@@ -5,7 +5,7 @@
 package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedAssignment;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedStatement;
 import name.martingeisse.mahdl.common.processor.statement.ProcessedSwitchStatement;
@@ -95,13 +95,13 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression selector = this.selector.performFolding(errorHandler);
-		ProcessedExpression defaultBranch = (this.defaultBranch == null ? null : this.defaultBranch.performFolding(errorHandler));
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression selector = this.selector.performFolding(sidekick);
+		ProcessedExpression defaultBranch = (this.defaultBranch == null ? null : this.defaultBranch.performFolding(sidekick));
 		boolean folded = (selector != this.selector || defaultBranch != this.defaultBranch);
 		List<Case> cases = new ArrayList<>();
 		for (Case aCase : this.cases) {
-			Case foldedCase = aCase.performFolding(errorHandler);
+			Case foldedCase = aCase.performFolding(sidekick);
 			cases.add(foldedCase);
 			if (foldedCase != aCase) {
 				folded = true;
@@ -110,7 +110,7 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 		try {
 			return folded ? new ProcessedSwitchExpression(getErrorSource(), getDataType(), selector, ImmutableList.copyOf(cases), defaultBranch) : this;
 		} catch (TypeErrorException e) {
-			errorHandler.onError(getErrorSource(), "internal type error during folding of switch expression");
+			sidekick.onError(getErrorSource(), "internal type error during folding of switch expression");
 			return this;
 		}
 	}
@@ -153,8 +153,8 @@ public final class ProcessedSwitchExpression extends ProcessedExpression {
 			return resultValue;
 		}
 
-		public Case performFolding(ErrorHandler errorHandler) {
-			ProcessedExpression resultValue = this.resultValue.performFolding(errorHandler);
+		public Case performFolding(ProcessingSidekick sidekick) {
+			ProcessedExpression resultValue = this.resultValue.performFolding(sidekick);
 			return (resultValue == this.resultValue ? this : new Case(selectorValues, resultValue));
 		}
 

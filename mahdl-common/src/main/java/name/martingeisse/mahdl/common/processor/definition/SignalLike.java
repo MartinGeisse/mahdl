@@ -61,7 +61,7 @@ public abstract class SignalLike extends Named {
 		if (initializer != null) {
 			processedInitializer = AssignmentConversionUtil.convertOnAssignment(
 				expressionProcessor.process(initializer),
-				processedDataType, expressionProcessor.getErrorHandler());
+				processedDataType, expressionProcessor.getSidekick());
 		}
 	}
 

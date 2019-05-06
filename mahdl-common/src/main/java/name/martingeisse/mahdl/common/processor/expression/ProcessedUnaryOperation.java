@@ -4,10 +4,9 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 
@@ -87,13 +86,13 @@ public final class ProcessedUnaryOperation extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression operand = this.operand.performFolding(errorHandler);
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression operand = this.operand.performFolding(sidekick);
 		if (operand != this.operand) {
 			try {
 				return new ProcessedUnaryOperation(getErrorSource(), operand, operator);
 			} catch (TypeErrorException e) {
-				errorHandler.onError(getErrorSource(), "internal type error during folding of unary operation");
+				sidekick.onError(getErrorSource(), "internal type error during folding of unary operation");
 				return this;
 			}
 		} else {

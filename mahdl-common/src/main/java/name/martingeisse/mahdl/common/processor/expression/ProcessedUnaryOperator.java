@@ -4,11 +4,11 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.input.cm.UnaryOperation;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.Expression_UnaryMinus;
 import name.martingeisse.mahdl.input.cm.Expression_UnaryNot;
 import name.martingeisse.mahdl.input.cm.Expression_UnaryPlus;
+import name.martingeisse.mahdl.input.cm.UnaryOperation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 

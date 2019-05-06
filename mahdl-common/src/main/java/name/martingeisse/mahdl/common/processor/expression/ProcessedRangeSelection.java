@@ -4,7 +4,7 @@
  */
 package name.martingeisse.mahdl.common.processor.expression;
 
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
@@ -57,13 +57,13 @@ public final class ProcessedRangeSelection extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
-		ProcessedExpression container = this.container.performFolding(errorHandler);
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
+		ProcessedExpression container = this.container.performFolding(sidekick);
 		if (container != this.container) {
 			try {
 				return new ProcessedRangeSelection(getErrorSource(), getDataType(), container, fromIndex, toIndex);
 			} catch (TypeErrorException e) {
-				errorHandler.onError(getErrorSource(), "internal type error during folding of range selection");
+				sidekick.onError(getErrorSource(), "internal type error during folding of range selection");
 				return this;
 			}
 		} else {

@@ -5,10 +5,10 @@
 package name.martingeisse.mahdl.common.functions;
 
 import com.google.common.collect.ImmutableList;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.expression.ProcessedExpression;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
-import name.martingeisse.mahdl.input.cm.CmNode;
+import name.martingeisse.mahdl.input.cm.CmLinked;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -46,21 +46,21 @@ public abstract class FixedSignatureFunction extends AbstractFunction {
 
 	@NotNull
 	@Override
-	public ProcessedDataType checkType(@NotNull CmNode errorSource, @NotNull List<ProcessedExpression> arguments, @NotNull ErrorHandler errorHandler) {
+	public ProcessedDataType checkType(@NotNull CmLinked errorSource, @NotNull List<ProcessedExpression> arguments, @NotNull ProcessingSidekick sidekick) {
 		if (arguments.size() != argumentTypes.size()) {
-			errorHandler.onError(errorSource, getSignatureText() + " cannot be invoked with " + arguments.size() + " arguments");
+			sidekick.onError(errorSource, getSignatureText() + " cannot be invoked with " + arguments.size() + " arguments");
 		}
 		for (int i = 0; i < Math.min(arguments.size(), argumentTypes.size()); i++) {
 			ProcessedExpression argument = arguments.get(i);
 			if (!argument.getDataType().equals(argumentTypes.get(i))) {
-				errorHandler.onError(argument.getErrorSource(),
+				sidekick.onError(argument,
 					"argument #" + i + " has type " + argument.getDataType() + ", expected " + argumentTypes.get(i));
 			}
 		}
-		return internalCheckType(arguments, errorHandler);
+		return internalCheckType(arguments, sidekick);
 	}
 
 	@NotNull
-	protected abstract ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ErrorHandler errorHandler);
+	protected abstract ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ProcessingSidekick sidekick);
 
 }

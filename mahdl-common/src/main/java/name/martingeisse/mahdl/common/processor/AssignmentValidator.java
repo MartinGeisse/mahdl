@@ -21,12 +21,12 @@ import java.util.Set;
  */
 public final class AssignmentValidator {
 
-	private final ErrorHandler errorHandler;
+	private final ProcessingSidekick sidekick;
 	private final Set<String> previouslyAssignedSignals = new HashSet<>();
 	private final Set<String> newlyAssignedSignals = new HashSet<>();
 
-	public AssignmentValidator(@NotNull ErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
+	public AssignmentValidator(@NotNull ProcessingSidekick sidekick) {
+		this.sidekick = sidekick;
 	}
 
 	public void finishSection() {
@@ -40,13 +40,13 @@ public final class AssignmentValidator {
 				ModulePort port = (ModulePort) definition;
 				if (port.getDirectionElement() instanceof PortDirection_Out) {
 					if (port.getInitializer() == null && !previouslyAssignedSignals.contains(port.getName())) {
-						errorHandler.onError(port.getNameElement(), "missing assignment for port '" + port.getName() + "'");
+						sidekick.onError(port.getNameElement(), "missing assignment for port '" + port.getName() + "'");
 					}
 				}
 			} else if (definition instanceof Signal) {
 				Signal signal = (Signal) definition;
 				if (signal.getInitializer() == null && !previouslyAssignedSignals.contains(signal.getName())) {
-					errorHandler.onError(signal.getNameElement(), "missing assignment for signal '" + signal.getName() + "'");
+					sidekick.onError(signal.getNameElement(), "missing assignment for signal '" + signal.getName() + "'");
 				}
 			} else if (definition instanceof ModuleInstance) {
 				ModuleInstance moduleInstance = (ModuleInstance) definition;
@@ -58,7 +58,7 @@ public final class AssignmentValidator {
 							for (PortDefinition portDefinition : portDefinitionGroup.getDefinitions().getAll()) {
 								String prefixedPortName = instanceName + '.' + portDefinition.getIdentifier().getText();
 								if (!previouslyAssignedSignals.contains(prefixedPortName)) {
-									errorHandler.onError(moduleInstance.getModuleInstanceDefinitionElement(),
+									sidekick.onError(moduleInstance.getModuleInstanceDefinitionElement(),
 										"missing assignment for port '" + portDefinition.getIdentifier().getText() + "' in instance '" + instanceName + "'");
 								}
 							}
@@ -76,7 +76,7 @@ public final class AssignmentValidator {
 		}
 		if (destination instanceof ProcessedConstantExpression) {
 
-			errorHandler.onError(destination.getErrorSource(), "cannot assign to a constant");
+			sidekick.onError(destination.getErrorSource(), "cannot assign to a constant");
 
 		} else if (destination instanceof SignalLikeReference) {
 
@@ -85,20 +85,20 @@ public final class AssignmentValidator {
 			if (signalLike instanceof ModulePort) {
 				PortDirection direction = ((ModulePort) signalLike).getDirection();
 				if (direction != PortDirection.OUT) {
-					errorHandler.onError(errorSource, "input port " + signalLike.getName() + " cannot be assigned to");
+					sidekick.onError(errorSource, "input port " + signalLike.getName() + " cannot be assigned to");
 				} else if (triggerKind != TriggerKind.CONTINUOUS) {
-					errorHandler.onError(errorSource, "assignment to module port must be continuous");
+					sidekick.onError(errorSource, "assignment to module port must be continuous");
 				}
 			} else if (signalLike instanceof Signal) {
 				if (triggerKind != TriggerKind.CONTINUOUS) {
-					errorHandler.onError(errorSource, "assignment to signal must be continuous");
+					sidekick.onError(errorSource, "assignment to signal must be continuous");
 				}
 			} else if (signalLike instanceof Register) {
 				if (triggerKind != TriggerKind.CLOCKED) {
-					errorHandler.onError(errorSource, "assignment to register must be clocked");
+					sidekick.onError(errorSource, "assignment to register must be clocked");
 				}
 			} else if (signalLike instanceof Constant) {
-				errorHandler.onError(errorSource, "cannot assign to constant");
+				sidekick.onError(errorSource, "cannot assign to constant");
 			}
 			considerAssignedTo(signalLike, destination.getErrorSource());
 
@@ -117,21 +117,21 @@ public final class AssignmentValidator {
 				validateAssignmentTo(binaryOperation.getLeftOperand(), triggerKind);
 				validateAssignmentTo(binaryOperation.getRightOperand(), triggerKind);
 			} else {
-				errorHandler.onError(destination.getErrorSource(), "expression cannot be assigned to");
+				sidekick.onError(destination.getErrorSource(), "expression cannot be assigned to");
 			}
 
 		} else if (destination instanceof InstancePortReference) {
 
 			InstancePortReference instancePortReference = (InstancePortReference) destination;
 			if (triggerKind != TriggerKind.CONTINUOUS) {
-				errorHandler.onError(destination.getErrorSource(), "assignment to instance port must be continuous");
+				sidekick.onError(destination.getErrorSource(), "assignment to instance port must be continuous");
 			}
 			validateAssignmentToInstancePort(instancePortReference.getModuleInstance(), instancePortReference.getPort(),
 				instancePortReference.getErrorSource());
 
 		} else if (!(destination instanceof UnknownExpression)) {
 
-			errorHandler.onError(destination.getErrorSource(), "expression cannot be assigned to");
+			sidekick.onError(destination.getErrorSource(), "expression cannot be assigned to");
 
 		}
 	}
@@ -151,7 +151,7 @@ public final class AssignmentValidator {
 
 	public void validateAssignmentToInstancePort(@NotNull ModuleInstance moduleInstance, @NotNull InstancePort port, @NotNull CmNode errorSource) {
 		if (port.getDirection() == PortDirection.OUT) {
-			errorHandler.onError(errorSource, "cannot assign to output port");
+			sidekick.onError(errorSource, "cannot assign to output port");
 		} else {
 			considerAssignedTo(moduleInstance.getName() + '.' + port.getName(), errorSource);
 		}
@@ -159,7 +159,7 @@ public final class AssignmentValidator {
 
 	private void considerAssignedTo(@NotNull String signalName, @NotNull CmNode errorSource) {
 		if (previouslyAssignedSignals.contains(signalName)) {
-			errorHandler.onError(errorSource, "'" + signalName + "' has already been assigned to");
+			sidekick.onError(errorSource, "'" + signalName + "' has already been assigned to");
 		}
 		newlyAssignedSignals.add(signalName);
 	}

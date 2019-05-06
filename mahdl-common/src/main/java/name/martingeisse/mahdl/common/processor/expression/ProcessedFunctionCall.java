@@ -6,7 +6,7 @@ package name.martingeisse.mahdl.common.processor.expression;
 
 import com.google.common.collect.ImmutableList;
 import name.martingeisse.mahdl.common.functions.BuiltinFunction;
-import name.martingeisse.mahdl.common.processor.ErrorHandler;
+import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.type.ProcessedDataType;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import org.jetbrains.annotations.NotNull;
@@ -61,11 +61,11 @@ public class ProcessedFunctionCall extends ProcessedExpression {
 
 	@NotNull
 	@Override
-	protected ProcessedExpression performSubFolding(@NotNull ErrorHandler errorHandler) {
+	protected ProcessedExpression performSubFolding(@NotNull ProcessingSidekick sidekick) {
 		List<ProcessedExpression> foldedArguments = new ArrayList<>();
 		boolean folded = false;
 		for (ProcessedExpression originalArgument : this.arguments) {
-			ProcessedExpression foldedArgument = originalArgument.performFolding(errorHandler);
+			ProcessedExpression foldedArgument = originalArgument.performFolding(sidekick);
 			folded |= (foldedArgument != originalArgument);
 		}
 		return folded ? new ProcessedFunctionCall(getErrorSource(), getDataType(), function, ImmutableList.copyOf(foldedArguments)) : this;
