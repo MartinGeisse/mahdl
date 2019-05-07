@@ -80,16 +80,16 @@ public final class CodeGenerator {
 		// fields part: clocks
 		for (ModulePort clock : model.getClocks()) {
 			builder.append("\n");
-			builder.append("	private final RtlClockNetwork ").append(clock.getName()).append(";\n");
+			builder.append("	final RtlClockNetwork ").append(clock.getName()).append(";\n");
 		}
 
 		// fields part: signal connectors for data ports and local signals (not including registers)
 		for (SignalLike signalLike : model.getSignalConnectors()) {
 			builder.append("\n");
 			if (signalLike.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
-				builder.append("	private final RtlBitSignalConnector ").append(signalLike.getName()).append(";\n");
+				builder.append("	final RtlBitSignalConnector ").append(signalLike.getName()).append(";\n");
 			} else {
-				builder.append("	private final RtlVectorSignalConnector ").append(signalLike.getName()).append(";\n");
+				builder.append("	final RtlVectorSignalConnector ").append(signalLike.getName()).append(";\n");
 			}
 		}
 
@@ -100,15 +100,15 @@ public final class CodeGenerator {
 				switch (register.getProcessedDataType().getFamily()) {
 
 					case BIT:
-						builder.append("	private final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
+						builder.append("	final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
 						break;
 
 					case VECTOR:
-						builder.append("	private final RtlProceduralVectorSignal ").append(register.getName()).append(";\n");
+						builder.append("	final RtlProceduralVectorSignal ").append(register.getName()).append(";\n");
 						break;
 
 					case MATRIX:
-						builder.append("	private final RtlProceduralMemory ").append(register.getName()).append(";\n");
+						builder.append("	final RtlProceduralMemory ").append(register.getName()).append(";\n");
 						break;
 
 				}
@@ -119,7 +119,7 @@ public final class CodeGenerator {
 		for (ModuleInstance moduleInstance : model.getModuleInstances()) {
 			String canonicalName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
 			builder.append("\n");
-			builder.append("	private final ").append(canonicalName).append(" ").append(moduleInstance.getName()).append(";\n");
+			builder.append("	final ").append(canonicalName).append(" ").append(moduleInstance.getName()).append(";\n");
 		}
 
 		// constructor intro
@@ -261,16 +261,28 @@ public final class CodeGenerator {
 		for (ModulePort port : model.getDataPorts()) {
 			builder.append("\n");
 			if (port.getDirection() == PortDirection.IN) {
+
+				// setter
 				builder.append("	public void set").append(StringUtils.capitalize(port.getName())).append("(")
 					.append(signalTypeToString(port.getProcessedDataType())).append(' ').append(port.getName())
 					.append(") {\n");
 				builder.append("		this.").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
 				builder.append("	}\n");
+
+				// getter (returns what was set by the setter)
+				builder.append("	public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
+					.append(StringUtils.capitalize(port.getName())).append("() {\n");
+				builder.append("		return ").append(port.getName()).append(".getConnected();\n");
+				builder.append("	}\n");
+
 			} else {
+
+				// getter (returns the connector, to be independent from internal logic)
 				builder.append("	public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
 					.append(StringUtils.capitalize(port.getName())).append("() {\n");
 				builder.append("		return ").append(port.getName()).append(";\n");
 				builder.append("	}\n");
+
 			}
 			builder.append("\n");
 		}
