@@ -328,9 +328,11 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 				// For a vector, the greatest possible value is releant, not the actual value, even if the vector is
 				// constant (see language design documents for details).
 				int indexSize = ((ProcessedDataType.Vector) index.getDataType()).getSize();
-				if (containerSizeIfKnown < (1 << indexSize)) {
+				if (indexSize >= ProcessedDataType.LOG2_SIZE_LIMIT) {
+					return error(index, "index of vector size " + indexSize + " is too large for any supported container size");
+				} else if (containerSizeIfKnown < (1 << indexSize)) {
 					return error(index, "index of vector size " + indexSize +
-						" must index a container vector of at least " + (1 << indexSize) + " in size, found " +
+						" must index a container of at least " + (1 << indexSize) + " in size, found " +
 						containerSizeIfKnown);
 				} else {
 					return index;

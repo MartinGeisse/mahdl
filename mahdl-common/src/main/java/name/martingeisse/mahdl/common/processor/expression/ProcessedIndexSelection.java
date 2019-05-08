@@ -30,6 +30,20 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 		this.index = index;
 	}
 
+	protected static void indexTypeCheck(ProcessedExpression index, int containerSize) throws TypeErrorException {
+		if (index.getDataType() instanceof ProcessedDataType.Vector) {
+			ProcessedDataType.Vector indexType = (ProcessedDataType.Vector) index.getDataType();
+			if (indexType.getSize() > 30) {
+				throw new TypeErrorException("container with more than 2^30 entries is not supported");
+			}
+			if (containerSize < (1 << indexType.getSize())) {
+				throw new TypeErrorException("container size " + containerSize + " is too small for index size " + indexType.getSize());
+			}
+		} else if (!(index.getDataType() instanceof ProcessedDataType.Integer)) {
+			throw new TypeErrorException("cannot select by index type " + index.getDataType());
+		}
+	}
+
 	@NotNull
 	public ProcessedExpression getContainer() {
 		return container;
@@ -124,14 +138,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 				throw new TypeErrorException("BitFromVector selection needs vector-typed container, got " + container.getDataType());
 			}
 			ProcessedDataType.Vector containerType = (ProcessedDataType.Vector) container.getDataType();
-			if (index.getDataType() instanceof ProcessedDataType.Vector) {
-				ProcessedDataType.Vector indexType = (ProcessedDataType.Vector) index.getDataType();
-				if (containerType.getSize() < (1 << indexType.getSize())) {
-					throw new TypeErrorException("container size " + containerType.getSize() + " too small for index size " + indexType.getSize());
-				}
-			} else if (!(index.getDataType() instanceof ProcessedDataType.Integer)) {
-				throw new TypeErrorException("cannot select from vector by index type " + index.getDataType());
-			}
+			indexTypeCheck(index, containerType.getSize());
 		}
 
 		@Override
@@ -153,14 +160,7 @@ public abstract class ProcessedIndexSelection extends ProcessedExpression {
 				throw new TypeErrorException("VectorFromMatrix selection needs matrix-typed container, got " + container.getDataType());
 			}
 			ProcessedDataType.Matrix containerType = (ProcessedDataType.Matrix) container.getDataType();
-			if (index.getDataType() instanceof ProcessedDataType.Vector) {
-				ProcessedDataType.Vector indexType = (ProcessedDataType.Vector) index.getDataType();
-				if (containerType.getFirstSize() < (1 << indexType.getSize())) {
-					throw new TypeErrorException("first matrix size " + containerType.getFirstSize() + " is too small for index size " + indexType.getSize());
-				}
-			} else if (!(index.getDataType() instanceof ProcessedDataType.Integer)) {
-				throw new TypeErrorException("cannot select from matrix by index type " + index.getDataType());
-			}
+			indexTypeCheck(index, containerType.getFirstSize());
 			return new ProcessedDataType.Vector(containerType.getSecondSize());
 		}
 

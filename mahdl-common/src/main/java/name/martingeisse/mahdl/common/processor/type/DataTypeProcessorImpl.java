@@ -18,8 +18,6 @@ import java.math.BigInteger;
  */
 public final class DataTypeProcessorImpl implements DataTypeProcessor {
 
-	private static final BigInteger MAX_SIZE_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
-
 	private final ProcessingSidekick sidekick;
 	private final ExpressionProcessor expressionProcessor;
 
@@ -69,7 +67,7 @@ public final class DataTypeProcessorImpl implements DataTypeProcessor {
 			}
 			return -1;
 		}
-		if (integerValue.compareTo(MAX_SIZE_VALUE) > 0) {
+		if (integerValue.compareTo(ProcessedDataType.SIZE_LIMIT) >= 0) {
 			if (reportErrors) {
 				sidekick.onError(expression, "size too large: " + integerValue);
 			}

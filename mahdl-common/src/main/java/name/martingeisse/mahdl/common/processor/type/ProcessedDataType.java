@@ -7,10 +7,17 @@ package name.martingeisse.mahdl.common.processor.type;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
+
 /**
- *
+ * All sizes are limited. The size limit as defined by constants in this class is 2^30; the maximum size is less than
+ * the limit, i.e. (2^30)-1.
  */
 public abstract class ProcessedDataType {
+
+	public static final int LOG2_SIZE_LIMIT = 30;
+	public static final int SIZE_LIMIT_INT = (1 << LOG2_SIZE_LIMIT);
+	public static final BigInteger SIZE_LIMIT = BigInteger.valueOf(SIZE_LIMIT_INT);
 
 	@NotNull
 	public abstract Family getFamily();
