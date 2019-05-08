@@ -68,7 +68,7 @@ public class ValueGenerator {
 		} else if (value instanceof ConstantValue.Integer) {
 			return ((ConstantValue.Integer) value).getValue().toString();
 		} else if (value instanceof ConstantValue.Text) {
-			return "\"" + ((ConstantValue.Text) value).getValue().replace("\\", "\\\\").replace("\"", "\\\"");
+			return Util.buildJavaStringLiteral(((ConstantValue.Text) value).getValue());
 		} else {
 			CompilationErrors.reportError(null, "unsupported run-time value: " + value);
 			return "null";

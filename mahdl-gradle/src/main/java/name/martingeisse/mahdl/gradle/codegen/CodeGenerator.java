@@ -144,6 +144,8 @@ public final class CodeGenerator {
 				builder.append(", ").append(clockToPass);
 			}
 			builder.append(");\n");
+			builder.append("	this.").append(info.getModuleInstance().getName()).append(".setName(")
+				.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
 		}
 
 		// definition part: create signal connectors
@@ -155,6 +157,8 @@ public final class CodeGenerator {
 				int width = ((ProcessedDataType.Vector) signalLike.getProcessedDataType()).getSize();
 				builder.append("RtlVectorSignalConnector(realm, ").append(width).append(");\n");
 			}
+			builder.append("	this.").append(signalLike.getName()).append(".setName(")
+				.append(Util.buildJavaStringLiteral(signalLike.getName())).append(");\n");
 		}
 
 		// definition part: create clocked do-blocks and registers

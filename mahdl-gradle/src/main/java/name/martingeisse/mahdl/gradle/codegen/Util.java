@@ -56,4 +56,8 @@ final class Util {
 		}
 	}
 
+	static String buildJavaStringLiteral(String value) {
+		return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+	}
+
 }
