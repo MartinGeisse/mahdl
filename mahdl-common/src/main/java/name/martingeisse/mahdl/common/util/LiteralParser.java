@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class LiteralParser {
 
-	private static final Pattern VECTOR_PATTERN = Pattern.compile("([0-9]+)([bodh])([0-9]+)");
+	private static final Pattern VECTOR_PATTERN = Pattern.compile("([0-9]+)([bodh])([0-9a-fA-F]+)");
 
 	// prevent instantiation
 	private LiteralParser() {

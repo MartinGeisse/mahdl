@@ -285,6 +285,12 @@ public class ExpressionProcessorImpl implements ExpressionProcessor {
 			return new UnknownExpression(expression);
 		}
 
+		// check if the range is invalid
+		if (toIndexInteger < 0 || fromIndexInteger < toIndexInteger || fromIndexInteger >= containerSizeIfKnown) {
+			return error(expression, "invalid range: " + fromIndexInteger + ":" + toIndexInteger +
+				" for container size " + containerSizeIfKnown);
+		}
+
 		// otherwise return a range selection node
 		int width = fromIndexInteger - toIndexInteger + 1;
 		return new ProcessedRangeSelection(expression, new ProcessedDataType.Vector(width), container, fromIndexInteger, toIndexInteger);

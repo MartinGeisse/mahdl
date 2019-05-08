@@ -8,12 +8,13 @@ import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
 import name.martingeisse.mahdl.common.processor.definition.InstancePort;
 import name.martingeisse.mahdl.common.processor.definition.ModuleInstance;
 import name.martingeisse.mahdl.input.cm.CmNode;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
 /**
  *
  */
-public class InstancePortReference extends ProcessedExpression {
+public class InstancePortReference extends ProcessedExpression implements Comparable<InstancePortReference> {
 
 	@NotNull
 	private final ModuleInstance moduleInstance;
@@ -63,6 +64,12 @@ public class InstancePortReference extends ProcessedExpression {
 	 */
 	public boolean isSameAs(InstancePortReference other) {
 		return moduleInstance == other.getModuleInstance() && port == other.getPort();
+	}
+
+	@Override
+	public int compareTo(@NotNull InstancePortReference o) {
+		return new CompareToBuilder().append(moduleInstance.getName(), o.getModuleInstance().getName())
+			.append(port.getName(), o.getPort().getName()).toComparison();
 	}
 
 }

@@ -7,6 +7,7 @@ import name.martingeisse.mahdl.input.MapagGeneratedMahdlParser;
 import name.martingeisse.mahdl.input.Symbols;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
@@ -125,7 +126,14 @@ public final class SourceLoader {
 		}
 
 		// run parser
-		MapagGeneratedMahdlParser parser = new MapagGeneratedMahdlParser();
+		MapagGeneratedMahdlParser parser = new MapagGeneratedMahdlParser() {
+			@Override
+			protected void reportError(CmTokenImpl locationToken, String message) {
+				int row = locationToken.getRow();
+				int column = locationToken.getColumn();
+				CompilationErrors.reportError(path, row, column, message);
+			}
+		};
 		CmNode rootNode = parser.parse(tokens.toArray(new CmTokenImpl[0]));
 		if (rootNode == null) {
 			return null;

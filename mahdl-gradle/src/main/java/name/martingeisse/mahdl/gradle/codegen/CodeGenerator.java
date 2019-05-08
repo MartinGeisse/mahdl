@@ -218,6 +218,9 @@ public final class CodeGenerator {
 		for (ContinuousDoBlockInfo doBlockInfo : model.getContinuousDoBlockInfos()) {
 			for (SignalLike target : doBlockInfo.getSignalLikes()) {
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
+					if (expression instanceof InstancePortReference) {
+						return false;
+					}
 					if (!(expression instanceof SignalLikeReference)) {
 						CompilationErrors.reportError(expression,
 							"only assignment to whole registers are currently supported");
@@ -231,6 +234,10 @@ public final class CodeGenerator {
 				builder.append("		").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 			for (InstancePortReference target : doBlockInfo.getInstancePortReferences()) {
+				if (target.getPort().getDataType().getFamily() == ProcessedDataType.Family.CLOCK) {
+					// clocks get passed as constructor arguments in module instantiation
+					continue;
+				}
 				Predicate<ProcessedExpression> leftHandSideMatcher = expression -> {
 					if (expression instanceof InstancePortReference) {
 						InstancePortReference reference = (InstancePortReference) expression;
