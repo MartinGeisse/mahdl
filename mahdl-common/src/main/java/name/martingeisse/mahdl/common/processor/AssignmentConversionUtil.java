@@ -31,7 +31,7 @@ public class AssignmentConversionUtil {
 				if (value.equals(BigInteger.ZERO)) {
 					return new ProcessedConstantExpression(expression.getErrorSource(), new ConstantValue.Bit(false));
 				} else if (value.equals(BigInteger.ONE)) {
-					return new ProcessedConstantExpression(expression.getErrorSource(), new ConstantValue.Bit(false));
+					return new ProcessedConstantExpression(expression.getErrorSource(), new ConstantValue.Bit(true));
 				} else {
 					sidekick.onError(expression.getErrorSource(), "cannot convert value " + value + " to bit");
 					return new UnknownExpression(expression.getErrorSource());
