@@ -52,7 +52,7 @@ public class ClockedStatementGenerator {
 			builder.append("		RtlWhenStatement ").append(helperName).append(" = ").append(sequence)
 				.append(".when(").append(expressionGenerator.buildExpression(processedIf.getCondition())).append(");\n");
 			generateStatements(helperName + ".getThenBranch()", processedIf.getThenBranch());
-			generateStatements(helperName + ".getElseBranch()", processedIf.getElseBranch());
+			generateStatements(helperName + ".getOtherwiseBranch()", processedIf.getElseBranch());
 
 		} else if (statement instanceof ProcessedSwitchStatement) {
 

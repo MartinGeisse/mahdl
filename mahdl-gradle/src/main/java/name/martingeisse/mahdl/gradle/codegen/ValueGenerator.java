@@ -50,7 +50,7 @@ public class ValueGenerator {
 			if (vector.getSize() > 64) {
 				throw new UnsupportedOperationException("constant vector size >64 not yet supported");
 			}
-			return "VectorValue.ofUnsigned(" + vector.getSize() + ", " + vector.convertToInteger().longValue() + ")";
+			return "VectorValue.of(" + vector.getSize() + ", " + vector.convertToInteger().longValue() + ")";
 		} else if (value instanceof ConstantValue.Matrix) {
 			ConstantValue.Matrix matrix = (ConstantValue.Matrix)value;
 			String name = "___matrix" + model.newSyntheticConstruct();
@@ -59,7 +59,7 @@ public class ValueGenerator {
 			for (int i = 0; i < matrix.getFirstSize(); i++) {
 				ConstantValue row = matrix.selectIndex(i);
 				if (row instanceof ConstantValue.Vector) {
-					builder.append("		").append(name).append("setRow(").append(i).append(", VectorValue.ofUnsigned(")
+					builder.append("		").append(name).append("setRow(").append(i).append(", VectorValue.of(")
 						.append(matrix.getSecondSize()).append(", ").append(buildValue(row)).append("));\n");
 
 				}
