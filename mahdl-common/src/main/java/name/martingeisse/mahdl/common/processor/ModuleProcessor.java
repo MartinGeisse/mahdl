@@ -94,6 +94,9 @@ public final class ModuleProcessor {
 
 		// process module definitions
 		definitionProcessor.processPorts(module.getPortDefinitionGroups());
+		if (isNative) {
+			return new ModuleDefinition(isNative, canonicalModuleName, ImmutableMap.copyOf(getDefinitions()), ImmutableList.of());
+		}
 		for (ImplementationItem implementationItem : module.getImplementationItems().getAll()) {
 			if (isConstant(implementationItem)) {
 				definitionProcessor.process(implementationItem);
