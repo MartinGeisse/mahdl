@@ -101,11 +101,11 @@ public final class CodeGenerator {
 				switch (register.getProcessedDataType().getFamily()) {
 
 					case BIT:
-						builder.append("	final RtlProceduralBitSignal ").append(register.getName()).append(";\n");
+						builder.append("	final RtlProceduralBitRegister ").append(register.getName()).append(";\n");
 						break;
 
 					case VECTOR:
-						builder.append("	final RtlProceduralVectorSignal ").append(register.getName()).append(";\n");
+						builder.append("	final RtlProceduralVectorRegister ").append(register.getName()).append(";\n");
 						break;
 
 					case MATRIX:
