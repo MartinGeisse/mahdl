@@ -60,6 +60,7 @@ public final class CodeGenerator {
 		builder.append("import name.martingeisse.esdk.core.rtl.signal.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.signal.connector.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.synthesis.verilog.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.synthesis.verilog.contribution.*;\n");
 		builder.append("import name.martingeisse.esdk.core.util.*;\n");
 		builder.append("import name.martingeisse.esdk.core.util.vector.VectorValue;\n");
 		builder.append("\n");
