@@ -50,7 +50,7 @@ public final class LoadMahdlMatrixFileFunction extends FixedSignatureFunction {
 	protected ProcessedDataType internalCheckType(@NotNull List<ProcessedExpression> arguments, ProcessingSidekick sidekick) {
 		ProcessedExpression.FormallyConstantEvaluationContext context = new ProcessedExpression.FormallyConstantEvaluationContext(sidekick);
 		int firstSize = arguments.get(1).evaluateFormallyConstant(context).convertToInteger().intValueExact();
-		int secondSize = arguments.get(1).evaluateFormallyConstant(context).convertToInteger().intValueExact();
+		int secondSize = arguments.get(2).evaluateFormallyConstant(context).convertToInteger().intValueExact();
 		return new ProcessedDataType.Matrix(firstSize, secondSize);
 	}
 
