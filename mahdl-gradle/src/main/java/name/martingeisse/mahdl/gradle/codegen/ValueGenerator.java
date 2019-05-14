@@ -59,8 +59,8 @@ public class ValueGenerator {
 			for (int i = 0; i < matrix.getFirstSize(); i++) {
 				ConstantValue row = matrix.selectIndex(i);
 				if (row instanceof ConstantValue.Vector) {
-					builder.append("		").append(name).append("setRow(").append(i).append(", VectorValue.of(")
-						.append(matrix.getSecondSize()).append(", ").append(buildValue(row)).append("));\n");
+					builder.append("		").append(name).append(".setRow(").append(i).append(", ")
+						.append(buildValue(row)).append("));\n");
 
 				}
 			}

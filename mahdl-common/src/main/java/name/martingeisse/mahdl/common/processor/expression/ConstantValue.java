@@ -317,6 +317,9 @@ public abstract class ConstantValue {
 		private final BitSet bits;
 
 		public Matrix(int firstSize, int secondSize, @NotNull BitSet bits) {
+			if (bits == null) {
+				throw new IllegalArgumentException("bits argument is null");
+			}
 			this.firstSize = firstSize;
 			this.secondSize = secondSize;
 			this.bits = bits;

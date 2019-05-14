@@ -31,6 +31,7 @@ public abstract class HeadBodyReader {
 			String value = line.substring(colonIndex + 1).trim();
 			onHeadProperty(key, value);
 		}
+		onStartBody();
 		int bodyStartLineIndex = lineNumberReader.getLineNumber();
 		while (true) {
 			String line = lineNumberReader.readLine();
