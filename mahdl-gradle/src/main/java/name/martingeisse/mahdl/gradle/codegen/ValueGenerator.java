@@ -60,7 +60,7 @@ public class ValueGenerator {
 				ConstantValue row = matrix.selectIndex(i);
 				if (row instanceof ConstantValue.Vector) {
 					builder.append("		").append(name).append(".setRow(").append(i).append(", ")
-						.append(buildValue(row)).append("));\n");
+						.append(buildValue(row)).append(");\n");
 
 				}
 			}
