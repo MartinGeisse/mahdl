@@ -66,7 +66,7 @@ public class ExpressionGenerator {
 		} else if (expression instanceof InstancePortReference) {
 
 			InstancePortReference reference = (InstancePortReference) expression;
-			return reference.getModuleInstance().getName() + ".get" + StringUtils.capitalize(reference.getPort().getName()) + "()";
+			return "_" + reference.getModuleInstance().getName() + ".get" + StringUtils.capitalize(reference.getPort().getName()) + "()";
 
 		} else if (expression instanceof ProcessedUnaryOperation) {
 

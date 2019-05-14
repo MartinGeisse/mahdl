@@ -173,7 +173,7 @@ public final class CodeGenerator {
 			}
 			String clockName = ((SignalLikeReference) clock).getDefinition().getName();
 
-			builder.append("		RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(");
+			builder.append("		RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(_");
 			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getRegisters()) {

@@ -57,7 +57,7 @@ public class AssignmentTargetGenerator {
 			if (!(indexSelection.getContainer() instanceof SignalLikeReference)) {
 				throw new UnsupportedOperationException("unsupported assignment target for code generation");
 			}
-			String container = ((SignalLikeReference) indexSelection.getContainer()).getDefinition().getName();
+			String container = "_" + ((SignalLikeReference) indexSelection.getContainer()).getDefinition().getName();
 
 			// Handle selection by (constant) integer specially. It uses a different ESDK class that allows indexing
 			// the "upper" indices of a non-PO2 container.
@@ -81,7 +81,7 @@ public class AssignmentTargetGenerator {
 			if (!(rangeSelection.getContainer() instanceof SignalLikeReference)) {
 				throw new UnsupportedOperationException("unsupported assignment target for code generation");
 			}
-			String container = ((SignalLikeReference) rangeSelection.getContainer()).getDefinition().getName();
+			String container = "_" + ((SignalLikeReference) rangeSelection.getContainer()).getDefinition().getName();
 			return "new RtlVectorTargetRangeSelection(realm, " + container + ", " + rangeSelection.getFromIndex() +
 				", " + rangeSelection.getToIndex() + ")";
 
