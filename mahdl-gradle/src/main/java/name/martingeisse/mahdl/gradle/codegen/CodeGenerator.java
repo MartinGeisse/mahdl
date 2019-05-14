@@ -175,6 +175,8 @@ public final class CodeGenerator {
 			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getRegisters()) {
+				String initializerValue = (register.getInitializerValue() == null ? null :
+					valueGenerator.buildValue(register.getInitializerValue()));
 				builder.append("		").append(register.getName()).append(" = ").append(doBlockInfo.getName());
 				switch (register.getProcessedDataType().getFamily()) {
 
@@ -186,7 +188,7 @@ public final class CodeGenerator {
 					case VECTOR: {
 						ProcessedDataType.Vector vectorType = (ProcessedDataType.Vector) register.getProcessedDataType();
 						builder.append(".createVector(").append(vectorType.getSize());
-						if (register.getInitializerValue() != null) {
+						if (initializerValue != null) {
 							builder.append(", ");
 						}
 						break;
@@ -194,19 +196,17 @@ public final class CodeGenerator {
 
 					case MATRIX: {
 						builder.append(".createMemory(");
-						if (register.getInitializerValue() == null) {
+						if (initializerValue == null) {
 							ProcessedDataType.Matrix matrixType = (ProcessedDataType.Matrix) register.getProcessedDataType();
 							builder.append(matrixType.getFirstSize()).append(", ").append(matrixType.getSecondSize());
 						}
 					}
 
 				}
-				if (register.getInitializerValue() == null) {
-					builder.append(");\n");
-				} else {
-					builder.append(valueGenerator.buildValue(register.getInitializerValue()));
-					builder.append(");\n");
+				if (initializerValue != null) {
+					builder.append(initializerValue);
 				}
+				builder.append(");\n");
 			}
 		}
 
