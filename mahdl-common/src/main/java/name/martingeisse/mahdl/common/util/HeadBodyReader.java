@@ -34,11 +34,12 @@ public abstract class HeadBodyReader {
 		onStartBody();
 		int bodyStartLineIndex = lineNumberReader.getLineNumber();
 		while (true) {
+			int lineIndex = lineNumberReader.getLineNumber();
 			String line = lineNumberReader.readLine();
 			if (line == null) {
 				break;
 			}
-			onBodyLine(lineNumberReader.getLineNumber(), lineNumberReader.getLineNumber() - bodyStartLineIndex, line);
+			onBodyLine(lineIndex, lineIndex - bodyStartLineIndex, line);
 		}
 	}
 
