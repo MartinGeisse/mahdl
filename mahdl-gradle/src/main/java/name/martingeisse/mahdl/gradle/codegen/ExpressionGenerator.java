@@ -61,7 +61,7 @@ public class ExpressionGenerator {
 
 		} else if (expression instanceof SignalLikeReference) {
 
-			return ((SignalLikeReference) expression).getDefinition().getName();
+			return "_" + ((SignalLikeReference) expression).getDefinition().getName();
 
 		} else if (expression instanceof InstancePortReference) {
 

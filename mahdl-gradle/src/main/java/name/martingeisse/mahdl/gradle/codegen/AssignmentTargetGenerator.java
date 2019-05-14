@@ -43,7 +43,7 @@ public class AssignmentTargetGenerator {
 	public String buildAssignmentTarget(ProcessedExpression expression) {
 		if (expression instanceof SignalLikeReference) {
 
-			return ((SignalLikeReference) expression).getDefinition().getName();
+			return "_" + ((SignalLikeReference) expression).getDefinition().getName();
 
 		} else if (expression instanceof ProcessedBinaryOperation) {
 
