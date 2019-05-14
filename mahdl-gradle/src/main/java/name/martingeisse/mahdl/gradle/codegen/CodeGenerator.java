@@ -26,6 +26,7 @@ import static name.martingeisse.mahdl.gradle.codegen.Util.valueTypeToString;
 public final class CodeGenerator {
 
 	private final GenerationModel model;
+	private final DataFileFactory dataFileFactory;
 	private final ProcessingSidekick sidekick;
 	private final StringBuilder builder;
 	private final ValueGenerator valueGenerator;
@@ -33,11 +34,12 @@ public final class CodeGenerator {
 	private final ContinuousStatementExpressionGenerator continuousStatementExpressionGenerator;
 	private final ClockedStatementGenerator clockedStatementGenerator;
 
-	public CodeGenerator(GenerationModel model, ErrorHandler errorHandler) {
+	public CodeGenerator(GenerationModel model, DataFileFactory dataFileFactory, ErrorHandler errorHandler) {
 		this.model = model;
+		this.dataFileFactory = dataFileFactory;
 		this.sidekick = new ProcessingSidekick(errorHandler);
 		this.builder = new StringBuilder();
-		this.valueGenerator = new ValueGenerator(model, builder);
+		this.valueGenerator = new ValueGenerator(model, builder, dataFileFactory);
 		this.expressionGenerator = new ExpressionGenerator(model, builder, valueGenerator, sidekick);
 		this.continuousStatementExpressionGenerator = new ContinuousStatementExpressionGenerator(model, builder);
 		this.clockedStatementGenerator = new ClockedStatementGenerator(model, builder, valueGenerator, expressionGenerator, sidekick);
@@ -311,6 +313,11 @@ public final class CodeGenerator {
 
 	public String getCode() {
 		return builder.toString();
+	}
+
+	public interface DataFileFactory {
+		String getAnchorClassName();
+		void createDataFile(String filename, byte[] data);
 	}
 
 }

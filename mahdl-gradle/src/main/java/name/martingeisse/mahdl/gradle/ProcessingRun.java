@@ -27,13 +27,14 @@ public class ProcessingRun {
 
 	private ImmutableMap<ImmutableList<String>, ModuleWrapper> codeModels;
 	private ImmutableMap<ModuleWrapper, ImmutableList<String>> codeModelsReverse;
-	private ImmutableMap<ImmutableList<String>, File> dataFiles;
+	private ImmutableMap<ImmutableList<String>, File> inputDataFiles;
 	private Map<ImmutableList<String>, String> generatedCode;
+	private Map<ImmutableList<String>, byte[]> outputDataFiles;
 
 	public ProcessingRun(ImmutableMap<ImmutableList<String>, ModuleWrapper> codeModels, ImmutableMap<ImmutableList<String>, File> dataFiles) {
 		this.codeModels = codeModels;
 		this.codeModelsReverse = ImmutableMap.copyOf(reverse(codeModels));
-		this.dataFiles = dataFiles;
+		this.inputDataFiles = dataFiles;
 	}
 
 	private static final <A, B> Map<B, A> reverse(Map<A, B> map) {
@@ -48,8 +49,13 @@ public class ProcessingRun {
 		return ImmutableMap.copyOf(generatedCode);
 	}
 
+	public Map<ImmutableList<String>, byte[]> getOutputDataFiles() {
+		return outputDataFiles;
+	}
+
 	public void run() {
 		generatedCode = new HashMap<>();
+		outputDataFiles = new HashMap<>();
 		for (Map.Entry<ImmutableList<String>, ModuleWrapper> codeModelEntry : codeModels.entrySet()) {
 			ImmutableList<String> qualifiedName = codeModelEntry.getKey();
 			ModuleWrapper moduleWrapper = codeModelEntry.getValue();
@@ -76,7 +82,22 @@ public class ProcessingRun {
 				String packageName = StringUtils.join(qualifiedName.subList(0, qualifiedName.size() - 1), '.');
 				String localName = qualifiedName.get(qualifiedName.size() - 1);
 				GenerationModel model = new GenerationModel(moduleDefinition, packageName, localName);
-				CodeGenerator codeGenerator = new CodeGenerator(model, errorHandler);
+				CodeGenerator.DataFileFactory dataFileFactory = new CodeGenerator.DataFileFactory() {
+
+					@Override
+					public String getAnchorClassName() {
+						return packageName + '.' + localName;
+					}
+
+					@Override
+					public void createDataFile(String filename, byte[] data) {
+						List<String> qualifiedDataFileName = new ArrayList<>(qualifiedName.subList(0, qualifiedName.size() - 1));
+						qualifiedDataFileName.add(filename);
+						outputDataFiles.put(ImmutableList.copyOf(qualifiedDataFileName), data);
+					}
+
+				};
+				CodeGenerator codeGenerator = new CodeGenerator(model, dataFileFactory, errorHandler);
 				codeGenerator.run();
 				generatedCode.put(qualifiedName, codeGenerator.getCode());
 			} finally {
@@ -85,10 +106,10 @@ public class ProcessingRun {
 		}
 	}
 
-	public InputStream openDataFile(ModuleWrapper moduleWrapper, String filename) throws IOException {
+	public InputStream openInputDataFile(ModuleWrapper moduleWrapper, String filename) throws IOException {
 		ImmutableList<String> qualifiedModuleName = codeModelsReverse.get(moduleWrapper);
 		ImmutableList<String> qualifiedFileName = replaceLast(qualifiedModuleName, filename);
-		File dataFile = dataFiles.get(qualifiedFileName);
+		File dataFile = inputDataFiles.get(qualifiedFileName);
 		if (dataFile == null) {
 			throw new FileNotFoundException(filename);
 		}

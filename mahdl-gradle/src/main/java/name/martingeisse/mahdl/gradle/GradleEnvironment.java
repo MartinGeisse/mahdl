@@ -27,7 +27,7 @@ public class GradleEnvironment implements Environment {
 		if (moduleWrapper == null) {
 			throw new IOException("could not locate data file due to previous errors");
 		}
-		return moduleWrapper.getProcessingRun().openDataFile(moduleWrapper, filename);
+		return moduleWrapper.getProcessingRun().openInputDataFile(moduleWrapper, filename);
 	}
 
 	@Override

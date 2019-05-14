@@ -12,10 +12,12 @@ public class ValueGenerator {
 
 	private final GenerationModel model;
 	private final StringBuilder builder;
+	private final CodeGenerator.DataFileFactory dataFileFactory;
 
-	public ValueGenerator(GenerationModel model, StringBuilder builder) {
+	public ValueGenerator(GenerationModel model, StringBuilder builder, CodeGenerator.DataFileFactory dataFileFactory) {
 		this.model = model;
 		this.builder = builder;
+		this.dataFileFactory = dataFileFactory;
 	}
 
 	/**
@@ -54,15 +56,23 @@ public class ValueGenerator {
 		} else if (value instanceof ConstantValue.Matrix) {
 			ConstantValue.Matrix matrix = (ConstantValue.Matrix)value;
 			String name = "___matrix" + model.newSyntheticConstruct();
-			builder.append("		Matrix ").append(name).append(" = new Matrix(").append(matrix.getFirstSize())
-				.append(", ").append(matrix.getSecondSize()).append(");\n");
-			for (int i = 0; i < matrix.getFirstSize(); i++) {
-				ConstantValue row = matrix.selectIndex(i);
-				if (row instanceof ConstantValue.Vector) {
-					builder.append("		").append(name).append(".setRow(").append(i).append(", ")
-						.append(buildValue(row)).append(");\n");
+			if (matrix.getFirstSize() * matrix.getSecondSize() < 10_000) {
+				builder.append("		Matrix ").append(name).append(" = new Matrix(").append(matrix.getFirstSize())
+					.append(", ").append(matrix.getSecondSize()).append(");\n");
+				for (int i = 0; i < matrix.getFirstSize(); i++) {
+					ConstantValue row = matrix.selectIndex(i);
+					if (row instanceof ConstantValue.Vector) {
+						builder.append("		").append(name).append(".setRow(").append(i).append(", ")
+							.append(buildValue(row)).append(");\n");
 
+					}
 				}
+			} else {
+				dataFileFactory.createDataFile(name, Util.generateMatrixFileContents(matrix));
+				builder.append("		Matrix ").append(name).append(" = Matrix.load(")
+					.append(dataFileFactory.getAnchorClassName()).append(".class, \"").append(name)
+					.append("\", ").append(matrix.getFirstSize()).append(", ").append(matrix.getSecondSize())
+					.append(");\n");
 			}
 			return name;
 		} else if (value instanceof ConstantValue.Integer) {

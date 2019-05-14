@@ -43,9 +43,15 @@ public class CompilationRun {
 		// process sources
 		ProcessingRun processingRun = new ProcessingRun(codeModels, dataFiles);
 		processingRun.run();
+
+		// write output
 		for (Map.Entry<ImmutableList<String>, String> javaEntry : processingRun.getGeneratedCode().entrySet()) {
 			File outputFile = prepareOutputFile(javaEntry.getKey(), ".java");
 			FileUtils.writeStringToFile(outputFile, javaEntry.getValue(), StandardCharsets.UTF_8);
+		}
+		for (Map.Entry<ImmutableList<String>, byte[]> dataFileEntry : processingRun.getOutputDataFiles().entrySet()) {
+			File outputFile = prepareOutputFile(dataFileEntry.getKey(), "");
+			FileUtils.writeByteArrayToFile(outputFile, dataFileEntry.getValue());
 		}
 
 	}
