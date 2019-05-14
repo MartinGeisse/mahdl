@@ -255,7 +255,7 @@ public final class CodeGenerator {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
 					doBlockInfo, target.getDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
-				builder.append("		").append(target.getModuleInstance().getName()).append(".set")
+				builder.append("		_").append(target.getModuleInstance().getName()).append(".set")
 					.append(StringUtils.capitalize(target.getPort().getName())).append("(")
 					.append(expressionText).append(");\n");
 			}
