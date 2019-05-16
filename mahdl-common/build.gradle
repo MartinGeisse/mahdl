@@ -4,6 +4,12 @@ apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+        options.compilerArgs << '--release'
+        options.compilerArgs << '8'
+    }
+}
 
 group 'name.martingeisse.mahdl'
 version '1.0'

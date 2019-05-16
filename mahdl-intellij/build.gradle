@@ -7,6 +7,12 @@ apply plugin: 'java'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+        options.compilerArgs << '--release'
+        options.compilerArgs << '8'
+    }
+}
 
 intellij {
     version '191.6707.61'
