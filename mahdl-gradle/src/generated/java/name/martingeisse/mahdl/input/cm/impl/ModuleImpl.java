@@ -1,6 +1,7 @@
 package name.martingeisse.mahdl.input.cm.impl;
 
 import name.martingeisse.mahdl.input.cm.*;
+import name.martingeisse.mahdl.input.cm.Module;
 
 public final class ModuleImpl extends CmNodeImpl implements Module {
 
