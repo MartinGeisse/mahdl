@@ -2,7 +2,6 @@ package name.martingeisse.mahdl.gradle;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.common.processor.ErrorHandler;
 import name.martingeisse.mahdl.common.processor.ModuleProcessor;

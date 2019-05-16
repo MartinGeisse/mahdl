@@ -5,7 +5,6 @@
 package name.martingeisse.mahdl.common.processor.definition;
 
 import com.google.common.collect.ImmutableMap;
-import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.common.processor.ProcessingSidekick;
