@@ -141,13 +141,9 @@ public final class CodeGenerator {
 
 		// definition part: create module instances
 		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
-			builder.append("	this._").append(info.getModuleInstance().getName()).append(" = new ")
-				.append(info.getCanonicalModuleName()).append("(realm");
-			for (String clockToPass : info.getLocalClocksToPass()) {
-				builder.append(", ").append(clockToPass);
-			}
-			builder.append(");\n");
-			builder.append("	this._").append(info.getModuleInstance().getName()).append(".setName(")
+			builder.append("		this._").append(info.getModuleInstance().getName()).append(" = create")
+				.append(StringUtils.capitalize(info.getModuleInstance().getName())).append("();\n");
+			builder.append("		this._").append(info.getModuleInstance().getName()).append(".setName(")
 				.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
 		}
 
@@ -160,7 +156,7 @@ public final class CodeGenerator {
 				int width = ((ProcessedDataType.Vector) signalLike.getProcessedDataType()).getSize();
 				builder.append("RtlVectorSignalConnector(realm, ").append(width).append(");\n");
 			}
-			builder.append("	this._").append(signalLike.getName()).append(".setName(")
+			builder.append("		this._").append(signalLike.getName()).append(".setName(")
 				.append(Util.buildJavaStringLiteral(signalLike.getName())).append(");\n");
 		}
 
@@ -300,6 +296,20 @@ public final class CodeGenerator {
 				builder.append("	}\n");
 
 			}
+			builder.append("\n");
+		}
+
+		// factory methods for creating module instances (can be overridden for dependency injection)
+		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
+			builder.append("	public ").append(info.getCanonicalModuleName())
+				.append(" create").append(StringUtils.capitalize(info.getModuleInstance().getName()))
+				.append("() {\n");
+			builder.append("		return new ").append(info.getCanonicalModuleName()).append("(getRealm()");
+			for (String clockToPass : info.getLocalClocksToPass()) {
+				builder.append(", ").append(clockToPass);
+			}
+			builder.append(");\n");
+			builder.append("	}\n");
 			builder.append("\n");
 		}
 
