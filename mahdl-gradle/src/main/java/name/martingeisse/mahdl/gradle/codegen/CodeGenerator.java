@@ -209,6 +209,8 @@ public final class CodeGenerator {
 					builder.append(initializerValue);
 				}
 				builder.append(");\n");
+				builder.append("		_").append(register.getName()).append(".setName(").
+					append(Util.buildJavaStringLiteral(register.getName())).append(");\n");
 			}
 		}
 
