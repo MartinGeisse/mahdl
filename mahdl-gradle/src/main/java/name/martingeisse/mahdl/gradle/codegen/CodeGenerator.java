@@ -157,7 +157,7 @@ public final class CodeGenerator {
 		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 			builder.append("			this._").append(info.getModuleInstance().getName()).append(" = create")
 				.append(StringUtils.capitalize(info.getModuleInstance().getName())).append("();\n");
-			builder.append("			this._").append(info.getModuleInstance().getName()).append(".setName(")
+			builder.append("			this._").append(info.getModuleInstance().getName()).append(".getRtlItem().setName(")
 				.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
 		}
 
