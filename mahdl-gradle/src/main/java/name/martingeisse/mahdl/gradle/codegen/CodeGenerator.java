@@ -67,14 +67,28 @@ public final class CodeGenerator {
 		builder.append("import name.martingeisse.esdk.core.util.vector.VectorValue;\n");
 		builder.append("\n");
 
+		// interface intro
+		builder.append("public interface ").append(model.getLocalName()).append(" extends RtlItemOwned {\n");
+		for (ModulePort port : model.getDataPorts()) {
+			if (port.getDirection() == PortDirection.IN) {
+				builder.append("	void set").append(StringUtils.capitalize(port.getName())).append("(")
+					.append(signalTypeToString(port.getProcessedDataType())).append(' ').append(port.getName())
+					.append(");\n");
+			} else {
+				builder.append("	").append(signalTypeToString(port.getProcessedDataType())).append(" get")
+					.append(StringUtils.capitalize(port.getName())).append("();\n");
+			}
+		}
+		builder.append("\n");
+
 		// class intro
-		builder.append("public class ").append(model.getLocalName()).append(" extends RtlItem {\n");
+		builder.append("	class Implementation extends RtlItem implements ").append(model.getLocalName()).append(" {\n");
 
 		// constants
 		for (Constant constant : model.getConstants()) {
 			if (constant.getProcessedDataType().getFamily() != ProcessedDataType.Family.MATRIX) {
 				builder.append("\n");
-				builder.append("	public static final ").append(valueTypeToString(constant.getProcessedDataType()))
+				builder.append("		public static final ").append(valueTypeToString(constant.getProcessedDataType()))
 					.append(" _").append(constant.getName()).append(" = ")
 					.append(valueGenerator.buildValue(constant.getValue())).append(";\n");
 			}
@@ -83,16 +97,16 @@ public final class CodeGenerator {
 		// fields part: clocks
 		for (ModulePort clock : model.getClocks()) {
 			builder.append("\n");
-			builder.append("	public final RtlClockNetwork _").append(clock.getName()).append(";\n");
+			builder.append("		public final RtlClockNetwork _").append(clock.getName()).append(";\n");
 		}
 
 		// fields part: signal connectors for data ports and local signals (not including registers)
 		for (SignalLike signalLike : model.getSignalConnectors()) {
 			builder.append("\n");
 			if (signalLike.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
-				builder.append("	public final RtlBitSignalConnector _").append(signalLike.getName()).append(";\n");
+				builder.append("		public final RtlBitSignalConnector _").append(signalLike.getName()).append(";\n");
 			} else {
-				builder.append("	public final RtlVectorSignalConnector _").append(signalLike.getName()).append(";\n");
+				builder.append("		public final RtlVectorSignalConnector _").append(signalLike.getName()).append(";\n");
 			}
 		}
 
@@ -103,15 +117,15 @@ public final class CodeGenerator {
 				switch (register.getProcessedDataType().getFamily()) {
 
 					case BIT:
-						builder.append("	public final RtlProceduralBitRegister _").append(register.getName()).append(";\n");
+						builder.append("		public final RtlProceduralBitRegister _").append(register.getName()).append(";\n");
 						break;
 
 					case VECTOR:
-						builder.append("	public final RtlProceduralVectorRegister _").append(register.getName()).append(";\n");
+						builder.append("		public final RtlProceduralVectorRegister _").append(register.getName()).append(";\n");
 						break;
 
 					case MATRIX:
-						builder.append("	public final RtlProceduralMemory _").append(register.getName()).append(";\n");
+						builder.append("		public final RtlProceduralMemory _").append(register.getName()).append(";\n");
 						break;
 
 				}
@@ -122,41 +136,41 @@ public final class CodeGenerator {
 		for (ModuleInstance moduleInstance : model.getModuleInstances()) {
 			String canonicalName = CmUtil.canonicalizeQualifiedModuleName(moduleInstance.getModuleElement().getModuleName());
 			builder.append("\n");
-			builder.append("	public final ").append(canonicalName).append(" _").append(moduleInstance.getName()).append(";\n");
+			builder.append("		public final ").append(canonicalName).append(" _").append(moduleInstance.getName()).append(";\n");
 		}
 
 		// constructor intro
 		builder.append("\n");
-		builder.append("	public ").append(model.getLocalName()).append("(RtlRealm realm");
+		builder.append("		public Implementation(RtlRealm realm");
 		for (ModulePort port : model.getClocks()) {
 			builder.append(", RtlClockNetwork ").append(port.getName());
 		}
 		builder.append(") {\n");
-		builder.append("		super(realm);\n");
+		builder.append("			super(realm);\n");
 
 		// assign clock networks (final variables)
 		for (ModulePort port : model.getClocks()) {
-			builder.append("		this._").append(port.getName()).append(" = ").append(port.getName()).append(";\n");
+			builder.append("			this._").append(port.getName()).append(" = ").append(port.getName()).append(";\n");
 		}
 
 		// definition part: create module instances
 		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
-			builder.append("		this._").append(info.getModuleInstance().getName()).append(" = create")
+			builder.append("			this._").append(info.getModuleInstance().getName()).append(" = create")
 				.append(StringUtils.capitalize(info.getModuleInstance().getName())).append("();\n");
-			builder.append("		this._").append(info.getModuleInstance().getName()).append(".setName(")
+			builder.append("			this._").append(info.getModuleInstance().getName()).append(".setName(")
 				.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
 		}
 
 		// definition part: create signal connectors
 		for (SignalLike signalLike : model.getSignalConnectors()) {
-			builder.append("		this._").append(signalLike.getName()).append(" = new ");
+			builder.append("			this._").append(signalLike.getName()).append(" = new ");
 			if (signalLike.getProcessedDataType().getFamily() == ProcessedDataType.Family.BIT) {
 				builder.append("RtlBitSignalConnector(realm);\n");
 			} else {
 				int width = ((ProcessedDataType.Vector) signalLike.getProcessedDataType()).getSize();
 				builder.append("RtlVectorSignalConnector(realm, ").append(width).append(");\n");
 			}
-			builder.append("		this._").append(signalLike.getName()).append(".setName(")
+			builder.append("			this._").append(signalLike.getName()).append(".setName(")
 				.append(Util.buildJavaStringLiteral(signalLike.getName())).append(");\n");
 		}
 
@@ -169,13 +183,13 @@ public final class CodeGenerator {
 			}
 			String clockName = ((SignalLikeReference) clock).getDefinition().getName();
 
-			builder.append("		RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(_");
+			builder.append("			RtlClockedBlock ").append(doBlockInfo.getName()).append(" = new RtlClockedBlock(_");
 			builder.append(clockName);
 			builder.append(");\n");
 			for (Register register : doBlockInfo.getRegisters()) {
 				String initializerValue = (register.getInitializerValue() == null ? null :
 					valueGenerator.buildValue(register.getInitializerValue()));
-				builder.append("		_").append(register.getName()).append(" = ").append(doBlockInfo.getName());
+				builder.append("			_").append(register.getName()).append(" = ").append(doBlockInfo.getName());
 				switch (register.getProcessedDataType().getFamily()) {
 
 					case BIT: {
@@ -205,7 +219,7 @@ public final class CodeGenerator {
 					builder.append(initializerValue);
 				}
 				builder.append(");\n");
-				builder.append("		_").append(register.getName()).append(".setName(").
+				builder.append("			_").append(register.getName()).append(".setName(").
 					append(Util.buildJavaStringLiteral(register.getName())).append(");\n");
 			}
 		}
@@ -215,7 +229,7 @@ public final class CodeGenerator {
 			ProcessedExpression initializer = signal.getProcessedInitializer();
 			if (initializer != null) {
 				String expression = expressionGenerator.buildExpression(initializer);
-				builder.append("		_").append(signal.getName()).append(".setConnected(").append(expression).append(");\n");
+				builder.append("			_").append(signal.getName()).append(".setConnected(").append(expression).append(");\n");
 			}
 		}
 
@@ -236,7 +250,7 @@ public final class CodeGenerator {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
 					doBlockInfo, target.getProcessedDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
-				builder.append("		_").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
+				builder.append("			_").append(target.getName()).append(".setConnected(").append(expressionText).append(");\n");
 			}
 			for (InstancePortReference target : doBlockInfo.getInstancePortReferences()) {
 				if (target.getPort().getDataType().getFamily() == ProcessedDataType.Family.CLOCK) {
@@ -253,7 +267,7 @@ public final class CodeGenerator {
 				ProcessedExpression equivalentExpression = continuousStatementExpressionGenerator.buildEquivalentExpression(
 					doBlockInfo, target.getDataType(), leftHandSideMatcher);
 				String expressionText = expressionGenerator.buildExpression(equivalentExpression);
-				builder.append("		_").append(target.getModuleInstance().getName()).append(".set")
+				builder.append("			_").append(target.getModuleInstance().getName()).append(".set")
 					.append(StringUtils.capitalize(target.getPort().getName())).append("(")
 					.append(expressionText).append(");\n");
 			}
@@ -266,7 +280,7 @@ public final class CodeGenerator {
 		}
 
 		// end of constructor
-		builder.append("	}\n");
+		builder.append("		}\n");
 		builder.append("\n");
 
 		// accessors part: generate port accessors
@@ -275,25 +289,25 @@ public final class CodeGenerator {
 			if (port.getDirection() == PortDirection.IN) {
 
 				// setter
-				builder.append("	public void set").append(StringUtils.capitalize(port.getName())).append("(")
+				builder.append("		public void set").append(StringUtils.capitalize(port.getName())).append("(")
 					.append(signalTypeToString(port.getProcessedDataType())).append(' ').append(port.getName())
 					.append(") {\n");
-				builder.append("		this._").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
-				builder.append("	}\n");
+				builder.append("			this._").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
+				builder.append("		}\n");
 
 				// getter (returns what was set by the setter)
-				builder.append("	public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
+				builder.append("		public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
 					.append(StringUtils.capitalize(port.getName())).append("() {\n");
-				builder.append("		return _").append(port.getName()).append(".getConnected();\n");
-				builder.append("	}\n");
+				builder.append("			return _").append(port.getName()).append(".getConnected();\n");
+				builder.append("		}\n");
 
 			} else {
 
 				// getter (returns the connector, to be independent from internal logic)
-				builder.append("	public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
+				builder.append("		public ").append(signalTypeToString(port.getProcessedDataType())).append(" get")
 					.append(StringUtils.capitalize(port.getName())).append("() {\n");
-				builder.append("		return _").append(port.getName()).append(";\n");
-				builder.append("	}\n");
+				builder.append("			return _").append(port.getName()).append(";\n");
+				builder.append("		}\n");
 
 			}
 			builder.append("\n");
@@ -301,25 +315,30 @@ public final class CodeGenerator {
 
 		// factory methods for creating module instances (can be overridden for dependency injection)
 		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
-			builder.append("	public ").append(info.getCanonicalModuleName())
+			builder.append("		protected ").append(info.getCanonicalModuleName())
 				.append(" create").append(StringUtils.capitalize(info.getModuleInstance().getName()))
 				.append("() {\n");
-			builder.append("		return new ").append(info.getCanonicalModuleName()).append("(getRealm()");
+			builder.append("			return new ").append(info.getCanonicalModuleName()).append(".Implementation(getRealm()");
 			for (String clockToPass : info.getLocalClocksToPass()) {
 				builder.append(", ").append(clockToPass);
 			}
 			builder.append(");\n");
-			builder.append("	}\n");
+			builder.append("		}\n");
 			builder.append("\n");
 		}
 
 		// custom verilog contribution (not needed since the RTL classes used contribute everything needed)
-		builder.append("	@Override\n");
-		builder.append("	public VerilogContribution getVerilogContribution() {\n");
-		builder.append("		return new EmptyVerilogContribution();\n");
+		builder.append("		@Override\n");
+		builder.append("		public VerilogContribution getVerilogContribution() {\n");
+		builder.append("			return new EmptyVerilogContribution();\n");
+		builder.append("		}\n");
+		builder.append("\n");
+
+		// outro
 		builder.append("	}\n");
 		builder.append("\n");
 		builder.append("}\n");
+		builder.append("\n");
 
 	}
 
