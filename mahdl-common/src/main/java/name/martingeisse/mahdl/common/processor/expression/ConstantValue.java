@@ -388,7 +388,7 @@ public abstract class ConstantValue {
 			if (index < 0 || index >= firstSize) {
 				return Unknown.INSTANCE;
 			}
-			return new Vector(secondSize, bits.get(index * secondSize, (index + 1) * secondSize - 1), false);
+			return new Vector(secondSize, bits.get(index * secondSize, (index + 1) * secondSize), false);
 		}
 
 		@Override
