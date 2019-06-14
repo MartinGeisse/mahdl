@@ -58,6 +58,7 @@ public final class CodeGenerator {
 		builder.append("import name.martingeisse.esdk.core.rtl.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.block.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.block.statement.*;\n");
+		builder.append("import name.martingeisse.esdk.core.rtl.block.statement.target.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.memory.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.signal.*;\n");
 		builder.append("import name.martingeisse.esdk.core.rtl.signal.connector.*;\n");
