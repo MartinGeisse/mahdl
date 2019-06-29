@@ -158,6 +158,7 @@ public final class CodeGenerator {
 		for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 			builder.append("			this._").append(info.getModuleInstance().getName()).append(" = create")
 				.append(StringUtils.capitalize(info.getModuleInstance().getName())).append("();\n");
+			builder.append("			this._").append(info.getModuleInstance().getName()).append(".getRtlItem().setHierarchyParent(this);\n");
 			builder.append("			this._").append(info.getModuleInstance().getName()).append(".getRtlItem().setName(")
 				.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
 		}
@@ -171,6 +172,7 @@ public final class CodeGenerator {
 				int width = ((ProcessedDataType.Vector) signalLike.getProcessedDataType()).getSize();
 				builder.append("RtlVectorSignalConnector(realm, ").append(width).append(");\n");
 			}
+			builder.append("			this._").append(signalLike.getName()).append(".setHierarchyParent(this);\n");
 			builder.append("			this._").append(signalLike.getName()).append(".setName(")
 				.append(Util.buildJavaStringLiteral(signalLike.getName())).append(");\n");
 		}
@@ -220,6 +222,7 @@ public final class CodeGenerator {
 					builder.append(initializerValue);
 				}
 				builder.append(");\n");
+				builder.append("			_").append(register.getName()).append(".setHierarchyParent(this);\n");
 				builder.append("			_").append(register.getName()).append(".setName(").
 					append(Util.buildJavaStringLiteral(register.getName())).append(");\n");
 			}
