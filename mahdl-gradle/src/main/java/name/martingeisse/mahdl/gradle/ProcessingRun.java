@@ -9,6 +9,7 @@ import name.martingeisse.mahdl.common.processor.definition.ModuleDefinition;
 import name.martingeisse.mahdl.gradle.codegen.CodeGenerator;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import name.martingeisse.mahdl.input.cm.*;
+import name.martingeisse.mahdl.input.cm.Module;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
