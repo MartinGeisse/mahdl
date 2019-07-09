@@ -89,8 +89,6 @@ public final class CodeGenerator {
 		writeImplementationClass(true);
 
 		// outro
-		builder.append("	}\n");
-		builder.append("\n");
 		builder.append("}\n");
 		builder.append("\n");
 
@@ -386,6 +384,8 @@ public final class CodeGenerator {
 		builder.append("			return new EmptyVerilogContribution();\n");
 		builder.append("		}\n");
 		builder.append("\n");
+        builder.append("	}\n");
+        builder.append("\n");
 
 	}
 
