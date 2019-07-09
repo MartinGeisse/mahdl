@@ -365,16 +365,24 @@ public final class CodeGenerator {
 		}
 
 		// factory methods for creating module instances (can be overridden for dependency injection)
+        // TODO when using native modules, we should probably make the factory method abstract -- but this ripples
+        // through the module hierarchy up to the top module. OTOH this just reflects that the caller must indeed
+        // subclass all those modules -- inconvenient but actually correct. However, for now we take the easy route and
+        // throw an exception instead of making the method abstract.
 		if (!connector) {
 			for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 				builder.append("		protected ").append(info.getCanonicalModuleName())
 						.append(" create").append(StringUtils.capitalize(info.getModuleInstance().getName()))
 						.append("() {\n");
-				builder.append("			return new ").append(info.getCanonicalModuleName()).append(".Implementation(getRealm()");
-				for (String clockToPass : info.getLocalClocksToPass()) {
-					builder.append(", ").append(clockToPass);
+				if (info.getModuleInstance().getModuleElement().getNativeness().getIt() == null) {
+					builder.append("			return new ").append(info.getCanonicalModuleName()).append(".Implementation(getRealm()");
+					for (String clockToPass : info.getLocalClocksToPass()) {
+						builder.append(", ").append(clockToPass);
+					}
+					builder.append(");\n");
+				} else {
+					builder.append("			throw new UnsupportedOperationException(\"submodule is native\");\n");
 				}
-				builder.append(");\n");
 				builder.append("		}\n");
 				builder.append("\n");
 			}
