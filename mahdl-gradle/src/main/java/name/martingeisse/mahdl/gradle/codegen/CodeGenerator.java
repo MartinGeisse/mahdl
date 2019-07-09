@@ -323,7 +323,6 @@ public final class CodeGenerator {
 
 		// accessors part: generate port accessors
 		for (ModulePort port : model.getDataPorts()) {
-			builder.append("\n");
 			if (port.getDirection() == PortDirection.IN) {
 
 				// setter for the caller
@@ -332,6 +331,7 @@ public final class CodeGenerator {
 						.append(") {\n");
 				builder.append("			this._").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
 				builder.append("		}\n");
+				builder.append("\n");
 
 				// getter for the connector socket (returns the signal connector to be independent from setter calls)
 				if (connector) {
@@ -339,6 +339,7 @@ public final class CodeGenerator {
 							.append(StringUtils.capitalize(port.getName())).append("Socket() {\n");
 					builder.append("			return _").append(port.getName()).append(";\n");
 					builder.append("		}\n");
+					builder.append("\n");
 				}
 
 			} else {
@@ -348,6 +349,7 @@ public final class CodeGenerator {
 						.append(StringUtils.capitalize(port.getName())).append("() {\n");
 				builder.append("			return _").append(port.getName()).append(";\n");
 				builder.append("		}\n");
+				builder.append("\n");
 
 				// setter for the connector socket
 				if (connector) {
@@ -356,10 +358,10 @@ public final class CodeGenerator {
 							.append(") {\n");
 					builder.append("			this._").append(port.getName()).append(".setConnected(").append(port.getName()).append(");\n");
 					builder.append("		}\n");
+					builder.append("\n");
 				}
 
 			}
-			builder.append("\n");
 		}
 
 		// factory methods for creating module instances (can be overridden for dependency injection)
