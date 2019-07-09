@@ -77,9 +77,6 @@ public class ProcessingRun {
 
 				};
 				ModuleDefinition moduleDefinition = new ModuleProcessor(moduleCm, errorHandler).process();
-				if (moduleDefinition.isNative()) {
-					continue;
-				}
 				String packageName = StringUtils.join(qualifiedName.subList(0, qualifiedName.size() - 1), '.');
 				String localName = qualifiedName.get(qualifiedName.size() - 1);
 				GenerationModel model = new GenerationModel(moduleDefinition, packageName, localName);
