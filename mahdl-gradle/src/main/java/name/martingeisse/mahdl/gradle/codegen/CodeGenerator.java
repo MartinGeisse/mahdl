@@ -180,7 +180,12 @@ public final class CodeGenerator {
 		if (!connector) {
 			for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 				builder.append("			this._").append(info.getModuleInstance().getName()).append(" = create")
-						.append(StringUtils.capitalize(info.getModuleInstance().getName())).append("();\n");
+						.append(StringUtils.capitalize(info.getModuleInstance().getName()))
+						.append("(getRealm()");
+				for (String localClock : info.getLocalClocksToPass()) {
+					builder.append(", _").append(localClock);
+				}
+				builder.append(");\n");
 				builder.append("			this._").append(info.getModuleInstance().getName()).append(".getRtlItem().setHierarchyParent(this);\n");
 				builder.append("			this._").append(info.getModuleInstance().getName()).append(".getRtlItem().setName(")
 						.append(Util.buildJavaStringLiteral(info.getModuleInstance().getName())).append(");\n");
@@ -373,9 +378,13 @@ public final class CodeGenerator {
 			for (ModuleInstanceInfo info : model.getModuleInstanceInfos()) {
 				builder.append("		protected ").append(info.getCanonicalModuleName())
 						.append(" create").append(StringUtils.capitalize(info.getModuleInstance().getName()))
-						.append("() {\n");
+						.append("(RtlRealm realm");
+				for (String clockToPass : info.getLocalClocksToPass()) {
+					builder.append(", RtlClockNetwork ").append(clockToPass);
+				}
+				builder.append(") {\n");
 				if (info.getModuleInstance().getModuleElement().getNativeness().getIt() == null) {
-					builder.append("			return new ").append(info.getCanonicalModuleName()).append(".Implementation(getRealm()");
+					builder.append("			return new ").append(info.getCanonicalModuleName()).append(".Implementation(realm");
 					for (String clockToPass : info.getLocalClocksToPass()) {
 						builder.append(", ").append(clockToPass);
 					}

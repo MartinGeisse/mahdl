@@ -70,7 +70,7 @@ public final class ContinuousDoBlockInfo extends DoBlockInfo {
 				if (portReference.isSameAs(target)) {
 					// assignment to the right clock port, so check if the source is a simple signal
 					if (rightHandSide instanceof SignalLikeReference) {
-						return "_" + ((SignalLikeReference) rightHandSide).getDefinition().getName();
+						return ((SignalLikeReference) rightHandSide).getDefinition().getName();
 					} else {
 						markClockSourceUnsupported(target, statement);
 						return null;
