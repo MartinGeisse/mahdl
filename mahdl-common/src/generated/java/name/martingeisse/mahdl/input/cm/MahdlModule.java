@@ -1,6 +1,6 @@
 package name.martingeisse.mahdl.input.cm;
 
-public interface Module extends CmNode {
+public interface MahdlModule extends CmNode {
 
 	CmOptional<CmToken> getNativeness();
 

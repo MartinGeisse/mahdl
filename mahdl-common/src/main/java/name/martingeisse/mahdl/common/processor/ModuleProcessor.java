@@ -15,7 +15,7 @@ import name.martingeisse.mahdl.common.processor.statement.StatementProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessor;
 import name.martingeisse.mahdl.common.processor.type.DataTypeProcessorImpl;
 import name.martingeisse.mahdl.input.cm.*;
-import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public final class ModuleProcessor {
 
-	private final Module module;
+	private final MahdlModule module;
 	private final String canonicalModuleName;
 	private final ProcessingSidekick sidekick;
 
@@ -52,11 +52,11 @@ public final class ModuleProcessor {
 	private StatementProcessor statementProcessor;
 	private List<ProcessedDoBlock> processedDoBlocks;
 
-	public ModuleProcessor(@NotNull Module module, @NotNull ErrorHandler errorHandler) {
+	public ModuleProcessor(@NotNull MahdlModule module, @NotNull ErrorHandler errorHandler) {
 		this(module, new ProcessingSidekick(errorHandler));
 	}
 
-	public ModuleProcessor(@NotNull Module module, @NotNull ProcessingSidekick sidekick) {
+	public ModuleProcessor(@NotNull MahdlModule module, @NotNull ProcessingSidekick sidekick) {
 		this.module = module;
 		this.canonicalModuleName = CmUtil.canonicalizeQualifiedModuleName(module.getModuleName());
 		this.sidekick = sidekick;

@@ -6,8 +6,7 @@ import name.martingeisse.mahdl.input.FlexGeneratedMahdlLexer;
 import name.martingeisse.mahdl.input.MapagGeneratedMahdlParser;
 import name.martingeisse.mahdl.input.Symbols;
 import name.martingeisse.mahdl.input.cm.CmNode;
-import name.martingeisse.mahdl.input.cm.Module;
-import name.martingeisse.mahdl.input.cm.impl.CmNodeImpl;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 import name.martingeisse.mahdl.input.cm.impl.CmTokenImpl;
 import name.martingeisse.mahdl.input.cm.impl.IElementType;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
@@ -68,7 +67,7 @@ public final class SourceLoader {
 				String filename = entry.getName();
 				if (filename.endsWith(MAHDL_FILENAME_SUFFIX)) {
 					String moduleName = filename.substring(0, filename.length() - MAHDL_FILENAME_SUFFIX.length());
-					Module codeModel = loadSourceFile(entry);
+					MahdlModule codeModel = loadSourceFile(entry);
 					if (codeModel != null) {
 						codeModels.put(buildName(moduleName), new ModuleWrapper(entry, codeModel));
 					}
@@ -94,7 +93,7 @@ public final class SourceLoader {
 		segments.remove(segments.size() - 1);
 	}
 
-	private Module loadSourceFile(File file) {
+	private MahdlModule loadSourceFile(File file) {
 		try {
 			// JFlex generates a lexer that takes a reader but does not read from it, so pass the content manually.
 			String content = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
@@ -105,7 +104,7 @@ public final class SourceLoader {
 		}
 	}
 
-	private Module loadSourceFile(String path, String content) throws IOException {
+	private MahdlModule loadSourceFile(String path, String content) throws IOException {
 
 		// run lexer
 		FlexGeneratedMahdlLexer lexer = new FlexGeneratedMahdlLexer(null);
@@ -140,8 +139,8 @@ public final class SourceLoader {
 		}
 
 		// check root node type
-		if (rootNode instanceof Module) {
-			return (Module) rootNode;
+		if (rootNode instanceof MahdlModule) {
+			return (MahdlModule) rootNode;
 		} else {
 			CompilationErrors.reportError(path, 0, 0, "wrong root CM node: " + rootNode);
 			return null;

@@ -2,7 +2,7 @@ package name.martingeisse.mahdl.input.cm.impl;
 
 import name.martingeisse.mahdl.gradle.ProcessingRun;
 import name.martingeisse.mahdl.input.cm.CmNode;
-import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 
 import java.io.File;
 
@@ -12,10 +12,10 @@ import java.io.File;
 public final class ModuleWrapper extends CmNodeImpl {
 
 	private final File file;
-	private final Module module;
+	private final MahdlModule module;
 	private ProcessingRun processingRun;
 
-	public ModuleWrapper(File file, Module module) {
+	public ModuleWrapper(File file, MahdlModule module) {
 		super(0, 0);
 		this.file = file;
 		this.module = module;
@@ -26,7 +26,7 @@ public final class ModuleWrapper extends CmNodeImpl {
 		return file;
 	}
 
-	public Module getModule() {
+	public MahdlModule getModule() {
 		return module;
 	}
 

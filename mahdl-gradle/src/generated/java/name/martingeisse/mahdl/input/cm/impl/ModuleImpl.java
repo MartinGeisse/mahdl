@@ -2,7 +2,7 @@ package name.martingeisse.mahdl.input.cm.impl;
 
 import name.martingeisse.mahdl.input.cm.*;
 
-public final class ModuleImpl extends CmNodeImpl implements Module {
+public final class ModuleImpl extends CmNodeImpl implements MahdlModule {
 
 	private final CmOptional<CmToken> nativeness;
 	private final QualifiedModuleName moduleName;

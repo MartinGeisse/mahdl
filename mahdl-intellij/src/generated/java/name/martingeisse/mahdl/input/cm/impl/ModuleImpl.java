@@ -10,7 +10,7 @@ import com.intellij.util.IncorrectOperationException;
 import name.martingeisse.mahdl.input.cm.*;
 import org.jetbrains.annotations.NotNull;
 
-public final class ModuleImpl extends ASTWrapperPsiElement implements Module, PsiCm, PsiNamedElement, PsiNameIdentifierOwner {
+public final class ModuleImpl extends ASTWrapperPsiElement implements MahdlModule, PsiCm, PsiNamedElement, PsiNameIdentifierOwner {
 
 	public ModuleImpl(@NotNull ASTNode node) {
 		super(node);

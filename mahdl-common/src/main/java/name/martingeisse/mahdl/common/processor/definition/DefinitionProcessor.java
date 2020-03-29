@@ -151,7 +151,7 @@ public final class DefinitionProcessor {
 			ImplementationItem_ModuleInstanceDefinitionGroup moduleInstanceDefinitionGroupElement = (ImplementationItem_ModuleInstanceDefinitionGroup) implementationItem;
 
 			// resolve the module definition
-			Module resolvedModule;
+			MahdlModule resolvedModule;
 			try {
 				resolvedModule = Environment.Holder.INSTANCE.resolveModuleReference(moduleInstanceDefinitionGroupElement.getModuleName());
 			} catch (ReferenceResolutionException e) {

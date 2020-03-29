@@ -9,7 +9,7 @@ import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.input.cm.CmNode;
 import name.martingeisse.mahdl.input.cm.CmUtil;
-import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.InternalPsiUtil;
 import name.martingeisse.mahdl.input.cm.impl.QualifiedModuleNameImpl;
@@ -52,7 +52,7 @@ public class IntellijEnvironment implements Environment {
 	}
 
 	@Override
-	public void validateModuleNameAgainstFilePath(Module mahdlModule, QualifiedModuleName name) throws IOException {
+	public void validateModuleNameAgainstFilePath(MahdlModule mahdlModule, QualifiedModuleName name) throws IOException {
 
 		// determine the IntelliJ project module
 		QualifiedModuleNameImpl namePsi = (QualifiedModuleNameImpl) InternalPsiUtil.getPsiFromCm(name);
@@ -103,11 +103,11 @@ public class IntellijEnvironment implements Environment {
 	}
 
 	@Override
-	public Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
+	public MahdlModule resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
 		QualifiedModuleNameImpl namePsi = (QualifiedModuleNameImpl) InternalPsiUtil.getPsiFromCm(name);
 		PsiElement untypedResolvedModule = namePsi.getReference().resolve();
-		if (untypedResolvedModule instanceof Module) {
-			return (Module) untypedResolvedModule;
+		if (untypedResolvedModule instanceof MahdlModule) {
+			return (MahdlModule) untypedResolvedModule;
 		} else {
 			throw new ReferenceResolutionException("unknown module: '" + namePsi.getReference().getCanonicalText() + "'");
 		}

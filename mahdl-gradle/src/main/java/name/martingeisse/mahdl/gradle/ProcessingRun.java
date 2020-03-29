@@ -9,7 +9,7 @@ import name.martingeisse.mahdl.common.processor.definition.ModuleDefinition;
 import name.martingeisse.mahdl.gradle.codegen.CodeGenerator;
 import name.martingeisse.mahdl.gradle.model.GenerationModel;
 import name.martingeisse.mahdl.input.cm.*;
-import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +62,7 @@ public class ProcessingRun {
 			ModuleWrapper moduleWrapper = codeModelEntry.getValue();
 			try {
 				moduleWrapper.setProcessingRun(this);
-				Module moduleCm = moduleWrapper.getModule();
+				MahdlModule moduleCm = moduleWrapper.getModule();
 				ErrorHandler errorHandler = new ErrorHandler() {
 
 					@Override
@@ -122,7 +122,7 @@ public class ProcessingRun {
 		}
 	}
 
-	public Module resolveModuleReference(ModuleWrapper moduleWrapper, QualifiedModuleName name) throws ReferenceResolutionException {
+	public MahdlModule resolveModuleReference(ModuleWrapper moduleWrapper, QualifiedModuleName name) throws ReferenceResolutionException {
 		ImmutableList<String> segments = convertQualifiedModuleName(name);
 		ModuleWrapper resolved = codeModels.get(segments);
 		if (resolved == null) {

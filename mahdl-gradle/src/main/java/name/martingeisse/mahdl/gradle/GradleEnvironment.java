@@ -3,7 +3,7 @@ package name.martingeisse.mahdl.gradle;
 import name.martingeisse.mahdl.common.Environment;
 import name.martingeisse.mahdl.common.ReferenceResolutionException;
 import name.martingeisse.mahdl.input.cm.CmNode;
-import name.martingeisse.mahdl.input.cm.Module;
+import name.martingeisse.mahdl.input.cm.MahdlModule;
 import name.martingeisse.mahdl.input.cm.QualifiedModuleName;
 import name.martingeisse.mahdl.input.cm.impl.ModuleWrapper;
 
@@ -31,7 +31,7 @@ public class GradleEnvironment implements Environment {
 	}
 
 	@Override
-	public void validateModuleNameAgainstFilePath(Module module, QualifiedModuleName name) throws IOException {
+	public void validateModuleNameAgainstFilePath(MahdlModule module, QualifiedModuleName name) throws IOException {
 		ModuleWrapper moduleWrapper = ModuleWrapper.get(module);
 		if (moduleWrapper == null) {
 			throw new IOException("could not validate module name due to previous errors");
@@ -40,7 +40,7 @@ public class GradleEnvironment implements Environment {
 	}
 
 	@Override
-	public Module resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
+	public MahdlModule resolveModuleReference(QualifiedModuleName name) throws ReferenceResolutionException {
 		ModuleWrapper moduleWrapper = ModuleWrapper.get(name);
 		if (moduleWrapper == null) {
 			throw new ReferenceResolutionException("could not resolve module reference due to previous errors");
